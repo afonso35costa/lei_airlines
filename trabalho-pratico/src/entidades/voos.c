@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include "voos.h"
+#include "include/entidades/voos.h"
 #include "include/parsing/datas.h"
 #include <string.h>
 
@@ -158,7 +158,7 @@ typedef struct voo {
 
     /* Getters: retornam o ponteiro interno (ou NULL). Não transferem propriedade. */
     const char *voo_get_flight_id(const Voo *v) { return v ? v->flight_id : NULL; }
-    const DataHora *voo_get_departure(const Voo *v) { return v ? v->departure : NULL; }
+    DataHora *voo_get_departure(const Voo *v) { return v ? v->departure : NULL; }
     const DataHora *voo_get_actual_departure(const Voo *v) { return v ? v->actual_departure : NULL; }
     const DataHora *voo_get_arrival(const Voo *v) { return v ? v->arrival : NULL; }
     const DataHora *voo_get_actual_arrival(const Voo *v) { return v ? v->actual_arrival : NULL; }
