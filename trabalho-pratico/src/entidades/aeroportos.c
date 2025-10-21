@@ -14,3 +14,19 @@ typedef struct aeroportos {
     char *icao;        // código ICAO
     char *type;        // tipo do aeroporto (small_airport, large_airport, etc.)
 } Aeroportos;
+
+Aeroportos* criar_aeroporto(char *code, char *name, char *city,
+                             char *country, double latitude,
+                             double longitude, char *icao,
+                             char *type) {
+    Aeroportos *aeroporto = (Aeroportos *)malloc(sizeof(Aeroportos));
+    aeroporto->code = code;
+    aeroporto->name = name;
+    aeroporto->city = city;
+    aeroporto->country = country;
+    aeroporto->latitude = latitude;
+    aeroporto->longitude = longitude;
+    aeroporto->icao = icao;
+    aeroporto->type = type;
+    return aeroporto;
+}

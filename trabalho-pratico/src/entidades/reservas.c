@@ -15,3 +15,18 @@ typedef struct reservas {
     char *qr_code;                // string do código QR
 } Reservas;
 
+Reservas* criar_reserva(char *reservation_id, char **flight_ids, char *document_number,
+                        char *seat, double price, bool extra_luggage,
+                        bool priority_boarding, char *qr_code) {
+    Reservas *reserva = (Reservas *)malloc(sizeof(Reservas));
+    reserva->reservation_id = reservation_id;
+    reserva->flight_ids = flight_ids;
+    reserva->document_number = document_number;
+    reserva->seat = seat;
+    reserva->price = price;
+    reserva->extra_luggage = extra_luggage;
+    reserva->priority_boarding = priority_boarding;
+    reserva->qr_code = qr_code;
+    return reserva;
+}
+
