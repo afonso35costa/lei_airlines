@@ -3,7 +3,7 @@
 #include <string.h>
 #include <stdbool.h>
 
-#include "../entidades/passageiros.h"
+#include "passageiros.h"
 #include "gestor_passageiros.h"
 
 // Estrutura do gestor de passageiros
@@ -14,7 +14,7 @@ typedef struct gestor_passageiros {
     bool sorted;                   // Flag se está ordenado
 } GestorPassageiros;
 
-// ===========================================
+// =============================================================================================
 // FUNÇÕES DE GESTÃO DE MEMÓRIA
 // ===========================================
 
@@ -152,4 +152,135 @@ Passageiros** find_passageiros_by_name(GestorPassageiros *gestor, const char *na
     return results;
 }
 
-Passageiros** find_passageiros
+Passageiros** find_passageiros_by_nationality(GestorPassageiros *gestor, const char *nationality, int *found_count) {
+    if (gestor == NULL || nationality == NULL || found_count == NULL) return NULL;
+    
+    *found_count = 0;
+    Passageiros **results = malloc(gestor->count * sizeof(Passageiros*));
+    if (results == NULL) return NULL;
+    
+    for (int i = 0; i < gestor->count; i++) {
+        char *nat = get_nationality(gestor->passageiros[i]);
+        if (nat != NULL && strcmp(nat, nationality) == 0) {
+            results[*found_count] = gestor->passageiros[i];
+            (*found_count)++;
+        }
+    }
+    
+    if (*found_count == 0) {
+        free(results);
+        return NULL;
+    }
+    
+    return results;
+}
+
+// ===========================================
+// FUNÇÕES DE ORDENAÇÃO
+// ===========================================
+
+void sort_passageiros(GestorPassageiros *gestor) {
+    if (gestor == NULL || gestor->sorted) return;
+    
+    // Bubble sort (simples para começar)
+    for (int i = 0; i < gestor->count - 1; i++) {
+        for (int j = 0; j < gestor->count - i - 1; j++) {
+            if (compare_passageiros(gestor->passageiros[j], gestor->passageiros[j + 1]) > 0) {
+                // Troca
+                Passageiros *temp = gestor->passageiros[j];
+                gestor->passageiros[j] = gestor->passageiros[j + 1];
+                gestor->passageiros[j + 1] = temp;
+            }
+        }
+    }
+    
+    gestor->sorted = true;
+}
+
+// ===========================================
+// FUNÇÕES DE CARREGAMENTO
+// ===========================================
+
+bool load_passageiros_to_gestor(GestorPassageiros *gestor, const char *filename) {
+    if (gestor == NULL || filename == NULL) return false;
+    
+    Passageiros **passageiros_array;
+    int count;
+    
+    // Carrega do ficheiro CSV
+    if (load_passageiros_from_file(filename, &passageiros_array, &count) != 0) {
+        return false;
+    }
+    
+    // Adiciona cada passageiro ao gestor
+    int added = 0;
+    for (int i = 0; i < count; i++) {
+        if (add_passageiro(gestor, passageiros_array[i])) {
+            added++;
+        } else {
+            destroy_passageiro(passageiros_array[i]);  // Liberta se não conseguiu adicionar
+        }
+    }
+    
+    free(passageiros_array);  // Liberta só o array, não os passageiros
+    
+    printf("Adicionados %d/%d passageiros ao gestor\n", added, count);
+    return added > 0;
+}
+
+// ===========================================
+// FUNÇÕES DE INFORMAÇÃO
+// ===========================================
+
+int get_passageiros_count(GestorPassageiros *gestor) {
+    return (gestor != NULL) ? gestor->count : 0;
+}
+
+void print_all_passageiros(GestorPassageiros *gestor) {
+    if (gestor == NULL) {
+        printf("Gestor inválido\n");
+        return;
+    }
+    
+    printf("=== LISTA DE PASSAGEIROS (%d total) ===\n", gestor->count);
+    for (int i = 0; i < gestor->count; i++) {
+        printf("\n--- Passageiro %d ---\n", i + 1);
+        print_passageiro(gestor->passageiros[i]);
+    }
+    printf("================================\n");
+}
+
+void print_passageiros_summary(GestorPassageiros *gestor) {
+    if (gestor == NULL) {
+        printf("Gestor inválido\n");
+        return;
+    }
+    
+    printf("=== RESUMO DE PASSAGEIROS ===\n");
+    printf("Total: %d passageiros\n", gestor->count);
+    printf("Capacidade: %d\n", gestor->capacity);
+    printf("Ordenado: %s\n", gestor->sorted ? "Sim" : "Não");
+    
+    // Conta por nacionalidade
+    // TODO: Implementar estatísticas mais detalhadas
+    
+    printf("============================\n");
+}
+
+// ===========================================
+// FUNÇÕES DE VALIDAÇÃO
+// ===========================================
+
+bool validate_all_passageiros(GestorPassageiros *gestor) {
+    if (gestor == NULL) return false;
+    
+    bool all_valid = true;
+    for (int i = 0; i < gestor->count; i++) {
+        if (!validate_passageiro(gestor->passageiros[i])) {
+            printf("ERRO: Passageiro %d inválido\n", i + 1);
+            all_valid = false;
+        }
+    }
+    
+    return all_valid;
+}
