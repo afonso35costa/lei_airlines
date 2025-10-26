@@ -43,23 +43,23 @@ Passageiros* create_passageiro(void) {
 
 // FUNÇÃO INICIALIZADORA - Função que inicializa os campos de um passageiro com valores padrão
 
-Passageiros* init_passageiro(const char *doc, const char *fname, const char *lname, 
-                             const char *birth, const char *nat, const char *gen,
-                             const char *mail, const char *tel, const char *addr, const char *pic) {
+Passageiros* init_passageiro(const char *document_number, const char *first_name, const char *last_name, 
+                             const char *dob, const char *nationality, const char *gender,
+                             const char *email, const char *phone, const char *address, const char *photo) {
     Passageiros *p = create_passageiro();
     if (p == NULL) return NULL;
     
     // Aloca e copia cada string (strdup faz malloc + strcpy)
-    p->document_number = doc ? strdup(doc) : NULL;
-    p->first_name = fname ? strdup(fname) : NULL;
-    p->last_name = lname ? strdup(lname) : NULL;
-    p->dob = birth ? strdup(birth) : NULL;
-    p->nationality = nat ? strdup(nat) : NULL;
-    p->gender = gen ? strdup(gen) : NULL;
-    p->email = mail ? strdup(mail) : NULL;
-    p->phone = tel ? strdup(tel) : NULL;
-    p->address = addr ? strdup(addr) : NULL;
-    p->photo = pic ? strdup(pic) : NULL;
+    p->document_number = document_number ? strdup(document_number) : NULL;
+    p->first_name = first_name ? strdup(first_name) : NULL;
+    p->last_name = last_name ? strdup(last_name) : NULL;
+    p->dob = dob ? strdup(dob) : NULL;
+    p->nationality = nationality ? strdup(nationality) : NULL;
+    p->gender = gender ? strdup(gender) : NULL;
+    p->email = email ? strdup(email) : NULL;
+    p->phone = phone ? strdup(phone) : NULL;
+    p->address = address ? strdup(address) : NULL;
+    p->photo = photo ? strdup(photo) : NULL;
     
     return p;
 }
@@ -89,15 +89,15 @@ void print_passageiro(const Passageiros *p) {
     }
     
     printf("=== PASSAGEIRO ===\n");
-    printf("Documento: %s\n", get_document_number(p) ?: "N/A");
-    printf("Nome: %s %s\n", get_first_name(p) ?: "", get_last_name(p) ?: "");
-    printf("Data nascimento: %s\n", get_dob(p) ?: "N/A");
-    printf("Nacionalidade: %s\n", get_nationality(p) ?: "N/A");
-    printf("Género: %s2\n", get_gender(p) ?: "N/A");
-    printf("Email: %s\n", get_email(p) ?: "N/A");
-    printf("Telefone: %s\n", get_phone(p) ?: "N/A");
-    printf("Morada: %s\n", get_address(p) ?: "N/A");
-    printf("Fotografia: %s\n", get_photo(p) ?: "N/A");
+    printf("Documento: %s\n", get_document_number(p) ? get_document_number(p) : "N/A");
+    printf("Nome: %s %s\n", get_first_name(p) ? get_first_name(p) : "", get_last_name(p) ? get_last_name(p) : "");
+    printf("Data nascimento: %s\n", get_dob(p) ? get_dob(p) : "N/A");
+    printf("Nacionalidade: %s\n", get_nationality(p) ? get_nationality(p) : "N/A");
+    printf("Género: %s\n", get_gender(p) ? get_gender(p) : "N/A");
+    printf("Email: %s\n", get_email(p) ? get_email(p) : "N/A");
+    printf("Telefone: %s\n", get_phone(p) ? get_phone(p) : "N/A");
+    printf("Morada: %s\n", get_address(p) ? get_address(p) : "N/A");
+    printf("Fotografia: %s\n", get_photo(p) ? get_photo(p) : "N/A");
     printf("==================\n");
 }
 
@@ -122,51 +122,10 @@ void destroy_passageiro(Passageiros *p) {
     free(p);
 }
 
-/*
-// FUNÇÃO DE VALIDAÇÃO - verifica se os dados são válidos
-bool validate_passageiro(const Passageiros *p) {
-    if (p == NULL) return false;
-    
-    if (p->document_number == NULL || strlen(p->document_number) == 0) return false;
-    if (p->first_name == NULL || strlen(p->first_name) == 0) return false;
-    if (p->last_name == NULL || strlen(p->last_name) == 0) return false; 
-    if (p->dob == NULL || strlen(p->dob) != 10) return false; // formato aaaa-mm-dd
-    if (p->nationality == NULL || strlen(p->nationality) == 0) return false;
-    if (p->gender == NULL || strlen(p->gender) == 0) return false;
-    if (p->email == NULL || strlen(p->email) == 0) return false;
-    if (p->phone == NULL || strlen(p->phone) == 0) return false;
-    if (p->address == NULL || strlen(p->address) == 0) return false;
-    if (p->photo == NULL || strlen(p->photo) == 0) return false;
-    return true;
-}
-*/
 
-// FUNÇÃO DE VALIDAÇÃO - verifica se os dados são válidos
-bool validate_passageiro(const Passageiros *p) {
-    if (p == NULL) return false;
-    
-    if (!is_valid_string(p->document_number)) return false;
-    if (!is_valid_string(p->first_name)) return false;
-    if (!is_valid_string(p->last_name)) return false;
-    if (!is_valid_string(p->dob) || strlen(p->dob) != 10) return false; // Data tem formato específico (aaaa-mm-dd)
-    if (!is_valid_string(p->nationality)) return false;
-    if (!is_valid_string(p->gender)) return false;
-    if (!is_valid_string(p->email)) return false;
-    if (!is_valid_string(p->phone)) return false;
-    if (!is_valid_string(p->address)) return false;
-    if (!is_valid_string(p->photo)) return false;
-    
-    return true;
-}
-
-// Função auxiliar para verificar se string é válida
-bool is_valid_string(const char *str) {
-    return str != NULL && strlen(str) > 0;
-}
-
-// ==================================================================================================
+// ============================================================================================================================================
 // GETTERS - Funções para obter valores
-// ==================================================================================================
+// ============================================================================================================================================
 
 char* get_document_number(const Passageiros *p) {
     return (p != NULL) ? p->document_number : NULL;
@@ -302,7 +261,7 @@ Passageiros* parse_passageiro_from_csv(const char *linha) {
     int num_campos = 0;
     
     // Divide a linha pelos delimitadores ','
-    char *token = strtok(linha_copia, ",");
+    char *token = strtok(linha_copia, ",");                     
     while (token != NULL && num_campos < 10) {
         campos[num_campos] = remove_quotes(token);
         num_campos++;

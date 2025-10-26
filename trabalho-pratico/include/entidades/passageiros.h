@@ -14,7 +14,7 @@ typedef struct passageiros Passageiros;
 Passageiros* create_passageiro(void);
 
 // Inicializa um passageiro com dados
-Passageiros* init_passageiro(const char *doc, const char *fname, const char *lname, 
+Passageiros *init_passageiro(const char *doc, const char *fname, const char *lname,
                              const char *birth, const char *nat, const char *gen,
                              const char *mail, const char *tel, const char *addr, const char *pic);
 
