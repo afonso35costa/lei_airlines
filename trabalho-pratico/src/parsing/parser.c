@@ -37,7 +37,7 @@ void parse_aeronaves_csv(const char *filename) {
 
     char *line = NULL;
     size_t len = 0;
-    ssize_t read;
+    size_t read;
     int first_line = 1;
 
     while ((read = getline(&line, &len, f)) != -1) {
