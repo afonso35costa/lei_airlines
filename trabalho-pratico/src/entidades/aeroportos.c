@@ -19,7 +19,10 @@ Aeroportos* criar_aeroporto(char *code, char *name, char *city,
                              char *country, double latitude,
                              double longitude, char *icao,
                              char *type) {
+    // Aloca memória para a estrutura 'Aeroportos'
     Aeroportos *aeroporto = (Aeroportos *)malloc(sizeof(Aeroportos));
+    
+    // Inicializa os campos da estrutura com os valores fornecidos
     aeroporto->code = code;
     aeroporto->name = name;
     aeroporto->city = city;
@@ -28,5 +31,8 @@ Aeroportos* criar_aeroporto(char *code, char *name, char *city,
     aeroporto->longitude = longitude;
     aeroporto->icao = icao;
     aeroporto->type = type;
+    
+    // Retorna o ponteiro para a estrutura criada
     return aeroporto;
 }
+
