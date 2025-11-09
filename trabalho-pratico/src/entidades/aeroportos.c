@@ -86,7 +86,7 @@ void free_aeroporto(Aeroportos *a) {
     free(a);
 }
 
-/ GETTERS
+// GETTERS
 
 const char* get_code(const Aeroportos *a) {
     return a ? a->code : NULL;
