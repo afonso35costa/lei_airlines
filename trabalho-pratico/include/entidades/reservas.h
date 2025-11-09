@@ -3,7 +3,7 @@
 
 #include <stdbool.h>
 
-// Forward declaration da struct
+//  Estrutura que representa uma reserva
 typedef struct reservas Reservas;
 
 // ===========================================
@@ -54,24 +54,5 @@ void set_price(Reservas *r, double price);
 void set_extra_luggage(Reservas *r, bool extra);
 void set_priority_boarding(Reservas *r, bool priority);
 void set_qr_code(Reservas *r, const char *qr);
-
-// ===========================================
-// PARSER - Funções para ler dados
-// ===========================================
-
-// Função auxiliar para remover aspas
-char* remove_quotes(char *str);
-
-// Parse de uma linha CSV para reserva
-Reservas* parse_reserva_from_csv(const char *linha);
-
-// Funçaõ de validação de reserva
-bool validate_reserva(const Reservas *r);
-
-// Carrega reservas de ficheiro CSV
-int load_reservas_from_file(const char *filename, Reservas ***reservas, int *count);
-
-// Liberta array de reservas
-void free_reservas_array(Reservas **reservas, int count);
 
 #endif

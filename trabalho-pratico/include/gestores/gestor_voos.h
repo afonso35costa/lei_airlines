@@ -1,20 +1,28 @@
 #ifndef GESTOR_VOOS_H
 #define GESTOR_VOOS_H
 
-#include <stdbool.h>
-#include "../entidades/voos.h"
+#include "voos.h"
 
-typedef struct GestorVoos GestorVoos;
+#define TABLE_SIZE_V 20000
 
-GestorVoos* criarGestorVoos(void);
-void destruirGestorVoos(GestorVoos *gv);
+typedef struct nodo_voo {
+    char *key;               // flight_id
+    Voo *valor;
+    struct nodo_voo *next;
+} NodoVoo;
 
-void adicionarVoo(GestorVoos *gv, Voo *v);
-bool removerVoo(GestorVoos *gv, const char *flight_id);
-Voo* procurarVoo(const GestorVoos *gv, const char *flight_id);
-int contarVoos(const GestorVoos *gv);
-void iterarVoos(GestorVoos *gv, void (*callback)(Voo *));
-void ordenarVoosPorData(GestorVoos *gv);
-void listarVoos(const GestorVoos *gv);
+typedef struct gestor_voos {
+    NodoVoo **tabela;
+} GestorVoos;
+
+/* CRUD */
+GestorVoos *criar_gestor_voos();
+int inserir_voo(GestorVoos *g, Voo *v);
+Voo *procurar_voo(GestorVoos *g, const char *flight_id);
+int remover_voo(GestorVoos *g, const char *flight_id);
+void libertar_gestor_voos(GestorVoos *g);
+
+/* Debug */
+void print_todos_voos(GestorVoos *g);
 
 #endif

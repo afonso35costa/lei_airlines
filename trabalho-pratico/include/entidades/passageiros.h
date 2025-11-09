@@ -64,18 +64,5 @@ void set_phone(Passageiros *p, const char *tel);
 void set_address(Passageiros *p, const char *addr);
 void set_photo(Passageiros *p, const char *pic);
 
-// ===========================================
-// PARSER - Funções para ler dados
-// ===========================================
-
-// Parse de uma linha CSV para passageiro
-Passageiros* parse_passageiro_from_csv(const char *linha);
-
-// Carrega passageiros de ficheiro CSV
-int load_passageiros_from_file(const char *filename, Passageiros ***passageiros, int *count);
-
-// Liberta array de passageiros
-void free_passageiros_array(Passageiros **passageiros, int count);
-
 
 #endif 

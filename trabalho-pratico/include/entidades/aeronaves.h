@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-typedef struct passageiros Passageiros;
+typedef struct aeronaves Aeronaves;
 
 // Cria uma nova aeronave e aloca memória
 Aeronaves* create_aeronave(void);
