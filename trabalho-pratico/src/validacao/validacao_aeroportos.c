@@ -46,7 +46,26 @@ int validar_icao(const char *icao) {
 }
 
 int validar_type(const char *type) {
-    return type && strlen(type) > 5;
+    if (!type) return 0; // Verifica se o ponteiro é nulo
+
+    const char *tipos_validos[] = {
+        "small_airport",
+        "medium_airport",
+        "large_airport",
+        "heliport",
+        "seaplane_base"
+    };
+
+    int num_tipos = sizeof(tipos_validos) / sizeof(tipos_validos[0]);
+
+    // Verifica se o tipo corresponde a algum dos válidos
+    for (int i = 0; i < num_tipos; i++) {
+        if (strcmp(type, tipos_validos[i]) == 0) {
+            return 1; 
+        }
+    }
+
+    return 0;
 }
 
 

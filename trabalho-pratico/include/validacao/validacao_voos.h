@@ -1,0 +1,30 @@
+#ifndef VALIDACAO_VOOS_H
+#define VALIDACAO_VOOS_H
+
+#include "voos.h"   
+
+// ============================================================
+// Funções de validação individual
+// ============================================================
+int validar_flight_id(const char *flight_id);
+int validar_departure(const char *departure);
+int validar_arrival(const char *arrival);
+int validar_aircraft(const char *aircraft);
+int validar_status(const char *status);
+int validar_tracking_url(const char *tracking_url);
+
+// Funções auxiliares para validar datas e horas
+int validar_data(const char *data);       // formato AAAA-MM-DD
+int validar_hora(const char *hora);       // formato HH:MM
+
+// ============================================================
+// Validação geral
+// ============================================================
+int validar_voo(const Voo *v);
+
+// ============================================================
+// Leitura e processamento de ficheiro CSV
+// ============================================================
+void processar_ficheiro_voos(const char *input_path, const char *erros_path);
+
+#endif
