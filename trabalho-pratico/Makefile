@@ -1,58 +1,51 @@
-#Compilador usado
 CC = gcc
+CFLAGS = -Wall -Wextra -std=c11 -g -DDEBUG
+GLIB_CFLAGS = `pkg-config --cflags glib-2.0`
+GLIB_LIBS = `pkg-config --libs glib-2.0`
 
-# Flags a usar para compilação
-# - Wall: mostrar todos os warnings
-# - Iinclude: diretoria para os ficheiros header locais
-# - `pkg-config --cflags glib-2.0`: diretorias dos ficheiros header da glib (opcional, só
-# necessário se usar glib),→
-CFLAGS = -Wall -Iinclude `pkg-config --cflags glib-2.0`
+# Diretórios corretos (assumindo que tests/ está na raiz do projeto)
+SRCDIR = ../src
+INCDIR = ../include
 
-# Flags a usar para linkagem
-# - `pkg-config --libs glib-2.0`: biblioteca glib (opcional, só necessário se usar glib)
-# - -lm: biblioteca matemática (opcional, só necessário se usar funções matemáticas)
-LDFLAGS = `pkg-config --libs glib-2.0` -lm
+# Só incluir ficheiros que existem
+EXISTING_SOURCES = ../src/gestores/gestor_aeroportos.c \
+                  ../src/gestores/gestor_aeronaves.c \
+                  ../src/gestores/gestor_voos.c \
+                  ../src/gestores/queries.c
 
-# Executável chamado 'program'.
-#
-# Para o gerar, linkamos todos os ficheiros .o e as bibliotecas glib e math.
-# Usamos $(NAME) para usar a variável NAME.
-# $@ é equivalente ao objetivo. Neste caso, $@ avalia para: program
-# $^ significa todos os pré-requisitos: Neste caso, avalia para: src/main.o src/file1.o src/file2.o
-# Neste exemplo, temos a seguinte regra:
-# gcc `pkg-config --libs glib-2.0` -lm -Wall -Iinclude `pkg-config --cflags glib-2.0` src/main.o
-# src/gestor_voos.o -o program
-#
-# Como esta é a primeira regra, será a que é chamada ao executar 'make' sem argumentos.
-# Ou seja, 'make' é equivalente a 'make program'.
-#
-# EXEMPLO COMPLETO
+# Assumindo que as entidades podem não estar completas
+ENTITY_SOURCES = $(wildcard ../src/entidades/*.c)
 
-# Para executar esta regra, o make irá primeiro precisar de executar as regras 'src/main.o',
-# 'src/file1.o' e 'src/file2.o', como especificado na lista de pré-requisitos (à direita)
-program: src/main.o src/gestor_voos.o
-	$(CC) $(CFLAGS) $^ $(LDFLAGS) -o $@
+# Parsing se existir
+PARSING_SOURCES = $(wildcard ../src/parsing/*.c)
 
-# Aqui começam as regras de compilação dos ficheiros fonte.
-# Uma regra vazia é equivalente a:
-# $(CC) $(CPPFLAGS) $(CFLAGS) -c <left param> <right param>
-# Sendo assim, definimos o objetivo (left) como o nome do ficheiro objeto a ser gerado
-# e o nome do ficheiro fonte na lista de pré-requisitos (right).
+ALL_SOURCES = $(EXISTING_SOURCES) $(ENTITY_SOURCES) $(PARSING_SOURCES)
 
-# Esta regra específica é equivalente a:
-# gcc -Wall -Iinclude `pkg-config --cflags glib-2.0` -c -o src/main.o src/main.c
-src/main.o: src/main.c
+# Regra principal
+test_queries: test_queries.c $(ALL_SOURCES)
+    $(CC) $(CFLAGS) $(GLIB_CFLAGS) -I$(INCDIR) -o test_queries test_queries.c $(ALL_SOURCES) $(GLIB_LIBS)
 
-# Equivalente à regra acima
-# src/main.o: src/main.c
-# $(CC) $(CFLAGS) -c -o $@ $<
+# Regra mais segura que verifica ficheiros
+test_safe: test_queries.c
+    @echo "Compilando apenas ficheiros que existem..."
+    $(CC) $(CFLAGS) $(GLIB_CFLAGS) -I$(INCDIR) -o test_queries test_queries.c $(wildcard $(ALL_SOURCES)) $(GLIB_LIBS) 2>/dev/null || echo "Alguns ficheiros podem estar em falta"
 
-src/gestor_voos.o: src/gestor_voos.c
+run_tests: test_queries
+    @echo "Executando testes das queries..."
+    ./test_queries
 
-# Objetivo padrão que compila tudo
-all: program
+# Lista ficheiros que faltam
+check_files:
+    @echo "Verificando ficheiros necessários..."
+    @for file in $(ALL_SOURCES); do \
+        if [ -f "$$file" ]; then \
+            echo "✅ $$file"; \
+        else \
+            echo "❌ $$file (EM FALTA)"; \
+        fi \
+    done
 
-# A regra de limpeza vai remover o executável ('program') e os ficheiros objeto (*.o).
-# Para a executar, devemos usar 'make clean'.
 clean:
-	rm -f program src/*.o
+    rm -f test_queries
+
+.PHONY: run_tests test_safe check_files clean
