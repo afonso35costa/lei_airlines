@@ -1,79 +1,43 @@
-#include <stdlib.h>
-#include <string.h>
 #include "gestor_aeronaves.h"
+#include <glib.h>
+#include <stdlib.h>
 
-static unsigned long hashN(const char *str) {
-    unsigned long h = 5381, c;
-    while((c = *str++)) h = ((h<<5)+h)+c;
-    return h % TABLE_SIZE_N;
+struct gestor_aeronaves {
+    GPtrArray *array;  // array de Aeronaves*
+};
+
+// Cria gestor
+GestorAeronaves* gestor_aeronaves_create(void) {
+    GestorAeronaves *ga = malloc(sizeof(GestorAeronaves));
+    if (!ga) return NULL;
+    ga->array = g_ptr_array_new_with_free_func((GDestroyNotify)aeronaves_free);
+    return ga;
 }
 
-GestorAeronaves *criar_gestor_aeronaves(){
-    GestorAeronaves *g = malloc(sizeof(GestorAeronaves));
-    g->tabela = calloc(TABLE_SIZE_N,sizeof(NodoAeronave*));
-    return g;
+// Adiciona aeronave
+void gestor_aeronaves_add(GestorAeronaves *ga, Aeronaves *aero) {
+    g_ptr_array_add(ga->array, aero);
 }
 
-int inserir_aeronave(GestorAeronaves *g, Aeronaves *a){
-    const char *key = get_identifier(a);
-    unsigned long idx = hashN(key);
-    NodoAeronave *n = malloc(sizeof(NodoAeronave));
-    n->key = strdup(key);
-    n->valor = a;
-    n->next = g->tabela[idx];
-    g->tabela[idx] = n;
-    return 1;
-}
-
-Aeronaves *procurar_aeronave(GestorAeronaves *g, const char *id){
-    unsigned long idx = hashN(id);
-    NodoAeronave *n=g->tabela[idx];
-    while(n){
-        if(strcmp(n->key,id)==0) return n->valor;
-        n=n->next;
-    }
-    return NULL;
-}
-
-int remover_aeronave(GestorAeronaves *g,const char *id){
-    unsigned long idx = hashN(id);
-    NodoAeronave *n=g->tabela[idx], *prev=NULL;
-    while(n){
-        if(strcmp(n->key,id)==0){
-            if(prev) prev->next=n->next;
-            else g->tabela[idx]=n->next;
-            free(n->key);
-            libertar_aeronave(n->valor);
-            free(n);
-            return 1;
-        }
-        prev=n;
-        n=n->next;
-    }
-    return 0;
-}
-
-void libertar_gestor_aeronaves(GestorAeronaves *g){
-    for(int i=0;i<TABLE_SIZE_N;i++){
-        NodoAeronave *n=g->tabela[i];
-        while(n){
-            NodoAeronave *t=n->next;
-            free(n->key);
-            libertar_aeronave(n->valor);
-            free(n);
-            n=t;
+// Remove aeronave por identificador
+void gestor_aeronaves_remove(GestorAeronaves *ga, const char *identifier) {
+    for (guint i = 0; i < ga->array->len; i++) {
+        Aeronaves *a = g_ptr_array_index(ga->array, i);
+        if (strcmp(a->identifier, identifier) == 0) {
+            g_ptr_array_remove_index(ga->array, i);
+            return;
         }
     }
-    free(g->tabela);
-    free(g);
 }
 
-void print_todos_aeronaves(GestorAeronaves *g){
-    for(int i=0;i<TABLE_SIZE_N;i++){
-        NodoAeronave *n=g->tabela[i];
-        while(n){
-            print_aeronave(n->valor);
-            n=n->next;
-        }
-    }
+// Retorna aeronave pelo índice
+Aeronaves* gestor_aeronaves_get(GestorAeronaves *ga, int index) {
+    if (index < 0 || index >= (int)ga->array->len) return NULL;
+    return g_ptr_array_index(ga->array, index);
+}
+
+// Liberta gestor e todas as aeronaves
+void gestor_aeronaves_free(GestorAeronaves *ga) {
+    g_ptr_array_free(ga->array, TRUE);
+    free(ga);
 }

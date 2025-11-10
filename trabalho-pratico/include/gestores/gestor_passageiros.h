@@ -1,3 +1,4 @@
+/*
 #ifndef GESTOR_PASSAGEIROS_H
 #define GESTOR_PASSAGEIROS_H
 
@@ -15,16 +16,16 @@ typedef struct gestor_passageiros {
     NodoPassageiros **tabela; // array de listas
 } GestorPassageiros;
 
-/* ===== Construção / Destruição ===== */
 GestorPassageiros *criar_gestor_passageiros();
 void libertar_gestor_passageiros(GestorPassageiros *g);
 
-/* ===== Operações ===== */
+
 int inserir_passageiro(GestorPassageiros *g, Passageiros *p);
 Passageiros *procurar_passageiro(GestorPassageiros *g, const char *doc);
 int remover_passageiro(GestorPassageiros *g, const char *doc);
 
-/* ===== Utilitário ===== */
+
 void print_todos_passageiros(GestorPassageiros *g);
 
 #endif
+*/

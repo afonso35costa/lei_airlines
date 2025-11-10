@@ -1,28 +1,24 @@
 #ifndef GESTOR_AEROPORTOS_H
 #define GESTOR_AEROPORTOS_H
 
+#include <glib.h>
 #include "aeroportos.h"
 
-#define TABLE_SIZE_A 20000
+typedef struct gestor_aeroportos GestorAeroportos;
 
-typedef struct nodo_aeroporto {
-    char *key;                   // código IATA
-    Aeroportos *valor;
-    struct nodo_aeroporto *next;
-} NodoAeroporto;
+// Cria um gestor de aeroportos vazio
+GestorAeroportos* gestor_aeroportos_create(void);
 
-typedef struct gestor_aeroportos {
-    NodoAeroporto **tabela;
-} GestorAeroportos;
+// Adiciona um aeroporto ao gestor
+void gestor_aeroportos_add(GestorAeroportos *ga, Aeroportos *aeroporto);
 
-/* CRUD */
-GestorAeroportos *criar_gestor_aeroportos();
-int inserir_aeroporto(GestorAeroportos *g, Aeroportos *a);
-Aeroportos *procurar_aeroporto(GestorAeroportos *g, const char *code);
-int remover_aeroporto(GestorAeroportos *g, const char *code);
-void libertar_gestor_aeroportos(GestorAeroportos *g);
+// Remove um aeroporto pelo código IATA
+void gestor_aeroportos_remove(GestorAeroportos *ga, const char *code);
 
-/* Debug */
-void print_todos_aeroportos(GestorAeroportos *g);
+// Retorna ponteiro para aeroporto pelo código IATA (NULL se não existir)
+Aeroportos* gestor_aeroportos_get(GestorAeroportos *ga, const char *code);
+
+// Liberta toda a memória associada ao gestor e aos aeroportos
+void gestor_aeroportos_free(GestorAeroportos *ga);
 
 #endif

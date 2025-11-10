@@ -1,84 +1,36 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include "gestor_aeroportos.h"
+#include <glib.h>
+#include <stdlib.h>
 
-static unsigned long hashA(const char *str) {
-    unsigned long h = 5381;
-    int c;
-    while((c = *str++)) h = ((h << 5) + h) + c;
-    return h % TABLE_SIZE_A;
+struct gestor_aeroportos {
+    GHashTable *hash;  // chave = code (char*), valor = Aeroportos*
+};
+
+// Cria gestor
+GestorAeroportos* gestor_aeroportos_create(void) {
+    GestorAeroportos *ga = malloc(sizeof(GestorAeroportos));
+    if (!ga) return NULL;
+    ga->hash = g_hash_table_new_full(g_str_hash, g_str_equal, free, (GDestroyNotify)aeroportos_free);
+    return ga;
 }
 
-GestorAeroportos *criar_gestor_aeroportos() {
-    GestorAeroportos *g = malloc(sizeof(GestorAeroportos));
-    g->tabela = calloc(TABLE_SIZE_A, sizeof(NodoAeroporto*));
-    return g;
+// Adiciona aeroporto
+void gestor_aeroportos_add(GestorAeroportos *ga, Aeroportos *aeroporto) {
+    g_hash_table_insert(ga->hash, strdup(aeroporto->code), aeroporto);
 }
 
-int inserir_aeroporto(GestorAeroportos *g, Aeroportos *a) {
-    if(!g || !a) return 0;
-    const char *key = get_code(a);
-    unsigned long idx = hashA(key);
-
-    NodoAeroporto *n = malloc(sizeof(NodoAeroporto));
-    n->key = strdup(key);
-    n->valor = a;
-    n->next = g->tabela[idx];
-    g->tabela[idx] = n;
-    return 1;
+// Remove aeroporto
+void gestor_aeroportos_remove(GestorAeroportos *ga, const char *code) {
+    g_hash_table_remove(ga->hash, code);
 }
 
-Aeroportos *procurar_aeroporto(GestorAeroportos *g, const char *code) {
-    unsigned long idx = hashA(code);
-    NodoAeroporto *n = g->tabela[idx];
-    while(n) {
-        if(strcmp(n->key, code) == 0) return n->valor;
-        n = n->next;
-    }
-    return NULL;
+// Retorna aeroporto
+Aeroportos* gestor_aeroportos_get(GestorAeroportos *ga, const char *code) {
+    return g_hash_table_lookup(ga->hash, code);
 }
 
-int remover_aeroporto(GestorAeroportos *g, const char *code) {
-    unsigned long idx = hashA(code);
-    NodoAeroporto *n = g->tabela[idx], *prev = NULL;
-    while(n) {
-        if(strcmp(n->key, code) == 0) {
-            if(prev) prev->next = n->next;
-            else g->tabela[idx] = n->next;
-
-            free(n->key);
-            libertar_aeroporto(n->valor);
-            free(n);
-            return 1;
-        }
-        prev = n;
-        n = n->next;
-    }
-    return 0;
-}
-
-void libertar_gestor_aeroportos(GestorAeroportos *g) {
-    for(int i=0;i<TABLE_SIZE_A;i++) {
-        NodoAeroporto *n=g->tabela[i];
-        while(n){
-            NodoAeroporto *tmp=n->next;
-            free(n->key);
-            libertar_aeroporto(n->valor);
-            free(n);
-            n=tmp;
-        }
-    }
-    free(g->tabela);
-    free(g);
-}
-
-void print_todos_aeroportos(GestorAeroportos *g) {
-    for(int i=0;i<TABLE_SIZE_A;i++) {
-        NodoAeroporto *n = g->tabela[i];
-        while(n) {
-            print_aeroporto(n->valor);
-            n = n->next;
-        }
-    }
+// Liberta gestor e todos os aeroportos
+void gestor_aeroportos_free(GestorAeroportos *ga) {
+    g_hash_table_destroy(ga->hash);
+    free(ga);
 }

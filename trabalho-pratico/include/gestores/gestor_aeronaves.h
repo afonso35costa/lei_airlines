@@ -1,25 +1,24 @@
 #ifndef GESTOR_AERONAVES_H
 #define GESTOR_AERONAVES_H
 
+#include <glib.h>
 #include "aeronaves.h"
 
-#define TABLE_SIZE_N 20000
+typedef struct gestor_aeronaves GestorAeronaves;
 
-typedef struct nodo_aeronave {
-    char *key;
-    Aeronaves *valor;
-    struct nodo_aeronave *next;
-} NodoAeronave;
+// Cria um gestor de aeronaves vazio
+GestorAeronaves* gestor_aeronaves_create(void);
 
-typedef struct gestor_aeronaves {
-    NodoAeronave **tabela;
-} GestorAeronaves;
+// Adiciona uma aeronave ao gestor
+void gestor_aeronaves_add(GestorAeronaves *ga, Aeronaves *aero);
 
-GestorAeronaves *criar_gestor_aeronaves();
-int inserir_aeronave(GestorAeronaves *g, Aeronaves *a);
-Aeronaves *procurar_aeronave(GestorAeronaves *g, const char *id);
-int remover_aeronave(GestorAeronaves *g, const char *id);
-void libertar_gestor_aeronaves(GestorAeronaves *g);
-void print_todos_aeronaves(GestorAeronaves *g);
+// Remove aeronave pelo índice ou identificador
+void gestor_aeronaves_remove(GestorAeronaves *ga, const char *identifier);
+
+// Retorna ponteiro para aeronave pelo índice
+Aeronaves* gestor_aeronaves_get(GestorAeronaves *ga, int index);
+
+// Liberta toda a memória associada ao gestor e às aeronaves
+void gestor_aeronaves_free(GestorAeronaves *ga);
 
 #endif

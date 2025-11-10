@@ -1,28 +1,24 @@
 #ifndef GESTOR_VOOS_H
 #define GESTOR_VOOS_H
 
+#include <glib.h>
 #include "voos.h"
 
-#define TABLE_SIZE_V 20000
+typedef struct gestor_voos GestorVoos;
 
-typedef struct nodo_voo {
-    char *key;               // flight_id
-    Voo *valor;
-    struct nodo_voo *next;
-} NodoVoo;
+// Cria um gestor de voos vazio
+GestorVoos* gestor_voos_create(void);
 
-typedef struct gestor_voos {
-    NodoVoo **tabela;
-} GestorVoos;
+// Adiciona um voo ao gestor
+void gestor_voos_add(GestorVoos *gv, Voo *v);
 
-/* CRUD */
-GestorVoos *criar_gestor_voos();
-int inserir_voo(GestorVoos *g, Voo *v);
-Voo *procurar_voo(GestorVoos *g, const char *flight_id);
-int remover_voo(GestorVoos *g, const char *flight_id);
-void libertar_gestor_voos(GestorVoos *g);
+// Remove voo pelo índice ou identificador
+void gestor_voos_remove(GestorVoos *gv, const char *flight_id);
 
-/* Debug */
-void print_todos_voos(GestorVoos *g);
+// Retorna ponteiro para voo pelo índice
+Voo* gestor_voos_get(GestorVoos *gv, int index);
+
+// Liberta toda a memória associada ao gestor e aos voos
+void gestor_voos_free(GestorVoos *gv);
 
 #endif

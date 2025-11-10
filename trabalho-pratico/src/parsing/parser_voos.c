@@ -1,9 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "parser_voos.h"
 #include "voos.h"
 #include "datas.h"
+
+#define ERRO_FILE "resultados/voos_errors.csv"
 
 Voo *parse_voo_line(const char *line) {
     if (!line) return NULL;
