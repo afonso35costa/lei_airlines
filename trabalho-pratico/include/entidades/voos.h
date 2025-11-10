@@ -1,7 +1,9 @@
 #ifndef VOOS_H
 #define VOOS_H
 
-#include <stddef.h>
+#include <stdbool.h>
+#include <stdlib.h>
+#include <string.h>
 
 /* O tipo Voo é opaco para o utilizador do header; a definição completa fica em voos.c */
 typedef struct voo Voo;

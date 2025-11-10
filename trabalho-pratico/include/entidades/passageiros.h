@@ -2,6 +2,8 @@
 #define PASSAGEIROS_H
 
 #include <stdbool.h>
+#include <stdlib.h>
+#include <string.h>
 
 // Estrutura que representa um passageiro
 typedef struct passageiros Passageiros;

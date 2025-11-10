@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "parser_utils.h"
+#include "parser_aeroportos.h"
 #include "aeroportos.h"
 
 Aeroportos *parse_aeroporto_line(const char *line) {

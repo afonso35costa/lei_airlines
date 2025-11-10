@@ -2,6 +2,8 @@
 #define RESERVAS_H
 
 #include <stdbool.h>
+#include <stdlib.h>
+#include <string.h>
 
 //  Estrutura que representa uma reserva
 typedef struct reservas Reservas;

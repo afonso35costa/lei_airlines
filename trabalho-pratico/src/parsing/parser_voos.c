@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "parser_utils.h"
-#include "voo.h"
+#include "parser_voos.h"
+#include "voos.h"
 #include "datas.h"
 
 Voo *parse_voo_line(const char *line) {
