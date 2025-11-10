@@ -7,6 +7,16 @@
 
 typedef struct aeronaves Aeronaves;
 
+typedef struct aeronaves {
+    char *identifier;     // identificador único (tail number)
+    char *manufacturer;   // fabricante
+    char *model;          // modelo
+    int year;             // ano de fabrico
+    int capacity;         // capacidade máxima de passageiros
+    int range;            // alcance máximo em km
+} Aeronaves;
+
+
 // Cria uma nova aeronave e aloca memória
 Aeronaves* create_aeronave(void);
 
