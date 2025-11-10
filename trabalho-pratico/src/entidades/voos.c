@@ -1,174 +1,298 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include "include/entidades/voos.h"
-#include "include/parsing/datas.h"
+#include "voos.h"
+#include "datas.h"
 #include <string.h>
 
 typedef struct voo {
-        char *flight_id;         // identificador único do voo
-        DataHora *departure;         // data e hora de partida estimada (aaaa-mm-dd hh:mm)
-        DataHora *actual_departure;  // data e hora de partida real
-        DataHora *arrival;           // data e hora de chegada estimada
-        DataHora *actual_arrival;    // data e hora de chegada real
-        char *gate;              // porta de embarque
-        char *status;            // estado: On Time, Delayed, Cancelled
-        char *origin;            // código IATA do aeroporto de origem
-        char *destination;       // código IATA do aeroporto de destino
-        char *aircraft;          // identificador único da aeronave
-        char *airline;           // nome da companhia aérea
-        char *tracking_url;      // URL para rastreamento do voo
+    char *flight_id;         // identificador único do voo
+    DataHora *departure;     // data e hora de partida estimada
+    DataHora *actual_departure;  // data e hora de partida real
+    DataHora *arrival;       // data e hora de chegada estimada
+    DataHora *actual_arrival;    // data e hora de chegada real
+    char *gate;              // porta de embarque
+    char *status;            // estado: On Time, Delayed, Cancelled
+    char *origin;            // código IATA do aeroporto de origem
+    char *destination;       // código IATA do aeroporto de destino
+    char *aircraft;          // identificador único da aeronave
+    char *airline;           // nome da companhia aérea
+    char *tracking_url;      // URL para rastreamento do voo
 } Voo;
 
-    /* Helper: duplicate string safely (returns NULL if input NULL)
-        Uses strdup for simplicity (POSIX). */
-    static char *dup_safe(const char *s) {
-         return s ? strdup(s) : NULL;
+// ===========================================
+// FUNÇÕES DE GESTÃO DE MEMÓRIA
+// ===========================================
+
+// FUNÇÃO CONSTRUTORA - Criar novo voo e alocar memória
+Voo* create_voo(void) {
+    Voo *v = malloc(sizeof(Voo));
+    if (v == NULL) {
+        return NULL;
     }
+    
+    // Inicializa todos os campos
+    v->flight_id = NULL;
+    v->departure = NULL;
+    v->actual_departure = NULL;
+    v->arrival = NULL;
+    v->actual_arrival = NULL;
+    v->gate = NULL;
+    v->status = NULL;
+    v->origin = NULL;
+    v->destination = NULL;
+    v->aircraft = NULL;
+    v->airline = NULL;
+    v->tracking_url = NULL;
+    
+    return v;
+}
 
-    /* Duplicate/free helpers for DataHora (assumes datas.h provides these) */
-    static DataHora *dh_dup_safe(const DataHora *d) {
-        return d ? datahora_clone(d) : NULL;
+// FUNÇÃO INICIALIZADORA - Inicializar voo com valores
+Voo* init_voo(const char *flight_id, DataHora *departure, DataHora *actual_departure,
+              DataHora *arrival, DataHora *actual_arrival, const char *gate,
+              const char *status, const char *origin, const char *destination,
+              const char *aircraft, const char *airline, const char *tracking_url) {
+    Voo *v = create_voo();
+    if (v == NULL) return NULL;
+    
+    // Aloca e copia strings
+    v->flight_id = flight_id ? strdup(flight_id) : NULL;
+    v->gate = gate ? strdup(gate) : NULL;
+    v->status = status ? strdup(status) : NULL;
+    v->origin = origin ? strdup(origin) : NULL;
+    v->destination = destination ? strdup(destination) : NULL;
+    v->aircraft = aircraft ? strdup(aircraft) : NULL;
+    v->airline = airline ? strdup(airline) : NULL;
+    v->tracking_url = tracking_url ? strdup(tracking_url) : NULL;
+    
+    // Copia estruturas DataHora (assumindo que têm função de cópia)
+    v->departure = departure ? copy_data_hora(departure) : NULL;
+    v->actual_departure = actual_departure ? copy_data_hora(actual_departure) : NULL;
+    v->arrival = arrival ? copy_data_hora(arrival) : NULL;
+    v->actual_arrival = actual_arrival ? copy_data_hora(actual_arrival) : NULL;
+    
+    return v;
+}
+
+// FUNÇÃO DE COMPARAÇÃO - Comparar voos por ID
+int compare_voos(const Voo *v1, const Voo *v2) {
+    if (v1 == NULL && v2 == NULL) return 0;
+    if (v1 == NULL) return -1;
+    if (v2 == NULL) return 1;
+    
+    // Compara pelo ID do voo (chave única)
+    char *id1 = get_flight_id(v1);
+    char *id2 = get_flight_id(v2);
+    
+    if (id1 == NULL && id2 == NULL) return 0;
+    if (id1 == NULL) return -1;
+    if (id2 == NULL) return 1;
+    
+    return strcmp(id1, id2);
+}
+
+// FUNÇÃO DE IMPRESSÃO - Mostrar dados do voo
+void print_voo(const Voo *v) {
+    if (v == NULL) {
+        printf("Voo inválido\n");
+        return;
     }
-    static void dh_free_safe(DataHora *d) {
-        if (d) datahora_free(d);
+    
+    printf("=== VOO ===\n");
+    printf("ID Voo: %s\n", get_flight_id(v) ? get_flight_id(v) : "N/A");
+    printf("Companhia: %s\n", get_airline(v) ? get_airline(v) : "N/A");
+    printf("Origem: %s\n", get_origin(v) ? get_origin(v) : "N/A");
+    printf("Destino: %s\n", get_destination(v) ? get_destination(v) : "N/A");
+    printf("Aeronave: %s\n", get_aircraft(v) ? get_aircraft(v) : "N/A");
+    printf("Estado: %s\n", get_status(v) ? get_status(v) : "N/A");
+    printf("Porta: %s\n", get_gate(v) ? get_gate(v) : "N/A");
+    
+    // Imprime datas (assumindo que DataHora tem função de impressão)
+    printf("Partida estimada: ");
+    if (get_departure(v)) {
+        print_data_hora(get_departure(v));
+    } else {
+        printf("N/A");
     }
-
-    /* Create a new Voo with provided values (duplicates all strings and DataHora).
-       Any parameter may be NULL. Returns NULL on allocation failure. */
-    Voo *voo_create(const char *flight_id,
-                    const DataHora *departure,
-                    const DataHora *actual_departure,
-                    const DataHora *arrival,
-                    const DataHora *actual_arrival,
-                    const char *gate,
-                    const char *status,
-                    const char *origin,
-                    const char *destination,
-                    const char *aircraft,
-                    const char *airline,
-                    const char *tracking_url) {
-        Voo *v = voo_inicializar();
-        if (!v) return NULL;
-
-        voo_set_flight_id(v, flight_id);
-        voo_set_departure(v, departure);
-        voo_set_actual_departure(v, actual_departure);
-        voo_set_arrival(v, arrival);
-        voo_set_actual_arrival(v, actual_arrival);
-        voo_set_gate(v, gate);
-        voo_set_status(v, status);
-        voo_set_origin(v, origin);
-        voo_set_destination(v, destination);
-        voo_set_aircraft(v, aircraft);
-        voo_set_airline(v, airline);
-        voo_set_tracking_url(v, tracking_url);
-
-        return v;
+    printf("\n");
+    
+    printf("Partida real: ");
+    if (get_actual_departure(v)) {
+        print_data_hora(get_actual_departure(v));
+    } else {
+        printf("N/A");
     }
-
-    Voo* voo_inicializar() {
-        Voo* v = malloc(sizeof(Voo));
-        if (v == NULL) {
-            return NULL; // Falha na alocação
-        }
-        v->flight_id = NULL;
-        v->departure = NULL;
-        v->actual_departure = NULL;
-        v->arrival = NULL;
-        v->actual_arrival = NULL;
-        v->gate = NULL;
-        v->status = NULL;
-        v->origin = NULL;
-        v->destination = NULL;
-        v->aircraft = NULL;
-        v->airline = NULL;
-        v->tracking_url = NULL;
-
-        return v;
+    printf("\n");
+    
+    printf("Chegada estimada: ");
+    if (get_arrival(v)) {
+        print_data_hora(get_arrival(v));
+    } else {
+        printf("N/A");
     }
-
-    /* Free all string members and DataHora members but do not free the struct itself */
-    void voo_clear(Voo *v) {
-        if (!v) return;
-        free(v->flight_id); v->flight_id = NULL;
-        dh_free_safe(v->departure); v->departure = NULL;
-        dh_free_safe(v->actual_departure); v->actual_departure = NULL;
-        dh_free_safe(v->arrival); v->arrival = NULL;
-        dh_free_safe(v->actual_arrival); v->actual_arrival = NULL;
-        free(v->gate); v->gate = NULL;
-        free(v->status); v->status = NULL;
-        free(v->origin); v->origin = NULL;
-        free(v->destination); v->destination = NULL;
-        free(v->aircraft); v->aircraft = NULL;
-        free(v->airline); v->airline = NULL;
-        free(v->tracking_url); v->tracking_url = NULL;
+    printf("\n");
+    
+    printf("Chegada real: ");
+    if (get_actual_arrival(v)) {
+        print_data_hora(get_actual_arrival(v));
+    } else {
+        printf("N/A");
     }
+    printf("\n");
+    
+    printf("URL rastreamento: %s\n", get_tracking_url(v) ? get_tracking_url(v) : "N/A");
+    printf("===========\n");
+}
 
-    /* Free the struct and its contents */
-    void voo_free(Voo *v) {
-        if (!v) return;
-        voo_clear(v);
-        free(v);
-    }
+// FUNÇÃO DESTRUTORA - Libertar toda a memória
+void destroy_voo(Voo *v) {
+    if (v == NULL) return;
+    
+    // Liberta strings
+    free(v->flight_id);
+    free(v->gate);
+    free(v->status);
+    free(v->origin);
+    free(v->destination);
+    free(v->aircraft);
+    free(v->airline);
+    free(v->tracking_url);
+    
+    // Liberta estruturas DataHora
+    if (v->departure) destroy_data_hora(v->departure);
+    if (v->actual_departure) destroy_data_hora(v->actual_departure);
+    if (v->arrival) destroy_data_hora(v->arrival);
+    if (v->actual_arrival) destroy_data_hora(v->actual_arrival);
+    
+    // Liberta a estrutura principal
+    free(v);
+}
 
-    /* Clone a Voo (deep copy). Returns NULL on allocation failure. */
-    Voo *voo_clone(const Voo *src) {
-        if (!src) return NULL;
-        return voo_create(src->flight_id, src->departure, src->actual_departure,
-                          src->arrival, src->actual_arrival, src->gate,
-                          src->status, src->origin, src->destination,
-                          src->aircraft, src->airline, src->tracking_url);
-    }
+// ===========================================
+// GETTERS - Funções para obter valores
+// ===========================================
 
-    /* Generic setter used by the typed setters below for strings.
-       Returns 0 on success, -1 on allocation failure. */
-    static int voo_set_generic(char **field, const char *value) {
-        char *dup = dup_safe(value);
-        if (value && !dup) return -1;
-        free(*field);
-        *field = dup;
-        return 0;
-    }
+char* get_flight_id(const Voo *v) {
+    return (v != NULL) ? v->flight_id : NULL;
+}
 
-    /* Generic setter for DataHora fields.
-       Returns 0 on success, -1 on allocation failure. */
-    static int voo_set_datahora(DataHora **field, const DataHora *value) {
-        DataHora *dup = dh_dup_safe(value);
-        if (value && !dup) return -1;
-        dh_free_safe(*field);
-        *field = dup;
-        return 0;
-    }
+DataHora* get_departure(const Voo *v) {
+    return (v != NULL) ? v->departure : NULL;
+}
 
-    /* Typed setters (return 0 on success, -1 on allocation failure) */
-    int voo_set_flight_id(Voo *v, const char *s) { return voo_set_generic(&v->flight_id, s); }
-    int voo_set_departure(Voo *v, const DataHora *s) { return voo_set_datahora(&v->departure, s); }
-    int voo_set_actual_departure(Voo *v, const DataHora *s) { return voo_set_datahora(&v->actual_departure, s); }
-    int voo_set_arrival(Voo *v, const DataHora *s) { return voo_set_datahora(&v->arrival, s); }
-    int voo_set_actual_arrival(Voo *v, const DataHora *s) { return voo_set_datahora(&v->actual_arrival, s); }
-    int voo_set_gate(Voo *v, const char *s) { return voo_set_generic(&v->gate, s); }
-    int voo_set_status(Voo *v, const char *s) { return voo_set_generic(&v->status, s); }
-    int voo_set_origin(Voo *v, const char *s) { return voo_set_generic(&v->origin, s); }
-    int voo_set_destination(Voo *v, const char *s) { return voo_set_generic(&v->destination, s); }
-    int voo_set_aircraft(Voo *v, const char *s) { return voo_set_generic(&v->aircraft, s); }
-    int voo_set_airline(Voo *v, const char *s) { return voo_set_generic(&v->airline, s); }
-    int voo_set_tracking_url(Voo *v, const char *s) { return voo_set_generic(&v->tracking_url, s); }
+DataHora* get_actual_departure(const Voo *v) {
+    return (v != NULL) ? v->actual_departure : NULL;
+}
 
+DataHora* get_arrival(const Voo *v) {
+    return (v != NULL) ? v->arrival : NULL;
+}
 
-    /* Getters: retornam o ponteiro interno (ou NULL). Não transferem propriedade. */
-    const char *voo_get_flight_id(const Voo *v) { return v ? v->flight_id : NULL; }
-    DataHora *voo_get_departure(const Voo *v) { return v ? v->departure : NULL; }
-    const DataHora *voo_get_actual_departure(const Voo *v) { return v ? v->actual_departure : NULL; }
-    const DataHora *voo_get_arrival(const Voo *v) { return v ? v->arrival : NULL; }
-    const DataHora *voo_get_actual_arrival(const Voo *v) { return v ? v->actual_arrival : NULL; }
-    const char *voo_get_gate(const Voo *v) { return v ? v->gate : NULL; }
-    const char *voo_get_status(const Voo *v) { return v ? v->status : NULL; }
-    const char *voo_get_origin(const Voo *v) { return v ? v->origin : NULL; }
-    const char *voo_get_destination(const Voo *v) { return v ? v->destination : NULL; }
-    const char *voo_get_aircraft(const Voo *v) { return v ? v->aircraft : NULL; }
-    const char *voo_get_airline(const Voo *v) { return v ? v->airline : NULL; }
-    const char *voo_get_tracking_url(const Voo *v) { return v ? v->tracking_url : NULL; }
+DataHora* get_actual_arrival(const Voo *v) {
+    return (v != NULL) ? v->actual_arrival : NULL;
+}
 
+char* get_gate(const Voo *v) {
+    return (v != NULL) ? v->gate : NULL;
+}
 
+char* get_status(const Voo *v) {
+    return (v != NULL) ? v->status : NULL;
+}
 
+char* get_origin(const Voo *v) {
+    return (v != NULL) ? v->origin : NULL;
+}
+
+char* get_destination(const Voo *v) {
+    return (v != NULL) ? v->destination : NULL;
+}
+
+char* get_aircraft(const Voo *v) {
+    return (v != NULL) ? v->aircraft : NULL;
+}
+
+char* get_airline(const Voo *v) {
+    return (v != NULL) ? v->airline : NULL;
+}
+
+char* get_tracking_url(const Voo *v) {
+    return (v != NULL) ? v->tracking_url : NULL;
+}
+
+// ===========================================
+// SETTERS - Funções para definir valores
+// ===========================================
+
+void set_flight_id(Voo *v, const char *flight_id) {
+    if (v == NULL) return;
+    free(v->flight_id);
+    v->flight_id = flight_id ? strdup(flight_id) : NULL;
+}
+
+void set_departure(Voo *v, DataHora *departure) {
+    if (v == NULL) return;
+    if (v->departure) destroy_data_hora(v->departure);
+    v->departure = departure ? copy_data_hora(departure) : NULL;
+}
+
+void set_actual_departure(Voo *v, DataHora *actual_departure) {
+    if (v == NULL) return;
+    if (v->actual_departure) destroy_data_hora(v->actual_departure);
+    v->actual_departure = actual_departure ? copy_data_hora(actual_departure) : NULL;
+}
+
+void set_arrival(Voo *v, DataHora *arrival) {
+    if (v == NULL) return;
+    if (v->arrival) destroy_data_hora(v->arrival);
+    v->arrival = arrival ? copy_data_hora(arrival) : NULL;
+}
+
+void set_actual_arrival(Voo *v, DataHora *actual_arrival) {
+    if (v == NULL) return;
+    if (v->actual_arrival) destroy_data_hora(v->actual_arrival);
+    v->actual_arrival = actual_arrival ? copy_data_hora(actual_arrival) : NULL;
+}
+
+void set_gate(Voo *v, const char *gate) {
+    if (v == NULL) return;
+    free(v->gate);
+    v->gate = gate ? strdup(gate) : NULL;
+}
+
+void set_status(Voo *v, const char *status) {
+    if (v == NULL) return;
+    free(v->status);
+    v->status = status ? strdup(status) : NULL;
+}
+
+void set_origin(Voo *v, const char *origin) {
+    if (v == NULL) return;
+    free(v->origin);
+    v->origin = origin ? strdup(origin) : NULL;
+}
+
+void set_destination(Voo *v, const char *destination) {
+    if (v == NULL) return;
+    free(v->destination);
+    v->destination = destination ? strdup(destination) : NULL;
+}
+
+void set_aircraft(Voo *v, const char *aircraft) {
+    if (v == NULL) return;
+    free(v->aircraft);
+    v->aircraft = aircraft ? strdup(aircraft) : NULL;
+}
+
+void set_airline(Voo *v, const char *airline) {
+    if (v == NULL) return;
+    free(v->airline);
+    v->airline = airline ? strdup(airline) : NULL;
+}
+
+void set_tracking_url(Voo *v, const char *tracking_url) {
+    if (v == NULL) return;
+    free(v->tracking_url);
+    v->tracking_url = tracking_url ? strdup(tracking_url) : NULL;
+}
