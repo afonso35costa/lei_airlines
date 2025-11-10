@@ -3,7 +3,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include "passageiros.h"
-#include "passageiros.c"
+
 
 
 // FUNÇÃO DE VALIDAÇÃO - verifica se os dados são válidos

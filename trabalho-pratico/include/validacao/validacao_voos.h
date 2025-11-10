@@ -3,9 +3,9 @@
 
 #include "voos.h"   
 
-// ============================================================
+
 // Funções de validação individual
-// ============================================================
+
 int validar_flight_id(const char *flight_id);
 int validar_departure(const char *departure);
 int validar_arrival(const char *arrival);
