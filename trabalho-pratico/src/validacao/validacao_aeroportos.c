@@ -68,20 +68,19 @@ int validar_type(const char *type) {
     return 0;
 }
 
-
-// VALIDAÇÃO GERAL
+// VALIDAÇÃO GERAL (com encapsulamento)
 
 int validar_aeroporto(const Aeroportos *a) {
     if (!a) return 0;
 
-    return validar_code(a->code) &&
-           validar_name(a->name) &&
-           validar_city(a->city) &&
-           validar_country(a->country) &&
-           validar_latitude(a->latitude) &&
-           validar_longitude(a->longitude) &&
-           validar_icao(a->icao) &&
-           validar_type(a->type);
+    return validar_code(get_code(a)) &&
+           validar_name(get_name(a)) &&
+           validar_city(get_city(a)) &&
+           validar_country(get_country(a)) &&
+           validar_latitude(get_latitude(a)) &&
+           validar_longitude(get_longitude(a)) &&
+           validar_icao(get_icao(a)) &&
+           validar_type(get_type(a));
 }
 
 

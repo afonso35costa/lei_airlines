@@ -97,22 +97,23 @@ int validar_hora(const char *hora) {
 }
 
 // ============================================================
-// Função geral — valida todos os campos de um voo
+// VALIDAÇÃO GERAL (com encapsulamento)
 // ============================================================
 int validar_voo(const Voo *v) {
     if (!v) return 0;
 
-    return validar_flight_id(v->flight_id) &&
-           validar_departure(v->departure) &&
-           validar_arrival(v->arrival) &&
-           validar_aircraft(v->aircraft) &&
-           validar_status(v->status) &&
-           validar_tracking_url(v->tracking_url) &&
-           validar_data(v->scheduled_departure->data) &&
-           validar_hora(v->scheduled_departure->hora) &&
-           validar_data(v->scheduled_arrival->data) &&
-           validar_hora(v->scheduled_arrival->hora);
+    return validar_flight_id(get_flight_id(v)) &&
+           validar_departure(get_departure(v)) &&
+           validar_arrival(get_arrival(v)) &&
+           validar_aircraft(get_aircraft(v)) &&
+           validar_status(get_status(v)) &&
+           validar_tracking_url(get_tracking_url(v)) &&
+           validar_data(get_scheduled_departure(v)->data) &&
+           validar_hora(get_scheduled_departure(v)->hora) &&
+           validar_data(get_scheduled_arrival(v)->data) &&
+           validar_hora(get_scheduled_arrival(v)->hora);
 }
+
 
 // ============================================================
 // Processamento do ficheiro CSV — leitura e geração de erros

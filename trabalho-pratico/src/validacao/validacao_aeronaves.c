@@ -38,17 +38,17 @@ int validar_range(int range) {
 }
 
 
-// VALIDAÇÃO GERAL
+// VALIDAÇÃO GERAL 
 
 int validar_aeronave(const Aeronaves *a) {
     if (!a) return 0;
 
-    return validar_identifier(a->identifier) &&
-           validar_manufacturer(a->manufacturer) &&
-           validar_model(a->model) &&
-           validar_year(a->year) &&
-           validar_capacity(a->capacity) &&
-           validar_range(a->range);
+    return validar_identifier(get_identifier(a)) &&
+           validar_manufacturer(get_manufacturer(a)) &&
+           validar_model(get_model(a)) &&
+           validar_year(get_year(a)) &&
+           validar_capacity(get_capacity(a)) &&
+           validar_range(get_range(a));
 }
 
 
