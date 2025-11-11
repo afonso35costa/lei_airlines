@@ -1,8 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "parser_reservas.h"
 #include "reservas.h"
+#include "validacao_reservas.h"  // contém validar_reserva()
+
+#define RESERVAS_ERRO_FILE "resultados/reservas_errors.csv"
 
 // Função auxiliar para parsing do campo flight_ids ["id1","id2",...]
 static char **parse_flight_ids(char *str) {
@@ -51,4 +53,21 @@ Reservas *parse_reserva_line(const char *line) {
     if (flight_ids) { for (int j=0; flight_ids[j]; j++) free(flight_ids[j]); free(flight_ids); }
     free(temp);
     return r;
+}
+
+Reservas *parse_and_validate_reserva_line(const char *line, FILE *ferr) {
+    if (!line || strlen(line) == 0)
+        return NULL;
+
+    Reservas *r = parse_reserva_line(line);
+
+    if (!validar_reserva(r)) {
+        if (ferr) {
+            fprintf(ferr, "%s\n", line);
+        }
+        reservas_free(r);
+        return NULL;
+    }
+
+    return r; // válido ✅
 }

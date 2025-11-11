@@ -1,4 +1,3 @@
-#include "queries.h"
 #include <string.h>
 #include <stdlib.h>
 #include <glib.h> 

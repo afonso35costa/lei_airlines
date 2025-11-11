@@ -3,6 +3,7 @@
 #include <string.h>
 #include "voos.h"
 #include "datas.h"
+#include "validacao_voos.h"
 
 #define ERRO_FILE "resultados/voos_errors.csv"
 
@@ -20,15 +21,34 @@ Voo *parse_voo_line(const char *line) {
 
     if (i < 12) { free(temp); return NULL; }
 
-    DataHora dep = ler_data_hora(campos[1]);
-    DataHora act_dep = ler_data_hora(campos[2]);
-    DataHora arr = ler_data_hora(campos[3]);
-    DataHora act_arr = ler_data_hora(campos[4]);
+    DataHora *dep = ler_data_hora(campos[1]);
+    DataHora *act_dep = ler_data_hora(campos[2]);
+    DataHora *arr = ler_data_hora(campos[3]);
+    DataHora *act_arr = ler_data_hora(campos[4]);
 
-    Voo *v = voo_create(campos[0], &dep, &act_dep, &arr, &act_arr,
+    Voo *v = voo_create(campos[0], dep, act_dep, arr, act_arr,
                         campos[5], campos[6], campos[7], campos[8],
                         campos[9], campos[10], campos[11]);
 
     free(temp);
     return v;
+}
+
+Voo *parse_and_validate_voo_line(const char *line, FILE *ferr) {
+    if (!line || strlen(line) == 0)
+        return NULL;
+
+    // Parsing sintático (sempre válido estruturalmente)
+    Voo *v = parse_voo_line(line);
+
+    // Validação semântica
+     if (!validar_voo(v)) {
+        if (ferr) {
+            fprintf(ferr, "%s\n", line);  // só escreve a linha inválida
+        }
+        voo_free(v);
+        return NULL;
+    }
+
+    return v;  // válido ✅
 }

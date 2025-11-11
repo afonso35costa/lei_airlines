@@ -29,33 +29,19 @@ Aeroportos *parse_aeroporto_line(const char *line) {
     return a;
 }
 
-Aeroportos *parse_and_validate_aeroporto_line(const char *line, int is_header) {
+Aeroportos *parse_and_validate_aeroporto_line(const char *line, FILE *ferr) {
     if (!line || strlen(line) == 0)
         return NULL;
-
-    // Se for a primeira linha (header), cria ficheiro e escreve o header
-    if (is_header) {
-        FILE *ferr = fopen(ERRO_FILE, "w");
-        if (ferr) {
-            fprintf(ferr, "%s\n", line);
-            fclose(ferr);
-        }
-        return NULL;
-    }
 
     // Faz o parsing (sintaticamente, sabemos que não falha)
     Aeroportos *a = parse_aeroporto_line(line);
 
     // Validação de conteúdo
-    if (!validar_aeroporto(a)) {
-        FILE *ferr = fopen(ERRO_FILE, "a");
+     if (!validar_aeroporto(a)) {
         if (ferr) {
-            fprintf(ferr, "%s\n", line);  // escreve linha original no ficheiro de erros
-            fclose(ferr);
+            fprintf(ferr, "%s\n", line);  // só escreve a linha inválida
         }
-
-        // Liberta memória da estrutura inválida
-        free(a);
+        aeroporto_free(a);
         return NULL;
     }
 
