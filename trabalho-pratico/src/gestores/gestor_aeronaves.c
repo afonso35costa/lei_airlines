@@ -10,7 +10,7 @@ struct gestor_aeronaves {
 GestorAeronaves* gestor_aeronaves_create(void) {
     GestorAeronaves *ga = malloc(sizeof(GestorAeronaves));
     if (!ga) return NULL;
-    ga->array = g_ptr_array_new_with_free_func((GDestroyNotify)aeronaves_free);
+    ga->array = g_ptr_array_new_with_free_func((GDestroyNotify)free_aeronave);
     return ga;
 }
 
@@ -23,7 +23,7 @@ void gestor_aeronaves_add(GestorAeronaves *ga, Aeronaves *aero) {
 void gestor_aeronaves_remove(GestorAeronaves *ga, const char *identifier) {
     for (guint i = 0; i < ga->array->len; i++) {
         Aeronaves *a = g_ptr_array_index(ga->array, i);
-        if (strcmp(a->identifier, identifier) == 0) {
+        if (g_strcmp0(get_identifier(a), identifier) == 0) {
             g_ptr_array_remove_index(ga->array, i);
             return;
         }

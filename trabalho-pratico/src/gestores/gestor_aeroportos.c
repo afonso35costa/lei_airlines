@@ -1,4 +1,5 @@
 #include "gestor_aeroportos.h"
+#include "aeroportos.h"
 #include <glib.h>
 #include <stdlib.h>
 
@@ -10,13 +11,13 @@ struct gestor_aeroportos {
 GestorAeroportos* gestor_aeroportos_create(void) {
     GestorAeroportos *ga = malloc(sizeof(GestorAeroportos));
     if (!ga) return NULL;
-    ga->hash = g_hash_table_new_full(g_str_hash, g_str_equal, free, (GDestroyNotify)aeroportos_free);
+    ga->hash = g_hash_table_new_full(g_str_hash, g_str_equal, free, (GDestroyNotify)free_aeroporto);
     return ga;
 }
 
 // Adiciona aeroporto
 void gestor_aeroportos_add(GestorAeroportos *ga, Aeroportos *aeroporto) {
-    g_hash_table_insert(ga->hash, strdup(aeroporto->code), aeroporto);
+    g_hash_table_insert(ga->hash, g_strdup(get_code(aeroporto)), aeroporto);
 }
 
 // Remove aeroporto

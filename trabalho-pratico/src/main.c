@@ -7,9 +7,9 @@
 #include "parser_aeroportos.h"
 #include "parser_voos.h"
 #include "parser_aeronaves.h"
-#include "gestores_aeroportos.h"
-#include "gestores_voos.h"
-#include "gestores_aeronaves.h"
+#include "gestor_aeroportos.h"
+#include "gestor_voos.h"
+#include "gestor_aeronaves.h"
 
 #define MAX_LINE 1024
 
@@ -20,7 +20,7 @@ int main(int argc, char *argv[]) {
     }
 
     char *csv_path = argv[1];
-    char *queries_file = argv[2];
+    char *commands_file = argv[2];
 
     // -------------------------------------------------------------
     // Inicializar gestores
@@ -97,39 +97,45 @@ int main(int argc, char *argv[]) {
 
     // Processa ficheiro de comandos
 
-    FILE *fcmd = fopen(cmd_file, "r");
-    if (!fcmd) {
-        fprintf(stderr, "Erro ao abrir ficheiro de comandos: %s\n", cmd_file);
-        return EXIT_FAILURE;
-    }
+    // ------------------------- EXECUÇÃO QUERIES -------------------------
+    FILE *f = fopen(commands_file, "r");
+    if (!f) { perror("Erro ao abrir ficheiro de comandos"); return 1; }
 
-    // PROVAVELMENTE VAI PRECISAR DE MAIS ARGUMENTOS PARA AS QUERIES
+    int command_count = 0;
+    while (fgets(line, sizeof(line), f)) {
+        if (strlen(line) <= 1) continue;
+        command_count++;
+        char output_path[MAX_LINE];
+        snprintf(output_path, MAX_LINE, "resultados/command%d_output.txt", command_count);
 
-    char linha[512];
-    int command_counter = 1;
+        FILE *fout = fopen(output_path, "w");
+        if (!fout) { perror("Erro ao criar output"); continue; }
 
-    while (fgets(linha, sizeof(linha), fcmd)) {
-        // Remove \n final
-        linha[strcspn(linha, "\r\n")] = 0;
-        if (strlen(linha) == 0) continue;
+        int query_type;
+        char arg1[256], arg2[256];
+        arg1[0] = arg2[0] = '\0';
 
-        int query_type = linha[0] - '0'; // Primeiro carácter é o número da query
-        char output_file[256];
-        snprintf(output_file, sizeof(output_file), RESULT_DIR"/command%d_output.txt", command_counter++);
+        int n_args = sscanf(line, "%d %s %s", &query_type, arg1, arg2);
 
-        // ----- Aqui está o if das queries -----
+        // Escolha da query
         if (query_type == 1) {
-            query1(linha + 2, output_file); // poucos argumentos, nao?
+            query1(g_aero, arg1, fout);
         } else if (query_type == 2) {
-            query2(linha + 2, output_file);
+            if (n_args == 2) query2(g_aero, g_voos, atoi(arg1), NULL, fout);
+            else query2(g_aero, g_voos, atoi(arg1), arg2, fout);
         } else if (query_type == 3) {
-            query3(linha + 2, output_file);
+            if (n_args == 3) query3(g_aero, g_voos, arg1, arg2, fout);
         }
-        // --------------------------------------
+
+        fclose(fout);
+
     }
+    fclose(f);
 
-    fclose(fcmd);
-
+    // ------------------------- LIBERTAÇÃO MEMÓRIA -------------------------
+    gestor_aeroportos_free(g_aero);
+    gestor_aeronaves_free(g_aeroN);
+    gestor_voos_free(g_voos);
 
     return 0;
 }

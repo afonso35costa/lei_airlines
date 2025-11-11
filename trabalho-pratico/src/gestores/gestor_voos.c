@@ -23,7 +23,7 @@ void gestor_voos_add(GestorVoos *gv, Voo *v) {
 void gestor_voos_remove(GestorVoos *gv, const char *flight_id) {
     for (guint i = 0; i < gv->array->len; i++) {
         Voo *v = g_ptr_array_index(gv->array, i);
-        if (strcmp(v->flight_id, flight_id) == 0) {
+        if (g_strcmp0(voo_get_flight_id(v), flight_id) == 0) {
             g_ptr_array_remove_index(gv->array, i);
             return;
         }
