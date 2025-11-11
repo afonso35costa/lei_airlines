@@ -33,7 +33,7 @@ PROGRAM_TESTES = programa-testes
 # ------------------------------
 # Includes para subpastas
 # ------------------------------
-INCLUDE_DIRS = -I$(INCDIR) -I$(INCDIR)/entidades -I$(INCDIR)/gestores -I$(INCDIR)/parsing
+INCLUDE_DIRS = -I$(INCDIR) -I$(INCDIR)/entidades -I$(INCDIR)/gestores -I$(INCDIR)/parsing -I$(INCDIR)/utils -I$(INCDIR)/validacao
 
 # ------------------------------
 # Regras principais

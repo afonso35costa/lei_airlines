@@ -83,38 +83,3 @@ int validar_aeroporto(const Aeroportos *a) {
            validar_type(get_type(a));
 }
 
-
-// LEITURA E GERAÇÃO DE FICHEIROS DE ERRO
-
-void processar_ficheiro_aeroportos(const char *input_path, const char *erros_path) {
-    FILE *input = fopen(input_path, "r");
-    FILE *erros = fopen(erros_path, "w");
-
-    if (!input || !erros) {
-        printf("Erro ao abrir ficheiros.\n");
-        return;
-    }
-
-    char linha[512];
-    int linha_num = 0;
-
-    while (fgets(linha, sizeof(linha), input)) {
-        linha_num++;
-
-        // Ignora cabeçalho
-        if (linha_num == 1) continue;
-
-        // Exemplo de validação fictícia
-        Aeroportos *a = init_aeroporto("OPO", "Francisco Sá Carneiro", "Porto",
-                                       "Portugal", 41.235, -8.678, "LPPR", "large_airport");
-
-        if (!validar_aeroporto(a)) {
-            fprintf(erros, "Linha %d: %s", linha_num, linha);
-        }
-
-        free_aeroporto(a);
-    }
-
-    fclose(input);
-    fclose(erros);
-}

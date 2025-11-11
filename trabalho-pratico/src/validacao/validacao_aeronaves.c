@@ -51,39 +51,3 @@ int validar_aeronave(const Aeronaves *a) {
            validar_range(get_range(a));
 }
 
-
-// LEITURA E GERAÇÃO DE FICHEIROS DE ERRO
-
-void processar_ficheiro_aeronaves(const char *input_path, const char *erros_path) {
-    FILE *input = fopen(input_path, "r");
-    FILE *erros = fopen(erros_path, "w");
-
-    if (!input || !erros) {
-        printf("Erro ao abrir ficheiros.\n");
-        return;
-    }
-
-    char linha[512];
-    int linha_num = 0;
-
-    while (fgets(linha, sizeof(linha), input)) {
-        linha_num++;
-
-        // Ignora cabeçalho
-        if (linha_num == 1) continue;
-
-        // Aqui farias o parsing da linha CSV (ex: strtok)
-        // e criarias uma aeronave temporária
-        // Exemplo simplificado:
-        Aeronaves *a = init_aeronave("CS-TNJ", "Airbus", "A320", 2018, 180, 6100);
-
-        if (!validar_aeronave(a)) {
-            fprintf(erros, "Linha %d: %s", linha_num, linha);
-        }
-
-        free_aeronave(a);
-    }
-
-    fclose(input);
-    fclose(erros);
-}

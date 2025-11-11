@@ -232,7 +232,7 @@ void set_flight_id(Voo *v, const char *flight_id) {
 }
 
 void set_departure(Voo *v, DataHora *departure) {
-    if (v =.= NULL) return;
+    if (v == NULL) return;
     if (v->departure) destroy_data_hora(v->departure);
     v->departure = departure ? copy_data_hora(departure) : NULL;
 }
