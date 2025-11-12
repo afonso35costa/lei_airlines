@@ -4,6 +4,7 @@
 #include "reservas.h"
 #include "validacao_reservas.h"  // contém validar_reserva()
 #include "parser_utils.h"
+#include "parser_reservas.h"
 
 #define RESERVAS_ERRO_FILE "resultados/reservas_errors.csv"
 

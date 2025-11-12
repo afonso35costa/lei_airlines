@@ -37,7 +37,7 @@ Passageiros *parse_and_validate_passageiro_line(const char *line, FILE *ferr) {
 
     Passageiros *p = parse_passageiro_line(line);
 
-    if (!validate_passageiro(p)) {
+    if (!validar_passageiro(p)) {
         if (ferr) {
             fprintf(ferr, "%s\n", line);
         }

@@ -1,5 +1,7 @@
 #ifndef PARSER_UTILS_H
 #define PARSER_UTILS_H
+
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 

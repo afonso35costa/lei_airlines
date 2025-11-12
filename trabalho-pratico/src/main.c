@@ -11,13 +11,23 @@
 #include "gestor_voos.h"
 #include "gestor_aeronaves.h"
 
+
 #define MAX_LINE 1024
 
+
 int main(int argc, char *argv[]) {
+
     if (argc != 3) {
         fprintf(stderr, "Uso: %s <caminho_csv> <ficheiro_queries>\n", argv[0]);
         return 1;
     }
+
+
+
+    printf("DEBUG: programa iniciado\n");
+
+
+
 
     char *csv_path = argv[1];
     char *commands_file = argv[2];
@@ -35,7 +45,7 @@ int main(int argc, char *argv[]) {
     char path_aero[512], path_voos[512], path_aeron[512];
     char err_aero[512], err_voos[512], err_aeron[512];
 
-    snprintf(path_aero, sizeof(path_aero), "%s/aeroports.csv", csv_path);
+    snprintf(path_aero, sizeof(path_aero), "%s/airports.csv", csv_path);
     snprintf(path_voos, sizeof(path_voos), "%s/flights.csv", csv_path);
     snprintf(path_aeron, sizeof(path_aeron), "%s/aircrafts.csv", csv_path);
 
@@ -44,58 +54,140 @@ int main(int argc, char *argv[]) {
     snprintf(err_aeron, sizeof(err_aeron), "resultados/aeronaves_errors.csv");
 
     FILE *faero = fopen(path_aero, "r");
+    if (!faero) perror(path_aero);
+
     FILE *fvoos = fopen(path_voos, "r");
+    if (!fvoos) perror(path_voos);
+
     FILE *faeron = fopen(path_aeron, "r");
+    if (!faeron) perror(path_aeron);
 
     FILE *err_faero = fopen(err_aero, "w");
+    if (!err_faero) perror(err_aero);
+
     FILE *err_fvoos = fopen(err_voos, "w");
+    if (!err_fvoos) perror(err_voos);
+
     FILE *err_faeron = fopen(err_aeron, "w");
+    if (!err_faeron) perror(err_aeron);
 
     if (!faero || !fvoos || !faeron || !err_faero || !err_fvoos || !err_faeron) {
-        fprintf(stderr, "Erro ao abrir ficheiros.\n");
-        return 1;
-    }
+    fprintf(stderr, "Erro ao abrir ficheiros.\n");
+    return 1;
+}
+
+    
+
+
+
+    printf("DEBUG: ficheiros abertos\n");
+
+
+
 
     // -------------------------------------------------------------
     // Ler headers e copiar para ficheiros de erro
     // -------------------------------------------------------------
-    char line[MAX_LINE];
+    char *line = NULL;
+    size_t len = 0;
 
-    if (fgets(line, sizeof(line), faero)) fprintf(err_faero, "%s", line);
-    if (fgets(line, sizeof(line), fvoos)) fprintf(err_fvoos, "%s", line);
-    if (fgets(line, sizeof(line), faeron)) fprintf(err_faeron, "%s", line);
+    if (getline(&line, &len, faero) != -1) fprintf(err_faero, "%s", line);
+    if (getline(&line, &len, fvoos) != -1) fprintf(err_fvoos, "%s", line);
+    if (getline(&line, &len, faeron) != -1) fprintf(err_faeron, "%s", line);
+
+     
+
+    printf("DEBUG: parsing iniciado\n");
 
     // -------------------------------------------------------------
     // Processar aeroportos
     // -------------------------------------------------------------
-    while (fgets(line, sizeof(line), faero)) {
+    while (getline(&line, &len, faero) != -1) {
+        // Remove newline no fim, se existir
+        size_t nread = strlen(line);
+        if (nread > 0 && line[nread - 1] == '\n') {
+            line[nread - 1] = '\0';
+        }
+
         Aeroportos *a = parse_and_validate_aeroporto_line(line, err_faero);
-        if (a) gestor_aeroportos_add(g_aero, a);
+
+        //Aeroportos validados
+        
+        if (a) {
+            gestor_aeroportos_add(g_aero, a);
+        }
+
+        //Aeroportos adicionados
     }
+
+    printf("DEBUG: aeroportos processados\n");
 
     // -------------------------------------------------------------
     // Processar voos
     // -------------------------------------------------------------
-    while (fgets(line, sizeof(line), fvoos)) {
-        Voo *v = parse_and_validate_voo_line(line, err_fvoos);
-        if (v) gestor_voos_add(g_voos, v);
+    while (getline(&line, &len, faero) != -1) {
+        // Remove newline no fim, se existir
+        size_t nread = strlen(line);
+        if (nread > 0 && line[nread - 1] == '\n') {
+            line[nread - 1] = '\0';
+        }
+
+        Voo *a = parse_and_validate_voo_line(line, err_fvoos);
+
+        //Voos validados
+
+        if (a) {
+            gestor_voos_add(g_voos, a);
+        }
+
+        //Voos adicionados
     }
 
+
+    printf("DEBUG: voos processados\n");
     // -------------------------------------------------------------
     // Processar aeronaves
     // -------------------------------------------------------------
-    while (fgets(line, sizeof(line), faeron)) {
-        Aeronaves *an = parse_and_validate_aeronave_line(line, err_faeron);
-        if (an) gestor_aeronaves_add(g_aeroN, an);
+    while (getline(&line, &len, faero) != -1) {
+        // Remove newline no fim, se existir
+        size_t nread = strlen(line);
+        if (nread > 0 && line[nread - 1] == '\n') {
+            line[nread - 1] = '\0';
+        }
+
+        Aeronaves *a = parse_and_validate_aeronave_line(line, err_faeron);
+
+        //Aeronaves validadas
+
+        if (a) {
+            gestor_aeronaves_add(g_aeroN, a);
+        }
+
+        //Aeronaves adicionadas
     }
 
+
+    printf("DEBUG: aeronaves processadas\n");
     // -------------------------------------------------------------
     // Fechar ficheiros CSV e de erros
     // -------------------------------------------------------------
     fclose(faero); fclose(fvoos); fclose(faeron);
     fclose(err_faero); fclose(err_fvoos); fclose(err_faeron);
 
+
+
+    printf("DEBUG: parsing terminado\n");
+
+
+
+
     // Processa ficheiro de comandos
+
+
+
+    printf("DEBUG: queries iniciadas\n");
+
+
 
     // ------------------------- EXECUÇÃO QUERIES -------------------------
     FILE *f = fopen(commands_file, "r");
@@ -136,6 +228,7 @@ int main(int argc, char *argv[]) {
     gestor_aeroportos_free(g_aero);
     gestor_aeronaves_free(g_aeroN);
     gestor_voos_free(g_voos);
+    free(line);
 
     return 0;
 }

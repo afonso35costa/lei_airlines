@@ -2,8 +2,12 @@
 # ------------------------------
 CC = gcc
 CFLAGS = -Wall -Wextra -std=c11 -g -DDEBUG
+#GLIB_CFLAGS = `pkg-config --cflags glib-2.0`
+#GLIB_LIBS = `pkg-config --libs glib-2.0`
+
+#PKG_CONFIG_PATH=/usr/local/lib/pkgconfig
 GLIB_CFLAGS = `pkg-config --cflags glib-2.0`
-GLIB_LIBS = `pkg-config --libs glib-2.0`
+GLIB_LIBS   = `pkg-config --libs glib-2.0`
 
 # ------------------------------
 # Diretórios
@@ -51,24 +55,14 @@ $(PROGRAM_PRINCIPAL): $(SRCDIR)/main.c $(ALL_SOURCES)
 $(PROGRAM_TESTES): $(SRCDIR)/main_testes.c $(ALL_SOURCES)
 	$(CC) $(CFLAGS) $(GLIB_CFLAGS) $(INCLUDE_DIRS) -o $(PROGRAM_TESTES) $(SRCDIR)/main_testes.c $(ALL_SOURCES) $(GLIB_LIBS)
 
-# ------------------------------
-# Verificação de ficheiros
-# ------------------------------
-check_files:
-	@echo "Verificando ficheiros necessários..."
-	@for file in $(ALL_SOURCES); do \
-		if [ -f "$$file" ]; then \
-			echo "✅ $$file"; \
-		else \
-			echo "❌ $$file (EM FALTA)"; \
-		fi \
-	done
 
 # ------------------------------
 # Limpeza
 # ------------------------------
 clean:
 	rm -f $(PROGRAM_PRINCIPAL) $(PROGRAM_TESTES) *.o
+	rm -f resultados/*.csv || true
+	rm -f resultados/*.txt || true
 
 # ------------------------------
 # Phony

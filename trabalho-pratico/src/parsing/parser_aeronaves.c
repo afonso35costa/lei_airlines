@@ -4,6 +4,7 @@
 #include "aeronaves.h"
 #include "validacao_aeronaves.h"
 #include "parser_utils.h"
+#include "parser_aeronaves.h"
 
 #define ERRO_FILE "resultados/aeronaves_errors.csv"
 

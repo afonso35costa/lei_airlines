@@ -4,6 +4,7 @@
 #include "voos.h"
 #include "datas.h"
 #include "validacao_voos.h"
+#include "parser_voos.h"
 #include "parser_utils.h"
 
 #define ERRO_FILE "resultados/voos_errors.csv"
