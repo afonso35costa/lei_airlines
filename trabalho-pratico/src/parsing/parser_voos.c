@@ -4,6 +4,7 @@
 #include "voos.h"
 #include "datas.h"
 #include "validacao_voos.h"
+#include "parser_utils.h"
 
 #define ERRO_FILE "resultados/voos_errors.csv"
 
@@ -26,7 +27,7 @@ Voo *parse_voo_line(const char *line) {
     DataHora *arr = ler_data_hora(campos[3]);
     DataHora *act_arr = ler_data_hora(campos[4]);
 
-    Voo *v = voo_create(campos[0], dep, act_dep, arr, act_arr,
+    Voo *v = init_voo(campos[0], dep, act_dep, arr, act_arr,
                         campos[5], campos[6], campos[7], campos[8],
                         campos[9], campos[10], campos[11]);
 
@@ -46,7 +47,7 @@ Voo *parse_and_validate_voo_line(const char *line, FILE *ferr) {
         if (ferr) {
             fprintf(ferr, "%s\n", line);  // só escreve a linha inválida
         }
-        voo_free(v);
+        destroy_voo(v);
         return NULL;
     }
 

@@ -19,7 +19,7 @@ Aeronaves* init_aeronave(const char *identifier, const char *manufacturer,
 void free_aeronave(Aeronaves *a);
 
 // Imprime os dados da aeronave (para debug)
-void print_aeronave(const Aeronaves *a);
+void print_aeronave(Aeronaves *a);
 
 
 

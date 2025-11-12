@@ -10,7 +10,7 @@ struct gestor_voos {
 GestorVoos* gestor_voos_create(void) {
     GestorVoos *gv = malloc(sizeof(GestorVoos));
     if (!gv) return NULL;
-    gv->array = g_ptr_array_new_with_free_func((GDestroyNotify)voo_free);
+    gv->array = g_ptr_array_new_with_free_func((GDestroyNotify)destroy_voo);
     return gv;
 }
 
@@ -23,7 +23,7 @@ void gestor_voos_add(GestorVoos *gv, Voo *v) {
 void gestor_voos_remove(GestorVoos *gv, const char *flight_id) {
     for (guint i = 0; i < gv->array->len; i++) {
         Voo *v = g_ptr_array_index(gv->array, i);
-        if (g_strcmp0(voo_get_flight_id(v), flight_id) == 0) {
+        if (g_strcmp0(get_flight_id(v), flight_id) == 0) {
             g_ptr_array_remove_index(gv->array, i);
             return;
         }
@@ -34,6 +34,16 @@ void gestor_voos_remove(GestorVoos *gv, const char *flight_id) {
 Voo* gestor_voos_get(GestorVoos *gv, int index) {
     if (index < 0 || index >= (int)gv->array->len) return NULL;
     return g_ptr_array_index(gv->array, index);
+}
+
+//Retorna o array de voos
+GestorVoos* gestor_voos_get_array(GestorVoos *gv) {
+    return gv->array;
+}
+
+//Length do array de voos
+guint gestor_voos_get_length(GestorVoos *gv) {
+    return gv->array->len;
 }
 
 // Liberta gestor e todos os voos

@@ -28,18 +28,18 @@ bool validate_passageiro(const Passageiros *p) {
 
 bool validate_passageiro(const Passageiros *p) {
     if (p == NULL) return false;
-    
-    if (!is_valid_string(p->document_number)) return false;
-    if (!is_valid_string(p->first_name)) return false;
-    if (!is_valid_string(p->last_name)) return false;
-    if (!is_valid_string(p->dob) || strlen(p->dob) != 10) return false; // Data tem formato específico (aaaa-mm-dd)
-    if (!is_valid_string(p->nationality)) return false;
-    if (!is_valid_string(p->gender)) return false;
-    if (!is_valid_string(p->email)) return false;
-    if (!is_valid_string(p->phone)) return false;
-    if (!is_valid_string(p->address)) return false;
-    if (!is_valid_string(p->photo)) return false;
-    
+
+    if (!is_valid_string(get_document_number(p))) return false;
+    if (!is_valid_string(get_first_name(p))) return false;
+    if (!is_valid_string(get_last_name(p))) return false;
+    if (!is_valid_string(get_dob(p)) || strlen(get_dob(p)) != 10) return false; // Data tem formato específico (aaaa-mm-dd)
+    if (!is_valid_string(get_nationality(p))) return false;
+    if (!is_valid_string(get_gender(p))) return false;
+    if (!is_valid_string(get_email(p))) return false;
+    if (!is_valid_string(get_phone(p))) return false;
+    if (!is_valid_string(get_address(p))) return false;
+    if (!is_valid_string(get_photo(p))) return false;
+
     return true;
 }
 

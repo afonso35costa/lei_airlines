@@ -4,6 +4,7 @@
 #include <ctype.h>
 #include "validacao_voos.h"
 #include "voos.h"
+#include "datas.h"
 
 // Funções de validação individual
 
@@ -108,9 +109,9 @@ int validar_voo(const Voo *v) {
            validar_aircraft(get_aircraft(v)) &&
            validar_status(get_status(v)) &&
            validar_tracking_url(get_tracking_url(v)) &&
-           validar_data(get_scheduled_departure(v)->data) &&
-           validar_hora(get_scheduled_departure(v)->hora) &&
-           validar_data(get_scheduled_arrival(v)->data) &&
-           validar_hora(get_scheduled_arrival(v)->hora);
+           validar_data(get_data(get_departure(v))) &&
+           validar_hora(get_hora(get_departure(v))) &&
+           validar_data(get_data(get_arrival(v))) &&
+           validar_hora(get_hora(get_arrival(v)));
 }
 
