@@ -67,10 +67,12 @@ Voo* init_voo(const char *flight_id, DataHora *departure, DataHora *actual_depar
     v->tracking_url = tracking_url ? strdup(tracking_url) : NULL;
     
     // Copia estruturas DataHora (assumindo que têm função de cópia)
-    v->departure = departure ? copy_data_hora(departure) : NULL;
-    v->actual_departure = actual_departure ? copy_data_hora(actual_departure) : NULL;
-    v->arrival = arrival ? copy_data_hora(arrival) : NULL;
-    v->actual_arrival = actual_arrival ? copy_data_hora(actual_arrival) : NULL;
+    /* Não existe função de cópia para DataHora: atribuir os ponteiros diretamente
+       e assumir transferência de propriedade (quem chama não deve libertá-los). */
+    v->departure = departure;
+    v->actual_departure = actual_departure;
+    v->arrival = arrival;
+    v->actual_arrival = actual_arrival;
     
     return v;
 }
@@ -92,58 +94,6 @@ int compare_voos(const Voo *v1, const Voo *v2) {
     return strcmp(id1, id2);
 }
 
-// FUNÇÃO DE IMPRESSÃO - Mostrar dados do voo
-void print_voo(const Voo *v) {
-    if (v == NULL) {
-        printf("Voo inválido\n");
-        return;
-    }
-    
-    printf("=== VOO ===\n");
-    printf("ID Voo: %s\n", get_flight_id(v) ? get_flight_id(v) : "N/A");
-    printf("Companhia: %s\n", get_airline(v) ? get_airline(v) : "N/A");
-    printf("Origem: %s\n", get_origin(v) ? get_origin(v) : "N/A");
-    printf("Destino: %s\n", get_destination(v) ? get_destination(v) : "N/A");
-    printf("Aeronave: %s\n", get_aircraft(v) ? get_aircraft(v) : "N/A");
-    printf("Estado: %s\n", get_status(v) ? get_status(v) : "N/A");
-    printf("Porta: %s\n", get_gate(v) ? get_gate(v) : "N/A");
-    
-    // Imprime datas (assumindo que DataHora tem função de impressão)
-    printf("Partida estimada: ");
-    if (get_departure(v)) {
-        print_data_hora(get_departure(v));
-    } else {
-        printf("N/A");
-    }
-    printf("\n");
-    
-    printf("Partida real: ");
-    if (get_actual_departure(v)) {
-        print_data_hora(get_actual_departure(v));
-    } else {
-        printf("N/A");
-    }
-    printf("\n");
-    
-    printf("Chegada estimada: ");
-    if (get_arrival(v)) {
-        print_data_hora(get_arrival(v));
-    } else {
-        printf("N/A");
-    }
-    printf("\n");
-    
-    printf("Chegada real: ");
-    if (get_actual_arrival(v)) {
-        print_data_hora(get_actual_arrival(v));
-    } else {
-        printf("N/A");
-    }
-    printf("\n");
-    
-    printf("URL rastreamento: %s\n", get_tracking_url(v) ? get_tracking_url(v) : "N/A");
-    printf("===========\n");
-}
 
 // FUNÇÃO DESTRUTORA - Libertar toda a memória
 void destroy_voo(Voo *v) {

@@ -4,6 +4,7 @@
 #include "parser_passageiros.h"
 #include "passageiros.h"
 #include "validacao_passageiros.h"
+#include "parser_utils.h"
 
 #define PASSAGEIROS_ERRO_FILE "resultados/passageiros_errors.csv"
 
@@ -36,7 +37,7 @@ Passageiros *parse_and_validate_passageiro_line(const char *line, FILE *ferr) {
 
     Passageiros *p = parse_passageiro_line(line);
 
-    if (!validar_passageiro(p)) {
+    if (!validate_passageiro(p)) {
         if (ferr) {
             fprintf(ferr, "%s\n", line);
         }

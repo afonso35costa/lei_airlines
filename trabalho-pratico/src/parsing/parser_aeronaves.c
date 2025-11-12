@@ -3,6 +3,7 @@
 #include <string.h>
 #include "aeronaves.h"
 #include "validacao_aeronaves.h"
+#include "parser_utils.h"
 
 #define ERRO_FILE "resultados/aeronaves_errors.csv"
 
@@ -42,7 +43,7 @@ Aeronaves *parse_and_validate_aeronave_line(const char *line, FILE *ferr) {
         if (ferr) {
             fprintf(ferr, "%s\n", line);  // só escreve a linha inválida
         }
-        aeronave_free(a);
+        free_aeronave(a);
         return NULL;
     }
 

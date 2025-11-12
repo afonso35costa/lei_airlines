@@ -17,7 +17,14 @@ INCDIR = include
 EXISTING_SOURCES = $(SRCDIR)/gestores/gestor_aeroportos.c \
                    $(SRCDIR)/gestores/gestor_aeronaves.c \
                    $(SRCDIR)/gestores/gestor_voos.c \
-                   $(SRCDIR)/gestores/queries.c
+                   $(SRCDIR)/gestores/queries.c \
+				   $(SRCDIR)/utils/datas.c \
+				   $(SRCDIR)/utils/parser_utils.c \
+				   $(SRCDIR)/validacao/validacao_aeronaves.c \
+				   $(SRCDIR)/validacao/validacao_voos.c \
+				   $(SRCDIR)/validacao/validacao_aeroportos.c \
+				   $(SRCDIR)/validacao/validacao_passageiros.c \
+				   $(SRCDIR)/validacao/validacao_reservas.c
 
 ENTITY_SOURCES = $(wildcard $(SRCDIR)/entidades/*.c)
 PARSING_SOURCES = $(wildcard $(SRCDIR)/parsing/*.c)

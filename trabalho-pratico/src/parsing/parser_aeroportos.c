@@ -3,6 +3,7 @@
 #include <string.h>
 #include "aeroportos.h"
 #include "validacao_aeroportos.h"
+#include "parser_utils.h"
 
 #define ERRO_FILE "resultados/aeroportos_errors.csv"
 
@@ -22,7 +23,7 @@ Aeroportos *parse_aeroporto_line(const char *line) {
     double latitude = atof(campos[4]);
     double longitude = atof(campos[5]);
 
-    Aeroportos *a = criar_aeroporto(campos[0], campos[1], campos[2], campos[3],
+    Aeroportos *a = init_aeroporto(campos[0], campos[1], campos[2], campos[3],
                                     latitude, longitude, campos[6], campos[7]);
 
     free(temp);
@@ -41,7 +42,7 @@ Aeroportos *parse_and_validate_aeroporto_line(const char *line, FILE *ferr) {
         if (ferr) {
             fprintf(ferr, "%s\n", line);  // só escreve a linha inválida
         }
-        aeroporto_free(a);
+        free_aeroporto(a);
         return NULL;
     }
 

@@ -1,0 +1,9 @@
+#ifndef PARSER_UTILS_H
+#define PARSER_UTILS_H
+#include <stdlib.h>
+#include <string.h>
+
+// Funcao strip_quotes - remove aspas de string
+char* strip_quotes(const char *str);
+
+#endif

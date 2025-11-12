@@ -12,25 +12,31 @@ typedef struct {
 // ------------------------- Funções de leitura -------------------------
 
 // Lê "YYYY-MM-DD HH:MM" e devolve um DataHora
-DataHora ler_data_hora(const char *texto) {
-    DataHora dh = {0, 0};
+DataHora* ler_data_hora(const char *texto) {
+    DataHora* dh = malloc(sizeof(DataHora));
+    if (!dh) return NULL;
+    dh->data = 0;
+    dh->hora = 0;
     int ano, mes, dia, hora, minuto;
 
     if (sscanf(texto, "%d-%d-%d %d:%d", &ano, &mes, &dia, &hora, &minuto) == 5) {
-        dh.data = ano * 10000 + mes * 100 + dia;
-        dh.hora = hora * 100 + minuto;
+        dh->data = ano * 10000 + mes * 100 + dia;
+        dh->hora = hora * 100 + minuto;
     }
     return dh;
 }
 
 // Lê "YYYY-MM-DD" e devolve um DataHora (hora = 0)
-DataHora ler_data(const char *texto) {
-    DataHora dh = {0, 0};
+DataHora* ler_data(const char *texto) {
+    DataHora* dh = malloc(sizeof(DataHora));
+    if (!dh) return NULL;
+    dh->data = 0;
+    dh->hora = 0;
     int ano, mes, dia;
 
     if (sscanf(texto, "%d-%d-%d", &ano, &mes, &dia) == 3) {
-        dh.data = ano * 10000 + mes * 100 + dia;
-        dh.hora = 0;
+        dh->data = ano * 10000 + mes * 100 + dia;
+        dh->hora = 0;
     }
     return dh;
 }
@@ -38,12 +44,13 @@ DataHora ler_data(const char *texto) {
 // ------------------------- Funções de conversão -------------------------
 
 // Converte DataHora para string "YYYY-MM-DD HH:MM"
-char *data_hora_para_texto(DataHora dh) {
-    int ano = dh.data / 10000;
-    int mes = (dh.data / 100) % 100;
-    int dia = dh.data % 100;
-    int hora = dh.hora / 100;
-    int minuto = dh.hora % 100;
+char *data_hora_para_texto(DataHora *dh) {
+    if (!dh) return NULL;
+    int ano = dh->data / 10000;
+    int mes = (dh->data / 100) % 100;
+    int dia = dh->data % 100;
+    int hora = dh->hora / 100;
+    int minuto = dh->hora % 100;
 
     char *buffer = malloc(20);
     sprintf(buffer, "%04d-%02d-%02d %02d:%02d", ano, mes, dia, hora, minuto);
@@ -51,10 +58,11 @@ char *data_hora_para_texto(DataHora dh) {
 }
 
 // Converte apenas a data para "YYYY-MM-DD"
-char *data_para_texto(DataHora dh) {
-    int ano = dh.data / 10000;
-    int mes = (dh.data / 100) % 100;
-    int dia = dh.data % 100;
+char *data_para_texto(DataHora *dh) {
+    if (!dh) return NULL;
+    int ano = dh->data / 10000;
+    int mes = (dh->data / 100) % 100;
+    int dia = dh->data % 100;
 
     char *buffer = malloc(12);
     sprintf(buffer, "%04d-%02d-%02d", ano, mes, dia);
@@ -64,21 +72,23 @@ char *data_para_texto(DataHora dh) {
 // ------------------------- Funções de diferença -------------------------
 
 // Diferença aproximada em dias (funciona se estiverem no mesmo mês)
-int diferenca_em_dias(DataHora d1, DataHora d2) {
-    int dia1 = d1.data % 100;
-    int dia2 = d2.data % 100;
+int diferenca_em_dias(DataHora *d1, DataHora *d2) {
+    if (!d1 || !d2) return 0;
+    int dia1 = d1->data % 100;
+    int dia2 = d2->data % 100;
     return dia2 - dia1;
 }
 
 // Diferença em minutos (baseado em dia, hora e minuto)
-int diferenca_em_minutos(DataHora d1, DataHora d2) {
-    int dia1 = d1.data % 100;
-    int dia2 = d2.data % 100;
+int diferenca_em_minutos(DataHora *d1, DataHora *d2) {
+    if (!d1 || !d2) return 0;
+    int dia1 = d1->data % 100;
+    int dia2 = d2->data % 100;
 
-    int hora1 = d1.hora / 100;
-    int min1 = d1.hora % 100;
-    int hora2 = d2.hora / 100;
-    int min2 = d2.hora % 100;
+    int hora1 = d1->hora / 100;
+    int min1 = d1->hora % 100;
+    int hora2 = d2->hora / 100;
+    int min2 = d2->hora % 100;
 
     int total1 = (dia1 * 24 * 60) + (hora1 * 60) + min1;
     int total2 = (dia2 * 24 * 60) + (hora2 * 60) + min2;
@@ -99,10 +109,37 @@ int diferenca_em_anos(int data1, int data2) {
 // ------------------------- Funções de comparação -------------------------
 
 // Verifica se uma data/hora está entre duas outras (inclusive)
-bool esta_entre_datas(DataHora alvo, DataHora inicio, DataHora fim) {
-    if (alvo.data < inicio.data || alvo.data > fim.data) return false;
-    if (alvo.data == inicio.data && alvo.hora < inicio.hora) return false;
-    if (alvo.data == fim.data && alvo.hora > fim.hora) return false;
+bool esta_entre_datas(DataHora *alvo, DataHora *inicio, DataHora *fim) {
+    if (!alvo || !inicio || !fim) return false;
+    if (alvo->data < inicio->data || alvo->data > fim->data) return false;
+    if (alvo->data == inicio->data && alvo->hora < inicio->hora) return false;
+    if (alvo->data == fim->data && alvo->hora > fim->hora) return false;
     return true;
 }
 
+// ------------------------- Funções de libertação -------------------------
+void destroy_data_hora(DataHora *dh) {
+    if (dh) free(dh);
+}
+
+// Funcao de copia de DataHora
+DataHora* copy_data_hora (const DataHora *src) {
+    if (!src) return NULL;
+    DataHora *copy = malloc(sizeof(DataHora));
+    if (!copy) return NULL;
+    copy->data = src->data;
+    copy->hora = src->hora;
+    return copy;
+}
+
+//Funcao que devolve hora
+int get_hora(DataHora *dh) {
+    if (!dh) return -1;
+    return dh->hora;
+}
+
+//Funcao que devolve data
+int get_data(DataHora *dh) {
+    if (!dh) return -1;
+    return dh->data;
+}

@@ -1,6 +1,7 @@
-#include "gestor_aeronaves.h"
 #include <glib.h>
 #include <stdlib.h>
+#include "aeronaves.h"
+#include "gestor_aeronaves.h"
 
 struct gestor_aeronaves {
     GPtrArray *array;  // array de Aeronaves*

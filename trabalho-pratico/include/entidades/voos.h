@@ -30,9 +30,6 @@ Voo* init_voo(const char *flight_id, DataHora *departure, DataHora *actual_depar
 /* Compara voos */
 int compare_voos(const Voo *v1, const Voo *v2);
 
-/* Funcao que imprime voos */
-void print_voo(const Voo *v);
-
 /* Funcao que destroi voo */
 void destroy_voo(Voo *v);
 

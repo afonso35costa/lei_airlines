@@ -3,8 +3,15 @@
 #include <string.h>
 #include "reservas.h"
 #include "validacao_reservas.h"  // contém validar_reserva()
+#include "parser_utils.h"
 
 #define RESERVAS_ERRO_FILE "resultados/reservas_errors.csv"
+
+// Converte string "true"/"false" para bool
+static bool str_to_bool(const char *str) {
+    if (!str) return false;
+    return (strcmp(str, "true") == 0) ? true : false;
+}
 
 // Função auxiliar para parsing do campo flight_ids ["id1","id2",...]
 static char **parse_flight_ids(char *str) {
@@ -65,7 +72,7 @@ Reservas *parse_and_validate_reserva_line(const char *line, FILE *ferr) {
         if (ferr) {
             fprintf(ferr, "%s\n", line);
         }
-        reservas_free(r);
+        destroy_reserva(r);
         return NULL;
     }
 
