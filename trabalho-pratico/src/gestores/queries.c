@@ -25,7 +25,7 @@ void query1(GestorAeroportos *ga, const char *code, FILE *out) {
 
     // Formato exigido:
     // code;name;city;country;type
-    fprintf(out, "%s;%s;%s;%s;%s\n",
+    fprintf(out, "%s,%s,%s,%s,%s\n",
         get_code(a),
         get_name(a),
         get_city(a),
