@@ -18,5 +18,6 @@ void destroy_data_hora(DataHora *dh);
 DataHora* copy_data_hora (const DataHora *src);
 int get_hora(DataHora *dh);
 int get_data(DataHora *dh);
+int comparar_data_hora(const DataHora *d1, const DataHora *d2);
 
 #endif

@@ -143,3 +143,28 @@ int get_data(DataHora *dh) {
     if (!dh) return -1;
     return dh->data;
 }
+
+/**
+ * Compara duas DataHora
+ * Retorna: 
+ *   < 0 se d1 < d2
+ *   = 0 se d1 == d2
+ *   > 0 se d1 > d2
+ */
+
+int comparar_data_hora(const DataHora *d1, const DataHora *d2) {
+    if (!d1 || !d2) {
+        // Se uma das datas for NULL, trata como inválida
+        if (!d1 && !d2) return 0;
+        if (!d1) return -1;
+        return 1;
+    }
+    
+    // Primeiro compara a data (AAAAMMDD)
+    if (d1->data != d2->data) {
+        return d1->data - d2->data;
+    }
+    
+    // Se as datas são iguais, compara as horas (HHMM)
+    return d1->hora - d2->hora;
+}

@@ -1,5 +1,6 @@
 #include <glib.h>
 #include <stdlib.h>
+#include <string.h>
 #include "aeronaves.h"
 #include "gestor_aeronaves.h"
 
@@ -37,8 +38,29 @@ Aeronaves* gestor_aeronaves_get(GestorAeronaves *ga, int index) {
     return g_ptr_array_index(ga->array, index);
 }
 
+// 🔧 NOVO: Retorna tamanho do array
+guint gestor_aeronaves_get_length(GestorAeronaves *ga) {
+    return ga ? ga->array->len : 0;
+}
+
+// 🔧 NOVO: Procura aeronave por identificador
+Aeronaves* gestor_aeronaves_find_by_id(GestorAeronaves *ga, const char *identifier) {
+    if (!ga || !identifier) return NULL;
+    
+    for (guint i = 0; i < ga->array->len; i++) {
+        Aeronaves *a = g_ptr_array_index(ga->array, i);
+        const char *id = get_identifier(a);
+        if (id && strcmp(id, identifier) == 0) {
+            return a;
+        }
+    }
+    return NULL;
+}
+
 // Liberta gestor e todas as aeronaves
 void gestor_aeronaves_free(GestorAeronaves *ga) {
-    g_ptr_array_free(ga->array, TRUE);
-    free(ga);
+    if (ga) {
+        g_ptr_array_free(ga->array, TRUE);
+        free(ga);
+    }
 }
