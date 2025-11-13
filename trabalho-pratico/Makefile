@@ -1,7 +1,7 @@
 # Compilador e flags
 # ------------------------------
 CC = gcc
-CFLAGS = -Wall -Wextra -std=c11 -g -DDEBUG
+CFLAGS = -Wall -Wextra -g -DDEBUG
 #GLIB_CFLAGS = `pkg-config --cflags glib-2.0`
 #GLIB_LIBS = `pkg-config --libs glib-2.0`
 

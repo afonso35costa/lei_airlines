@@ -4,9 +4,13 @@
 #include "aeroportos.h"
 #include "voos.h"
 #include "aeronaves.h"
+#include "passageiros.h"
+#include "reservas.h"
 #include "parser_aeroportos.h"
 #include "parser_voos.h"
 #include "parser_aeronaves.h"
+#include "parser_passageiros.h"
+#include "parser_reservas.h"
 #include "gestor_aeroportos.h"
 #include "gestor_voos.h"
 #include "gestor_aeronaves.h"
@@ -42,16 +46,20 @@ int main(int argc, char *argv[]) {
     // -------------------------------------------------------------
     // Abrir ficheiros CSV e ficheiros de erro
     // -------------------------------------------------------------
-    char path_aero[512], path_voos[512], path_aeron[512];
-    char err_aero[512], err_voos[512], err_aeron[512];
+    char path_aero[512], path_voos[512], path_aeron[512], path_pass[512], path_res[512];
+    char err_aero[512], err_voos[512], err_aeron[512], err_pass[512], err_res[512];
 
     snprintf(path_aero, sizeof(path_aero), "%s/airports.csv", csv_path);
     snprintf(path_voos, sizeof(path_voos), "%s/flights.csv", csv_path);
     snprintf(path_aeron, sizeof(path_aeron), "%s/aircrafts.csv", csv_path);
+    snprintf(path_pass, sizeof(path_pass), "%s/passengers.csv", csv_path);
+    snprintf(path_res, sizeof(path_res), "%s/reservations.csv", csv_path);
 
-    snprintf(err_aero, sizeof(err_aero), "resultados/aeroportos_errors.csv");
-    snprintf(err_voos, sizeof(err_voos), "resultados/voos_errors.csv");
-    snprintf(err_aeron, sizeof(err_aeron), "resultados/aeronaves_errors.csv");
+    snprintf(err_aero, sizeof(err_aero), "resultados/airports_errors.csv");
+    snprintf(err_voos, sizeof(err_voos), "resultados/flights_errors.csv");
+    snprintf(err_aeron, sizeof(err_aeron), "resultados/aircrafts_errors.csv");
+    snprintf(err_pass, sizeof(err_pass), "resultados/passengers_errors.csv");
+    snprintf(err_res, sizeof(err_res), "resultados/reservations_errors.csv");
 
     FILE *faero = fopen(path_aero, "r");
     if (!faero) perror(path_aero);
@@ -62,6 +70,12 @@ int main(int argc, char *argv[]) {
     FILE *faeron = fopen(path_aeron, "r");
     if (!faeron) perror(path_aeron);
 
+    FILE *fpass = fopen(path_pass, "r");
+    if (!fpass) perror(path_pass);
+
+    FILE *fres = fopen(path_res, "r");
+    if (!fres) perror(path_res);
+
     FILE *err_faero = fopen(err_aero, "w");
     if (!err_faero) perror(err_aero);
 
@@ -71,19 +85,16 @@ int main(int argc, char *argv[]) {
     FILE *err_faeron = fopen(err_aeron, "w");
     if (!err_faeron) perror(err_aeron);
 
-    if (!faero || !fvoos || !faeron || !err_faero || !err_fvoos || !err_faeron) {
+    FILE *err_fpass = fopen(err_pass, "w");
+    if (!err_fpass) perror(err_pass);
+
+    FILE *err_fres = fopen(err_res, "w");
+    if (!err_fres) perror(err_res);
+
+    if (!faero || !fvoos || !faeron || !fpass || !fres || !err_faero || !err_fvoos || !err_faeron || !err_fpass || !err_fres) {
     fprintf(stderr, "Erro ao abrir ficheiros.\n");
     return 1;
 }
-
-    
-
-
-
-    printf("DEBUG: ficheiros abertos\n");
-
-
-
 
     // -------------------------------------------------------------
     // Ler headers e copiar para ficheiros de erro
@@ -94,10 +105,8 @@ int main(int argc, char *argv[]) {
     if (getline(&line, &len, faero) != -1) fprintf(err_faero, "%s", line);
     if (getline(&line, &len, fvoos) != -1) fprintf(err_fvoos, "%s", line);
     if (getline(&line, &len, faeron) != -1) fprintf(err_faeron, "%s", line);
-
-     
-
-    printf("DEBUG: parsing iniciado\n");
+    if (getline(&line, &len, fpass) != -1) fprintf(err_fpass, "%s", line);
+    if (getline(&line, &len, fres) != -1) fprintf(err_fres, "%s", line);
 
     // -------------------------------------------------------------
     // Processar aeroportos
@@ -120,8 +129,6 @@ int main(int argc, char *argv[]) {
         //Aeroportos adicionados
     }
 
-    printf("DEBUG: aeroportos processados\n");
-
     // -------------------------------------------------------------
     // Processar voos
     // -------------------------------------------------------------
@@ -143,8 +150,6 @@ int main(int argc, char *argv[]) {
         //Voos adicionados
     }
 
-
-    printf("DEBUG: voos processados\n");
     // -------------------------------------------------------------
     // Processar aeronaves
     // -------------------------------------------------------------
@@ -166,27 +171,40 @@ int main(int argc, char *argv[]) {
         //Aeronaves adicionadas
     }
 
+    // -------------------------------------------------------------
+    // Processar passageiros
+    // -------------------------------------------------------------
+    while (getline(&line, &len, fpass) != -1) {
+        // Remove newline no fim, se existir
+        size_t nread = strlen(line);
+        if (nread > 0 && line[nread - 1] == '\n') {
+            line[nread - 1] = '\0';
+        }
 
-    printf("DEBUG: aeronaves processadas\n");
+        Passageiros *p = parse_and_validate_passageiro_line(line, err_fpass);
+    }
+    
+    // -------------------------------------------------------------
+    // Processar reservas
+    // -------------------------------------------------------------
+    while (getline(&line, &len, fres) != -1) {
+        // Remove newline no fim, se existir
+        size_t nread = strlen(line);
+        if (nread > 0 && line[nread - 1] == '\n') {
+            line[nread - 1] = '\0';
+        }
+
+        Reservas *r = parse_and_validate_reserva_line(line, err_fres);
+    }
+
     // -------------------------------------------------------------
     // Fechar ficheiros CSV e de erros
     // -------------------------------------------------------------
-    fclose(faero); fclose(fvoos); fclose(faeron);
-    fclose(err_faero); fclose(err_fvoos); fclose(err_faeron);
-
-
-
-    printf("DEBUG: parsing terminado\n");
-
-
+    fclose(faero); fclose(fvoos); fclose(faeron); fclose(fpass); fclose(fres);
+    fclose(err_faero); fclose(err_fvoos); fclose(err_faeron); fclose(err_fpass); fclose(err_fres);
 
 
     // Processa ficheiro de comandos
-
-
-
-    printf("DEBUG: queries iniciadas\n");
-
 
 
     // ------------------------- EXECUÇÃO QUERIES -------------------------
@@ -213,8 +231,8 @@ int main(int argc, char *argv[]) {
         if (query_type == 1) {
             query1(g_aero, arg1, fout);
         } else if (query_type == 2) {
-            if (n_args == 2) query2(g_aero, g_voos, atoi(arg1), NULL, fout);
-            else query2(g_aero, g_voos, atoi(arg1), arg2, fout);
+            if (n_args == 2) query2(g_aeroN, g_voos, atoi(arg1), NULL, fout);
+            else query2(g_aeroN, g_voos, atoi(arg1), arg2, fout);
         } else if (query_type == 3) {
             if (n_args == 3) query3(g_aero, g_voos, arg1, arg2, fout);
         }
@@ -230,5 +248,10 @@ int main(int argc, char *argv[]) {
     gestor_voos_free(g_voos);
     free(line);
 
+    printf("DEBUG: programa terminado\n");
+
     return 0;
 }
+
+
+
