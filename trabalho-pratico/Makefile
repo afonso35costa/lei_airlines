@@ -10,7 +10,7 @@ GLIB_CFLAGS = `pkg-config --cflags glib-2.0`
 GLIB_LIBS   = `pkg-config --libs glib-2.0`
 
 # ------------------------------
-# Diretórios
+# Diretorias
 # ------------------------------
 SRCDIR = src
 INCDIR = include

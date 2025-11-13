@@ -212,7 +212,7 @@ int main(int argc, char *argv[]) {
     if (!f) { perror("Erro ao abrir ficheiro de comandos"); return 1; }
 
     int command_count = 0;
-    while (fgets(line, sizeof(line), f)) {
+    while (getline(&line, &len, f) != -1) {
         if (strlen(line) <= 1) continue;
         command_count++;
         char output_path[MAX_LINE];
