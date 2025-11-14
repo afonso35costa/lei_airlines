@@ -10,11 +10,9 @@
 
 // Documento de identificação (alfanumérico, 5–15 caracteres)
 int validar_document_number(const char *document_number) {
-    if (!document_number) return 0;
-    int len = strlen(document_number);
-    if (len < 5 || len > 15) return 0;
-    for (int i = 0; i < len; i++) {
-        if (!isalnum(document_number[i])) return 0;
+    if (!document_number || strlen(document_number) != 9) return 0;
+    for (int i = 0; i < 9; i++) {
+        if (!isdigit(document_number[i])) return 0;
     }
     return 1;
 }
@@ -38,8 +36,7 @@ int validar_last_name(const char *last_name) {
 
 // Data de nascimento (formato YYYY-MM-DD)
 int validar_dob(const char *dob) {
-    if (!dob) return 0;
-    if (strlen(dob) != 10) return 0;
+    if (!dob || strlen(dob) != 10) return 0;
     if (dob[4] != '-' || dob[7] != '-') return 0;
 
     char ano[5], mes[3], dia[3];
@@ -70,14 +67,20 @@ int validar_nationality(const char *nationality) {
 // Género (M, F, ou outros valores válidos)
 int validar_gender(const char *gender) {
     if (!gender) return 0;
-    return (
-        strcmp(gender, "M") == 0 ||
-        strcmp(gender, "F") == 0 ||
-        strcasecmp(gender, "Male") == 0 ||
-        strcasecmp(gender, "Female") == 0 ||
-        strcasecmp(gender, "Other") == 0
-    );
+    
+    const char *validos[] = {
+        "M",
+        "F", 
+        "O",
+    };
+    int n = sizeof(validos) / sizeof(validos[0]);
+
+    for (int i = 0; i < n; i++) {
+        if (strcmp(gender, validos[i]) == 0) return 1;
+    }
+    return 0;
 }
+
 
 // Email (deve conter '@' e '.')
 int validar_email(const char *email) {

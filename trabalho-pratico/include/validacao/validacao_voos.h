@@ -7,8 +7,8 @@
 // Funções de validação individual
 
 int validar_flight_id(const char *flight_id);
-int validar_departure(const char *departure);
-int validar_arrival(const char *arrival);
+int validar_departure(const char *departure_date, const char *departure_time);
+int validar_arrival(const char *arrival_date, const char *arrival_time);
 int validar_aircraft(const char *aircraft);
 int validar_status(const char *status);
 int validar_tracking_url(const char *tracking_url);

@@ -26,12 +26,18 @@ int validar_city(const char *city) {
 }
 
 int validar_country(const char *country) {
-    return country && strlen(country) > 1;
+    if (!country || strlen(country) != 2) return 0;
+    for (int i = 0; i < 2; i++) {
+        if (!isalpha(country[i])) return 0;
+    }
+    return 1;
 }
 
 int validar_latitude(double latitude) {
-    return latitude >= -90.0 && latitude <= 90.0;
+    // Validar limite real
+    return (latitude >= -90.0 && latitude <= 90.0);
 }
+
 
 int validar_longitude(double longitude) {
     return longitude >= -180.0 && longitude <= 180.0;
@@ -58,7 +64,6 @@ int validar_type(const char *type) {
 
     int num_tipos = sizeof(tipos_validos) / sizeof(tipos_validos[0]);
 
-    // Verifica se o tipo corresponde a algum dos válidos
     for (int i = 0; i < num_tipos; i++) {
         if (strcmp(type, tipos_validos[i]) == 0) {
             return 1; 
@@ -82,4 +87,3 @@ int validar_aeroporto(const Aeroportos *a) {
            validar_icao(get_icao(a)) &&
            validar_type(get_type(a));
 }
-

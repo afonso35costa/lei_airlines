@@ -9,13 +9,26 @@
 
 
 int validar_identifier(const char *identifier) {
-    // Exemplo simples: matrícula não pode ser vazia e deve ter letras/números
-    if (!identifier || strlen(identifier) < 3) return 0;
-    for (int i = 0; identifier[i]; i++) {
-        if (!isalnum(identifier[i]) && identifier[i] != '-') return 0;
+
+    if (!identifier || strlen(identifier) != 8)
+        return 0;
+
+    for (int i = 0; i < 2; i++) {
+        if (!isalnum(identifier[i]))
+            return 0;
     }
+
+    if (identifier[2] != '-')
+        return 0;
+
+    for (int i = 3; i < 8; i++) {
+        if (!isalnum(identifier[i]))
+            return 0;
+    }
+
     return 1;
 }
+
 
 int validar_manufacturer(const char *manufacturer) {
     return manufacturer && strlen(manufacturer) > 1;
@@ -26,7 +39,7 @@ int validar_model(const char *model) {
 }
 
 int validar_year(int year) {
-    return (year >= 1950 && year <= 2025);
+    return (year >= 1900 && year <= 2025);
 }
 
 int validar_capacity(int capacity) {
