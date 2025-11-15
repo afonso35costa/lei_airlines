@@ -36,9 +36,18 @@ void destroy_voo(Voo *v);
 /* Getters: retornam ponteiro para string interna (ou NULL se não existir). */
 char* get_flight_id(const Voo *v);
 DataHora* get_departure(const Voo *v);
+DataHora* get_departure_date(const Voo *v);
+DataHora* get_departure_time(const Voo *v);
 DataHora* get_actual_departure(const Voo *v);
+DataHora* get_actual_departure_date(const Voo *v);
+DataHora* get_actual_departure_time(const Voo *v);
 DataHora* get_arrival(const Voo *v);
+DataHora* get_arrival_time(const Voo *v);
+DataHora* get_arrival_date(const Voo *v);
 DataHora* get_actual_arrival(const Voo *v);
+DataHora* get_actual_arrival_time(const Voo *v);
+DataHora* get_actual_arrival_date(const Voo *v);
+
 char* get_gate(const Voo *v);
 char* get_status(const Voo *v);
 char* get_origin(const Voo *v);

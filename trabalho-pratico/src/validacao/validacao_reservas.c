@@ -8,33 +8,41 @@
 // FUNÇÕES DE VALIDAÇÃO INDIVIDUAIS
 // ============================================================
 
-// Código da reserva (alfanumérico, 5–10 caracteres)
-int validar_reservation_id(const char *id) {
-    if (!id) return 0;
-    int len = strlen(id);
-    if (len < 5 || len > 10) return 0;
-    for (int i = 0; i < len; i++)
-        if (!isalnum(id[i])) return 0;
+
+int validar_reservation_id(const char *reservation_id) {
+    if (!reservation_id || strlen(reservation_id) != 10) return 0;
+
+    if (reservation_id[0] != 'R')
+        return 0;
+
+    for (int i = 1; i < 10; i++) {
+        if (!isdigit(reservation_id[i]))
+            return 0;
+    }
+
     return 1;
 }
 
 // ID do voo (alfanumérico)
 int validar_flight_ids(const char *flight_ids) {
-    if (!flight_ids) return 0;
-    int len = strlen(flight_ids);
-    if (len < 3 || len > 8) return 0;
-    for (int i = 0; i < len; i++)
-        if (!isalnum(flight_ids[i])) return 0;
+    if (!flight_ids || strlen(flight_ids) != 7) return 0;
+    for (int i = 0; i < 2; i++) {
+        if (!isupper(flight_ids[i])) return 0;
+    }
+
+    for (int i = 2; i < 7; i++) {
+        if (!isdigit(flight_ids[i])) return 0;
+    }
+
     return 1;
 }
 
 // Documento do passageiro (alfanumérico, 5–15 chars)
-int validar_document_number_reserva(const char *doc) {
-    if (!doc) return 0;
-    int len = strlen(doc);
-    if (len < 5 || len > 15) return 0;
-    for (int i = 0; i < len; i++)
-        if (!isalnum(doc[i])) return 0;
+int validar_document_number_reserva(const char *document_number) {
+    if (!document_number || strlen(document_number) != 9) return 0;
+    for (int i = 0; i < 9; i++) {
+        if (!isdigit(document_number[i])) return 0;
+    }
     return 1;
 }
 
@@ -42,7 +50,7 @@ int validar_document_number_reserva(const char *doc) {
 int validar_seat(const char *seat) {
     if (!seat) return 0;
     int len = strlen(seat);
-    if (len < 2 || len > 4) return 0;
+    if (len < 1 || len > 4) return 0;
 
     int i = 0;
     while (isdigit(seat[i])) i++;
@@ -57,8 +65,8 @@ int validar_price(double price) {
 }
 
 // Bagagem extra (valor >= 0 e < 100 kg)
-int validar_extra_luggage(double extra_luggage) {
-    return extra_luggage >= 0.0 && extra_luggage < 100.0;
+int validar_extra_luggage(bool extra_luggage) {
+    return (extra_luggage == true || extra_luggage == false);
 }
 
 // Priority boarding (bool - 0 ou 1)

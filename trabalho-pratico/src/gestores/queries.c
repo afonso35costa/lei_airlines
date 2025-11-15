@@ -78,61 +78,6 @@ void query2(GestorAeronaves *gae, GestorVoos *gv, int n, const char *manufacture
     
     // Itera sobre todos os voos
     for (guint i = 0; i < gestor_voos_get_length(gv); i++) {
-        printf("DEBUG: Processando voo %u\n", i); // ← ADICIONAR
-    
-        Voo *voo = gestor_voos_get(gv, i);
-    
-        // Só conta voos NÃO cancelados
-        if (!voo || !get_status(voo) || strcmp(get_status(voo), "Cancelled") == 0) {
-            printf("DEBUG: Voo %u ignorado (status)\n", i); // ← ADICIONAR
-            continue;
-        }
-    
-        char *aircraft_id = get_aircraft(voo);
-        if (!aircraft_id) {
-            printf("DEBUG: Voo %u sem aircraft_id\n", i); // ← ADICIONAR
-            continue;
-        }
-    
-        printf("DEBUG: Voo %u, aircraft: %s\n", i, aircraft_id); // ← ADICIONAR
-    
-        // Função que procura por identificador
-        Aeronaves *aeronave = gestor_aeronaves_find_by_id(gae, aircraft_id);
-        if (!aeronave) {
-            printf("DEBUG: Aeronave %s não encontrada\n", aircraft_id); // ← ADICIONAR
-            continue; 
-        }
-    
-        printf("DEBUG: Aeronave encontrada: %s\n", aircraft_id); // ← ADICIONAR
-    
-        // Aplica filtro de fabricante se especificado
-        if (manufacturer && get_manufacturer(aeronave)) {
-            if (strcmp(get_manufacturer(aeronave), manufacturer) != 0) {
-                printf("DEBUG: Filtro fabricante falhou\n"); // ← ADICIONAR
-                continue;
-            }
-        }
-    
-        printf("DEBUG: Contando voo para %s\n", aircraft_id); // ← ADICIONAR
-    
-        // Incrementa contador para esta aeronave
-        gpointer existing = g_hash_table_lookup(flight_counts, aircraft_id);
-    
-        if (existing) {
-            int *count = (int *)existing;
-            (*count)++;
-            printf("DEBUG: Novo count para %s: %d\n", aircraft_id, *count); // ← ADICIONAR
-        } else {
-            int *new_count = malloc(sizeof(int));
-            *new_count = 1;
-            g_hash_table_insert(flight_counts, strdup(aircraft_id), new_count);
-            printf("DEBUG: Primeiro voo para %s\n", aircraft_id); // ← ADICIONAR
-        }
-    }
-
-    printf("DEBUG: Loop terminou. Hash table size: %u\n", g_hash_table_size(flight_counts)); // ← ADICIONAR Itera sobre todos os voos
-    
-    for (guint i = 0; i < gestor_voos_get_length(gv); i++) {
         Voo *voo = gestor_voos_get(gv, i);
         
         // Só conta voos NÃO cancelados
@@ -144,17 +89,10 @@ void query2(GestorAeronaves *gae, GestorVoos *gv, int n, const char *manufacture
         if (!aircraft_id) continue;
         
         // Função que procura por identificador
-        Aeronaves* gestor_aeronaves_find_by_id(GestorAeronaves *ga, const char *identifier) {
-        if (!ga || !identifier) return NULL;
-    
-        for (guint i = 0; i < ga->aeronaves->len; i++) {
-            Aeronaves *a = g_ptr_array_index(ga->aeronaves, i);
-            if (a && get_identifier(a) && strcmp(get_identifier(a), identifier) == 0) {
-                return a;
-            }
+        Aeronaves *aeronave = gestor_aeronaves_find_by_id(gae, aircraft_id);
+        if (!aeronave) {
+            continue; // Aeronave não encontrada
         }
-        return NULL;
-    }
         
         // Aplica filtro de fabricante se especificado
         if (manufacturer && get_manufacturer(aeronave)) {

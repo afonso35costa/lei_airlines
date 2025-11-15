@@ -131,16 +131,47 @@ DataHora* get_departure(const Voo *v) {
     return (v != NULL) ? v->departure : NULL;
 }
 
+DataHora* get_departure_time(const Voo *v) {
+    return (v != NULL && v->departure != NULL) ? v->departure : NULL;
+}
+
+DataHora* get_departure_date(const Voo *v) {
+    return (v != NULL && v->departure != NULL) ? v->departure : NULL;
+}
+
 DataHora* get_actual_departure(const Voo *v) {
     return (v != NULL) ? v->actual_departure : NULL;
+}
+
+DataHora* get_actual_departure_time(const Voo *v) {
+    return (v != NULL && v->actual_departure != NULL) ? v->actual_departure : NULL;
+}
+DataHora* get_actual_departure_date(const Voo *v) {
+    return (v != NULL && v->actual_departure != NULL) ? v->actual_departure : NULL;
 }
 
 DataHora* get_arrival(const Voo *v) {
     return (v != NULL) ? v->arrival : NULL;
 }
 
+DataHora* get_arrival_time(const Voo *v) {
+    return (v != NULL && v->arrival != NULL) ? v->arrival : NULL;
+}
+
+DataHora* get_arrival_date(const Voo *v) {
+    return (v != NULL && v->arrival != NULL) ? v->arrival : NULL;
+}
+
 DataHora* get_actual_arrival(const Voo *v) {
     return (v != NULL) ? v->actual_arrival : NULL;
+}
+
+DataHora* get_actual_arrival_time(const Voo *v) {
+    return (v != NULL && v->actual_arrival != NULL) ? v->actual_arrival : NULL;
+}
+
+DataHora* get_actual_arrival_date(const Voo *v) {
+    return (v != NULL && v->actual_arrival != NULL) ? v->actual_arrival : NULL;
 }
 
 char* get_gate(const Voo *v) {

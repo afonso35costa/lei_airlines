@@ -8,7 +8,6 @@
 // FUNÇÕES INDIVIDUAIS DE VALIDAÇÃO
 // ============================================================
 
-// Documento de identificação (alfanumérico, 5–15 caracteres)
 int validar_document_number(const char *document_number) {
     if (!document_number || strlen(document_number) != 9) return 0;
     for (int i = 0; i < 9; i++) {
@@ -54,11 +53,8 @@ int validar_dob(const char *dob) {
 
 // Nacionalidade (só letras, mínimo 2)
 int validar_nationality(const char *nationality) {
-    if (!nationality) return 0;
-    int len = strlen(nationality);
-    if (len < 2) return 0;
-
-    for (int i = 0; i < len; i++) {
+    if (!nationality || strlen(nationality) != 2) return 0;
+    for (int i = 0; i < 2; i++) {
         if (!isalpha(nationality[i]) && nationality[i] != ' ') return 0;
     }
     return 1;
@@ -82,11 +78,62 @@ int validar_gender(const char *gender) {
 }
 
 
-// Email (deve conter '@' e '.')
 int validar_email(const char *email) {
     if (!email) return 0;
-    return (strchr(email, '@') && strchr(email, '.'));
+
+    int i = 0;
+
+    while (email[i] != '\0' && email[i] != '@') {
+        char c = email[i];
+        if (!( (c >= 'a' && c <= 'z') ||
+               (c >= '0' && c <= '9') ||
+               c == '.' ))
+            return 0;
+        i++;
+    }
+
+    // se acabou ou @ é o primeiro caractere → inválido
+    if (email[i] != '@' || i == 0)
+        return 0;
+
+    i++; // salta @
+
+    // ----------------------------
+    // 2) LSTRING (parte antes do ponto)
+    // ----------------------------
+    int start_l = i;
+    while (email[i] != '\0' && email[i] != '.') {
+        char c = email[i];
+        if (!(c >= 'a' && c <= 'z'))
+            return 0;
+        i++;
+    }
+
+    // se não há ponto ou lstring vazio → erro
+    if (email[i] != '.' || i == start_l)
+        return 0;
+
+    i++; // salta ponto
+
+    // ----------------------------
+    // 3) RSTRING (2–3 letras)
+    // ----------------------------
+    int start_r = i;
+
+    while (email[i] != '\0') {
+        char c = email[i];
+        if (!(c >= 'a' && c <= 'z'))
+            return 0;
+        i++;
+    }
+
+    int rlen = i - start_r;
+    if (rlen < 2 || rlen > 3)
+        return 0;
+
+    return 1;
 }
+
 
 // Telefone (só números, 9–15 dígitos)
 int validar_phone(const char *phone) {
@@ -107,19 +154,6 @@ int validar_address(const char *address) {
     return (len >= 5 && len <= 100);
 }
 
-// Caminho da foto (termina com .jpg, .png, .jpeg)
-int validar_photo(const char *photo) {
-    if (!photo) return 0;
-    const char *ext = strrchr(photo, '.');
-    if (!ext) return 0;
-
-    return (
-        strcasecmp(ext, ".jpg") == 0 ||
-        strcasecmp(ext, ".jpeg") == 0 ||
-        strcasecmp(ext, ".png") == 0
-    );
-}
-
 // ============================================================
 // VALIDAÇÃO GERAL (com encapsulamento)
 // ============================================================
@@ -134,8 +168,7 @@ int validar_passageiro(const Passageiros *p) {
            validar_gender(get_gender(p)) &&
            validar_email(get_email(p)) &&
            validar_phone(get_phone(p)) &&
-           validar_address(get_address(p)) &&
-           validar_photo(get_photo(p));
+           validar_address(get_address(p));       
 }
 
 // ============================================================

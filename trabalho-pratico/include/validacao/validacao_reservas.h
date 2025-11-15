@@ -12,7 +12,7 @@ int validar_flight_ids(const char *flight_ids);
 int validar_document_number_reserva(const char *doc);
 int validar_seat(const char *seat);
 int validar_price(double price);
-int validar_extra_luggage(double extra_luggage);
+int validar_extra_luggage(bool extra_luggage);
 int validar_priority_boarding(bool priority_boarding);
 int validar_qr_code(const char *qr);
 

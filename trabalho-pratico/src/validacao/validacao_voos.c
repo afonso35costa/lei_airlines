@@ -147,7 +147,6 @@ int validar_voo(const Voo *v) {
            validar_actual_arrival(get_actual_arrival_date(v), get_actual_arrival_time(v)) &&
            validar_aircraft(get_aircraft(v)) &&
            validar_status(get_status(v)) &&
-           validar_tracking_url(get_tracking_url(v)) &&
            validar_data(get_data(get_departure(v))) &&
            validar_hora(get_hora(get_departure(v))) &&
            validar_data(get_data(get_arrival(v))) &&

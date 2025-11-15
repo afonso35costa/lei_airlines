@@ -11,7 +11,7 @@ int validar_departure(const char *departure_date, const char *departure_time);
 int validar_arrival(const char *arrival_date, const char *arrival_time);
 int validar_aircraft(const char *aircraft);
 int validar_status(const char *status);
-int validar_tracking_url(const char *tracking_url);
+
 
 // Funções auxiliares para validar datas e horas
 int validar_data(const char *data);       // formato AAAA-MM-DD
