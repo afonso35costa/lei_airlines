@@ -22,7 +22,7 @@ Reservas* init_reserva(const char *reservation_id, char **flight_ids,
                       const char *qr_code);
 
 // Compara duas reservas por ID
-int servas(const Reservas *r1, const Reservas *r2);
+int compare_reservas(const Reservas *r1, const Reservas *r2);
 
 // Mostra dados da reserva
 void print_reserva(const Reservas *r);
