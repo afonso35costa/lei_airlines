@@ -3,12 +3,13 @@
 #include <string.h>
 #include <ctype.h>
 #include "validacao_reservas.h"
+#include "reservas.h"
 
 // ============================================================
 // FUNÇÕES DE VALIDAÇÃO INDIVIDUAIS
 // ============================================================
 
-
+/*
 int validar_reservation_id(const char *reservation_id) {
     if (!reservation_id || strlen(reservation_id) != 10) return 0;
 
@@ -83,7 +84,43 @@ int validar_qr_code(const char *qr) {
         if (!isalnum(qr[i]) && qr[i] != '-') return 0;
     return 1;
 }
+*/
 
+int validar_reservation_id_reservas(const char *reservation_id) {
+    if (!reservation_id || strlen(reservation_id) != 10) return 0;
+
+    if (reservation_id[0] != 'R')
+        return 0;
+
+    for (int i = 1; i < 10; i++) {
+        if (!isdigit(reservation_id[i]))
+            return 0;
+    }
+
+    return 1;
+}
+
+
+int validar_document_number_reserva(const char *document_number) {
+    if (!document_number || strlen(document_number) != 9 ) return 0;
+    for (int i = 0; i < strlen(document_number); i++) {
+        if (!isalnum(document_number[i])) return 0;
+    }
+    return 1;
+}
+
+int validar_listas_reservas(const char *flight_id) {
+    if (!flight_id) return 0;
+        
+        int len = strlen(flight_id);
+        if (len < 2) return 0;
+        
+        // Verificar se começa com '[' e termina com ']'
+        if (flight_id[0] != '[' || flight_id[len - 1] != ']') return 0;
+        
+        return 1;
+
+}
 // ============================================================
 // FUNÇÃO DE VALIDAÇÃO GERAL (COM ENCAPSULAMENTO)
 // ============================================================
@@ -91,16 +128,12 @@ int validar_qr_code(const char *qr) {
 int validar_reserva(const Reservas *r) {
     if (!r) return 0;
 
-    return validar_reservation_id(get_reservation_id(r)) &&
-           validar_flight_ids(get_flight_ids(r)) &&
-           validar_document_number_reserva(get_document_number_reserva(r)) &&
-           validar_seat(get_seat(r)) &&
-           validar_price(get_price(r)) &&
-           validar_extra_luggage(get_extra_luggage(r)) &&
-           validar_priority_boarding(get_priority_boarding(r)) &&
-           validar_qr_code(get_qr_code(r));
+    return validar_reservation_id_reservas(get_reservation_id_reservas(r)) &&
+           validar_document_number_reserva(get_document_number_reservas(r)) &&
+           validar_listas_reservas(get_flight_ids_reservas(r));
 }
 
+/*
 // ============================================================
 // LEITURA DE FICHEIRO E GERAÇÃO DE FICHEIRO DE ERROS
 // ============================================================
@@ -175,3 +208,5 @@ void processar_ficheiro_reservas(const char *ficheiro_entrada, const char *fiche
     printf("Reservas válidas: %d\n", validos);
     printf("Reservas inválidas: %d (ver ficheiro '%s')\n", invalidos, ficheiro_erros);
 }
+
+*/

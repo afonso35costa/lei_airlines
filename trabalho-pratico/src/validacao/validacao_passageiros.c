@@ -3,19 +3,23 @@
 #include <string.h>
 #include <ctype.h>
 #include "validacao_passageiros.h"
+#include "passageiros.h"
 
+/*
 // ============================================================
 // FUNÇÕES INDIVIDUAIS DE VALIDAÇÃO
 // ============================================================
 
+// Documento de identificação (alfanumérico, 5–15 caracteres)
 int validar_document_number(const char *document_number) {
-    if (!document_number || strlen(document_number) != 9) return 0;
-    for (int i = 0; i < 9; i++) {
-        if (!isdigit(document_number[i])) return 0;
+    if (!document_number) return 0;
+    int len = strlen(document_number);
+    if (len < 5 || len > 15) return 0;
+    for (int i = 0; i < len; i++) {
+        if (!isalnum(document_number[i])) return 0;
     }
     return 1;
-}
-
+    
 // Primeiro nome (só letras, tamanho 2–50)
 int validar_first_name(const char *first_name) {
     if (!first_name) return 0;
@@ -35,7 +39,8 @@ int validar_last_name(const char *last_name) {
 
 // Data de nascimento (formato YYYY-MM-DD)
 int validar_dob(const char *dob) {
-    if (!dob || strlen(dob) != 10) return 0;
+    if (!dob) return 0;
+    if (strlen(dob) != 10) return 0;
     if (dob[4] != '-' || dob[7] != '-') return 0;
 
     char ano[5], mes[3], dia[3];
@@ -53,8 +58,11 @@ int validar_dob(const char *dob) {
 
 // Nacionalidade (só letras, mínimo 2)
 int validar_nationality(const char *nationality) {
-    if (!nationality || strlen(nationality) != 2) return 0;
-    for (int i = 0; i < 2; i++) {
+    if (!nationality) return 0;
+    int len = strlen(nationality);
+    if (len < 2) return 0;
+
+    for (int i = 0; i < len; i++) {
         if (!isalpha(nationality[i]) && nationality[i] != ' ') return 0;
     }
     return 1;
@@ -63,77 +71,20 @@ int validar_nationality(const char *nationality) {
 // Género (M, F, ou outros valores válidos)
 int validar_gender(const char *gender) {
     if (!gender) return 0;
-    
-    const char *validos[] = {
-        "M",
-        "F", 
-        "O",
-    };
-    int n = sizeof(validos) / sizeof(validos[0]);
-
-    for (int i = 0; i < n; i++) {
-        if (strcmp(gender, validos[i]) == 0) return 1;
-    }
-    return 0;
+    return (
+        strcmp(gender, "M") == 0 ||
+        strcmp(gender, "F") == 0 ||
+        strcasecmp(gender, "Male") == 0 ||
+        strcasecmp(gender, "Female") == 0 ||
+        strcasecmp(gender, "Other") == 0
+    );
 }
 
-
+// Email (deve conter '@' e '.')
 int validar_email(const char *email) {
     if (!email) return 0;
-
-    int i = 0;
-
-    while (email[i] != '\0' && email[i] != '@') {
-        char c = email[i];
-        if (!( (c >= 'a' && c <= 'z') ||
-               (c >= '0' && c <= '9') ||
-               c == '.' ))
-            return 0;
-        i++;
-    }
-
-    // se acabou ou @ é o primeiro caractere → inválido
-    if (email[i] != '@' || i == 0)
-        return 0;
-
-    i++; // salta @
-
-    // ----------------------------
-    // 2) LSTRING (parte antes do ponto)
-    // ----------------------------
-    int start_l = i;
-    while (email[i] != '\0' && email[i] != '.') {
-        char c = email[i];
-        if (!(c >= 'a' && c <= 'z'))
-            return 0;
-        i++;
-    }
-
-    // se não há ponto ou lstring vazio → erro
-    if (email[i] != '.' || i == start_l)
-        return 0;
-
-    i++; // salta ponto
-
-    // ----------------------------
-    // 3) RSTRING (2–3 letras)
-    // ----------------------------
-    int start_r = i;
-
-    while (email[i] != '\0') {
-        char c = email[i];
-        if (!(c >= 'a' && c <= 'z'))
-            return 0;
-        i++;
-    }
-
-    int rlen = i - start_r;
-    if (rlen < 2 || rlen > 3)
-        return 0;
-
-    return 1;
+    return (strchr(email, '@') && strchr(email, '.'));
 }
-
 
 // Telefone (só números, 9–15 dígitos)
 int validar_phone(const char *phone) {
@@ -154,23 +105,105 @@ int validar_address(const char *address) {
     return (len >= 5 && len <= 100);
 }
 
+// Caminho da foto (termina com .jpg, .png, .jpeg)
+int validar_photo(const char *photo) {
+    if (!photo) return 0;
+    const char *ext = strrchr(photo, '.');
+    if (!ext) return 0;
+
+    return (
+        strcasecmp(ext, ".jpg") == 0 ||
+        strcasecmp(ext, ".jpeg") == 0 ||
+        strcasecmp(ext, ".png") == 0
+    );
+}
+*/
+
+int validar_document_number_passageiro(const char *document_number) {
+    if (!document_number || strlen(document_number) != 9 ) return 0;
+    for (int i = 0; i < strlen(document_number); i++) {
+        if (!isalnum(document_number[i])) return 0;
+    }
+    return 1;
+}
+
+int validar_email_passageiro(const char *email) {
+    if (!email) return 0;
+    
+    // Verificar se contém exatamente um @
+    char *at_pos = strchr(email, '@');
+    if (!at_pos || strchr(at_pos + 1, '@')) return 0;
+    
+    // Separar username e domínio
+    int username_len = at_pos - email;
+    if (username_len == 0) return 0; // Não pode começar com @
+    
+    char *domain = at_pos + 1;
+    if (strlen(domain) == 0) return 0; // Deve ter domínio
+    
+    // Validar username: [a-z0-9] e '.'
+    for (int i = 0; i < username_len; i++) {
+        char c = email[i];
+        if (!((c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c == '.')) {
+            return 0;
+        }
+    }
+    
+    // Validar domínio: deve ter exatamente um ponto
+    char *dot_pos = strchr(domain, '.');
+    if (!dot_pos || strchr(dot_pos + 1, '.')) return 0;
+    
+    // Separar lstring e rstring
+    int lstring_len = dot_pos - domain;
+    char *rstring = dot_pos + 1;
+    int rstring_len = strlen(rstring);
+    
+    // lstring: 1 ou mais caracteres [a-z]
+    if (lstring_len < 1) return 0;
+    for (int i = 0; i < lstring_len; i++) {
+        char c = domain[i];
+        if (!(c >= 'a' && c <= 'z')) return 0;
+    }
+    
+    // rstring: 2 ou 3 caracteres [a-z]
+    if (rstring_len < 2 || rstring_len > 3) return 0;
+    for (int i = 0; i < rstring_len; i++) {
+        char c = rstring[i];
+        if (!(c >= 'a' && c <= 'z')) return 0;
+    }
+    
+    return 1;
+}
+
+int validar_genero_passageiro (const char *gender){
+    if (!gender) return 0; // Verifica se o ponteiro é nulo
+    if (strcmp(gender, "small_airport") == 0 ||
+        strcmp(gender, "medium_airport") == 0 ||
+        strcmp(gender, "large_airport") == 0 ||
+        strcmp(gender, "heliport") == 0 ||
+        strcmp(gender, "seaplane_base") == 0) {
+        return 1; 
+    }
+    return 0;
+
+}
+
+
+
+
+
+
 // ============================================================
 // VALIDAÇÃO GERAL (com encapsulamento)
 // ============================================================
 int validar_passageiro(const Passageiros *p) {
     if (!p) return 0;
 
-    return validar_document_number(get_document_number(p)) &&
-           validar_first_name(get_first_name(p)) &&
-           validar_last_name(get_last_name(p)) &&
-           validar_dob(get_dob(p)) &&
-           validar_nationality(get_nationality(p)) &&
-           validar_gender(get_gender(p)) &&
-           validar_email(get_email(p)) &&
-           validar_phone(get_phone(p)) &&
-           validar_address(get_address(p));       
+    return validar_document_number_passageiro(get_document_number_passageiros(p)) &&
+           validar_email_passageiro(get_email_passageiros(p));
 }
 
+/*
 // ============================================================
 // LEITURA DE FICHEIRO E GERAÇÃO DE FICHEIRO DE ERROS
 // ============================================================
@@ -234,7 +267,7 @@ void processar_ficheiro_passageiros(const char *ficheiro_entrada, const char *fi
             validos++;
         }
 
-        destroy_passageiro(p);
+        free_passageiro(p);
     }
 
     fclose(fin);
@@ -244,3 +277,5 @@ void processar_ficheiro_passageiros(const char *ficheiro_entrada, const char *fi
     printf("Registos válidos: %d\n", validos);
     printf("Registos inválidos: %d (ver ficheiro '%s')\n", invalidos, ficheiro_erros);
 }
+
+*/

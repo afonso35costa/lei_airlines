@@ -5,7 +5,7 @@
 #include "validacao_aeroportos.h"
 #include "aeroportos.h"
 
-
+/*
 // VALIDAÇÕES INDIVIDUAIS
 
 int validar_code(const char *code) {
@@ -34,7 +34,6 @@ int validar_country(const char *country) {
 }
 
 int validar_latitude(double latitude) {
-    // Validar limite real
     return (latitude >= -90.0 && latitude <= 90.0);
 }
 
@@ -73,17 +72,55 @@ int validar_type(const char *type) {
     return 0;
 }
 
+*/
+
+// VALIDAÇÕES INDIVIDUAIS
+
+int validar_type_aeroporo (const char *type) {
+    if (!type) return 0; // Verifica se o ponteiro é nulo
+    if (strcmp(type, "small_airport") == 0 ||
+        strcmp(type, "medium_airport") == 0 ||
+        strcmp(type, "large_airport") == 0 ||
+        strcmp(type, "heliport") == 0 ||
+        strcmp(type, "seaplane_base") == 0) {
+        return 1; 
+    }
+    return 0;
+}
+
+
+
+int validar_latitude_aeroporto (double latitude) {
+    // Verifica se está no intervalo válido
+    if (latitude < -90.0 || latitude > 90.0) return 0;
+    
+    // Verifica se tem no máximo 8 casas decimais
+    // Multiplica por 10^8 e verifica se o resultado é um inteiro
+    double scaled = latitude * 100000000.0; // 10^8
+    return (scaled == (long long)scaled);
+}
+
+int validar_longitude_aeroporto (double longitude) {
+    return longitude >= -180.0 && longitude <= 180.0;
+}
+
+int validar_code_aeroporto(const char *code) {
+    // Código IATA = 3 letras
+    if (!code || strlen(code) != 3) return 0;
+    for (int i = 0; i < 3; i++) {
+        if (!isalpha(code[i])) return 0;  // verifica se são letras maisculas no intervalo de A-Z
+    }
+    return 1;
+}
+
+
 // VALIDAÇÃO GERAL (com encapsulamento)
 
 int validar_aeroporto(const Aeroportos *a) {
     if (!a) return 0;
 
-    return validar_code(get_code(a)) &&
-           validar_name(get_name(a)) &&
-           validar_city(get_city(a)) &&
-           validar_country(get_country(a)) &&
-           validar_latitude(get_latitude(a)) &&
-           validar_longitude(get_longitude(a)) &&
-           validar_icao(get_icao(a)) &&
-           validar_type(get_type(a));
+    return validar_type_aeroporo(get_type_aeroporto(a)) &&
+           validar_latitude_aeroporto(get_latitude_aeroporto(a)) &&
+           validar_longitude_aeroporto(get_longitude_aeroporto(a)) &&
+           validar_code_aeroporto(get_code_aeroporto(a));
 }

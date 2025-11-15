@@ -17,7 +17,7 @@ GestorAeroportos* gestor_aeroportos_create(void) {
 
 // Adiciona aeroporto
 void gestor_aeroportos_add(GestorAeroportos *ga, Aeroportos *aeroporto) {
-    g_hash_table_insert(ga->hash, g_strdup(get_code(aeroporto)), aeroporto);
+    g_hash_table_insert(ga->hash, g_strdup(get_code_aeroporto(aeroporto)), aeroporto);
 }
 
 // Remove aeroporto

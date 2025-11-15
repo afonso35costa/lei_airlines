@@ -71,8 +71,8 @@ int compare_passageiros(const Passageiros *p1, const Passageiros *p2) {
     if (p2 == NULL) return 1;
     
     // Compara pelo documento (chave única)
-    char *doc1 = get_document_number(p1);
-    char *doc2 = get_document_number(p2);
+    char *doc1 = get_document_number_passageiros(p1);
+    char *doc2 = get_document_number_passageiros(p2);
     
     if (doc1 == NULL && doc2 == NULL) return 0;
     if (doc1 == NULL) return -1;
@@ -89,15 +89,15 @@ void print_passageiro(const Passageiros *p) {
     }
     
     printf("=== PASSAGEIRO ===\n");
-    printf("Documento: %s\n", get_document_number(p) ? get_document_number(p) : "N/A");
-    printf("Nome: %s %s\n", get_first_name(p) ? get_first_name(p) : "", get_last_name(p) ? get_last_name(p) : "");
-    printf("Data nascimento: %s\n", get_dob(p) ? get_dob(p) : "N/A");
-    printf("Nacionalidade: %s\n", get_nationality(p) ? get_nationality(p) : "N/A");
-    printf("Género: %s\n", get_gender(p) ? get_gender(p) : "N/A");
-    printf("Email: %s\n", get_email(p) ? get_email(p) : "N/A");
-    printf("Telefone: %s\n", get_phone(p) ? get_phone(p) : "N/A");
-    printf("Morada: %s\n", get_address(p) ? get_address(p) : "N/A");
-    printf("Fotografia: %s\n", get_photo(p) ? get_photo(p) : "N/A");
+    printf("Documento: %s\n", get_document_number_passageiros(p) ? get_document_number_passageiros(p) : "N/A");
+    printf("Nome: %s %s\n", get_first_name_passageiros(p) ? get_first_name_passageiros(p) : "", get_last_name_passageiros(p) ? get_last_name_passageiros(p) : "");
+    printf("Data nascimento: %s\n", get_dob_passageiros(p) ? get_dob_passageiros(p) : "N/A");
+    printf("Nacionalidade: %s\n", get_nationality_passageiros(p) ? get_nationality_passageiros(p) : "N/A");
+    printf("Género: %s\n", get_gender_passageiros(p) ? get_gender_passageiros(p) : "N/A");
+    printf("Email: %s\n", get_email_passageiros(p) ? get_email_passageiros(p) : "N/A");
+    printf("Telefone: %s\n", get_phone_passageiros(p) ? get_phone_passageiros(p) : "N/A");
+    printf("Morada: %s\n", get_address_passageiros(p) ? get_address_passageiros(p) : "N/A");
+    printf("Fotografia: %s\n", get_photo_passageiros(p) ? get_photo_passageiros(p) : "N/A");
     printf("==================\n");
 }
 
@@ -127,43 +127,43 @@ void destroy_passageiro(Passageiros *p) {
 // GETTERS - Funções para obter valores
 // ============================================================================================================================================
 
-char* get_document_number(const Passageiros *p) {
+char* get_document_number_passageiros(const Passageiros *p) {
     return (p != NULL) ? p->document_number : NULL;
 }
 
-char* get_first_name(const Passageiros *p) {
+char* get_first_name_passageiros(const Passageiros *p) {
     return (p != NULL) ? p->first_name : NULL;
 }
 
-char* get_last_name(const Passageiros *p) {
+char* get_last_name_passageiros(const Passageiros *p) {
     return (p != NULL) ? p->last_name : NULL;
 }
 
-char* get_dob(const Passageiros *p) {
+char* get_dob_passageiros(const Passageiros *p) {
     return (p != NULL) ? p->dob : NULL;
 }
 
-char* get_nationality(const Passageiros *p) {
+char* get_nationality_passageiros(const Passageiros *p) {
     return (p != NULL) ? p->nationality : NULL;
 }
 
-char* get_gender(const Passageiros *p) {
+char* get_gender_passageiros(const Passageiros *p) {
     return (p != NULL) ? p->gender : NULL;
 }
 
-char* get_email(const Passageiros *p) {
+char* get_email_passageiros(const Passageiros *p) {
     return (p != NULL) ? p->email : NULL;
 }
 
-char* get_phone(const Passageiros *p) {
+char* get_phone_passageiros(const Passageiros *p) {
     return (p != NULL) ? p->phone : NULL;
 }
 
-char* get_address(const Passageiros *p) {
+char* get_address_passageiros(const Passageiros *p) {
     return (p != NULL) ? p->address : NULL;
 }
 
-char* get_photo(const Passageiros *p) {
+char* get_photo_passageiros(const Passageiros *p) {
     return (p != NULL) ? p->photo : NULL;
 }
 
@@ -171,61 +171,61 @@ char* get_photo(const Passageiros *p) {
 // SETTERS - Funções para definir valores
 // ===========================================================================================
 
-void set_document_number(Passageiros *p, const char *doc) {
+void set_document_number_passageiros(Passageiros *p, const char *doc) {
     if (p == NULL) return;
     free(p->document_number);
     p->document_number = doc ? strdup(doc) : NULL;
 }
 
-void set_first_name(Passageiros *p, const char *name) {
+void set_first_name_passageiros(Passageiros *p, const char *name) {
     if (p == NULL) return;
     free(p->first_name);
     p->first_name = name ? strdup(name) : NULL;
 }
 
-void set_last_name(Passageiros *p, const char *name) {
+void set_last_name_passageiros(Passageiros *p, const char *name) {
     if (p == NULL) return;
     free(p->last_name);
     p->last_name = name ? strdup(name) : NULL;
 }
 
-void set_dob(Passageiros *p, const char *birth) {
+void set_dob_passageiros(Passageiros *p, const char *birth) {
     if (p == NULL) return;
     free(p->dob);
     p->dob = birth ? strdup(birth) : NULL;
 }
 
-void set_nationality(Passageiros *p, const char *nat) {
+void set_nationality_passageiros(Passageiros *p, const char *nat) {
     if (p == NULL) return;
     free(p->nationality);
     p->nationality = nat ? strdup(nat) : NULL;
 }
 
-void set_gender(Passageiros *p, const char *gen) {
+void set_gender_passageiros(Passageiros *p, const char *gen) {
     if (p == NULL) return;
     free(p->gender);
     p->gender = gen ? strdup(gen) : NULL;
 }
 
-void set_email(Passageiros *p, const char *mail) {
+void set_email_passageiros(Passageiros *p, const char *mail) {
     if (p == NULL) return;
     free(p->email);
     p->email = mail ? strdup(mail) : NULL;
 }
 
-void set_phone(Passageiros *p, const char *tel) {
+void set_phone_passageiros(Passageiros *p, const char *tel) {
     if (p == NULL) return;
     free(p->phone);
     p->phone = tel ? strdup(tel) : NULL;
 }
 
-void set_address(Passageiros *p, const char *addr) {
+void set_address_passageiros(Passageiros *p, const char *addr) {
     if (p == NULL) return;
     free(p->address);
     p->address = addr ? strdup(addr) : NULL;
 }
 
-void set_photo(Passageiros *p, const char *pic) {
+void set_photo_passageiros(Passageiros *p, const char *pic) {
     if (p == NULL) return;
     free(p->photo);
     p->photo = pic ? strdup(pic) : NULL;

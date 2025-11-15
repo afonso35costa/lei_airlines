@@ -35,27 +35,27 @@ bool is_valid_string(const char *str);
 
 //GETTERS - Funções para obter valores
 
-const char* get_code(const Aeroportos *a);
-const char* get_name(const Aeroportos *a);
-const char* get_city(const Aeroportos *a);
-const char* get_country(const Aeroportos *a);
-double get_latitude(const Aeroportos *a);
-double get_longitude(const Aeroportos *a);
-const char* get_icao(const Aeroportos *a);
-const char* get_type(const Aeroportos *a);
+const char* get_code_aeroporto(const Aeroportos *a);
+const char* get_name_aeroporto(const Aeroportos *a);
+const char* get_city_aeroporto(const Aeroportos *a);
+const char* get_country_aeroporto(const Aeroportos *a);
+double get_latitude_aeroporto(const Aeroportos *a);
+double get_longitude_aeroporto(const Aeroportos *a);
+const char* get_icao_aeroporto(const Aeroportos *a);
+const char* get_type_aeroporto(const Aeroportos *a);
 
 
 
 //SETTERS - Funções para definir valores
 
-void set_code(Aeroportos *a, const char *code);
-void set_name(Aeroportos *a, const char *name);
-void set_city(Aeroportos *a, const char *city);
-void set_country(Aeroportos *a, const char *country);
-void set_latitude(Aeroportos *a, double latitude);
-void set_longitude(Aeroportos *a, double longitude);
-void set_icao(Aeroportos *a, const char *icao);
-void set_type(Aeroportos *a, const char *type);
+void set_code_aeroporto(Aeroportos *a, const char *code);
+void set_name_aeroporto(Aeroportos *a, const char *name);
+void set_city_aeroporto(Aeroportos *a, const char *city);
+void set_country_aeroporto(Aeroportos *a, const char *country);
+void set_latitude_aeroporto(Aeroportos *a, double latitude);
+void set_longitude_aeroporto(Aeroportos *a, double longitude);
+void set_icao_aeroporto(Aeroportos *a, const char *icao);
+void set_type_aeroporto(Aeroportos *a, const char *type);
 
 
 //PARSER - Funções para leitura e carregamento

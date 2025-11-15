@@ -5,7 +5,7 @@
 #include "gestor_aeroportos.h"
 #include "gestor_aeronaves.h"
 #include "gestor_voos.h"
-#include "aeroportos.h"
+#include "aeroportos.h"de
 #include "aeronaves.h"
 #include "voos.h"
 #include "datas.h"
@@ -26,11 +26,11 @@ void query1(GestorAeroportos *ga, const char *code, FILE *out) {
     // Formato exigido:
     // code,name,city,country,type
     fprintf(out, "%s,%s,%s,%s,%s\n",
-        get_code(a),
-        get_name(a),
-        get_city(a),
-        get_country(a),
-        get_type(a)
+        get_code_aeroporto(a),
+        get_name_aeroporto(a),
+        get_city_aeroporto(a),
+        get_country_aeroporto(a),
+        get_type_aeroporto(a)
     );
 }
 
@@ -81,11 +81,11 @@ void query2(GestorAeronaves *gae, GestorVoos *gv, int n, const char *manufacture
         Voo *voo = gestor_voos_get(gv, i);
         
         // Só conta voos NÃO cancelados
-        if (!voo || !get_status(voo) || strcmp(get_status(voo), "Cancelled") == 0) {
+        if (!voo || !get_status_voo(voo) || strcmp(get_status_voo(voo), "Cancelled") == 0) {
             continue;
         }
         
-        char *aircraft_id = get_aircraft(voo);
+        char *aircraft_id = get_aircraft_voo(voo);
         if (!aircraft_id) continue;
         
         // Função que procura por identificador
@@ -95,8 +95,8 @@ void query2(GestorAeronaves *gae, GestorVoos *gv, int n, const char *manufacture
         }
         
         // Aplica filtro de fabricante se especificado
-        if (manufacturer && get_manufacturer(aeronave)) {
-            if (strcmp(get_manufacturer(aeronave), manufacturer) != 0) {
+        if (manufacturer && get_manufacturer_aeronave(aeronave)) {
+            if (strcmp(get_manufacturer_aeronave(aeronave), manufacturer) != 0) {
                 continue; // Não corresponde ao fabricante
             }
         }
@@ -130,8 +130,8 @@ void query2(GestorAeronaves *gae, GestorVoos *gv, int n, const char *manufacture
         if (aeronave) {
             AircraftStats *stats = malloc(sizeof(AircraftStats));
             stats->identifier = strdup(identifier);
-            stats->manufacturer = strdup(get_manufacturer(aeronave));
-            stats->model = strdup(get_model(aeronave));
+            stats->manufacturer = strdup(get_manufacturer_aeronave(aeronave));
+            stats->model = strdup(get_model_aeronave(aeronave));
             stats->flight_count = *count;
             
             g_ptr_array_add(stats_array, stats);
@@ -210,12 +210,12 @@ void query3(GestorAeroportos *ga, GestorVoos *gv, DataHora *start_date, DataHora
         Voo *voo = gestor_voos_get(gv, i);
 
         // Verifica se o voo não foi cancelado
-        if (!voo || !get_status(voo) || strcmp(get_status(voo), "Cancelled") == 0) {
+        if (!voo || !get_status_voo(voo) || strcmp(get_status_voo(voo), "Cancelled") == 0) {
             continue;
         }
         
         // Verifica se tem data real de partida (actual_departure)
-        DataHora *actual_dep = get_actual_departure(voo);
+        DataHora *actual_dep = get_actual_departure_voo(voo);
         if (!actual_dep) {
             continue;
         }
@@ -228,7 +228,7 @@ void query3(GestorAeroportos *ga, GestorVoos *gv, DataHora *start_date, DataHora
         }
         
         // Verifica se o aeroporto de origem existe
-        char *origin_code = get_origin(voo);
+        char *origin_code = get_origin_voo(voo);
         if (!origin_code) {
             continue;
         }
@@ -269,9 +269,9 @@ void query3(GestorAeroportos *ga, GestorVoos *gv, DataHora *start_date, DataHora
         if (aeroporto) {
             AirportStats *stats = malloc(sizeof(AirportStats));
             stats->code = strdup(code);
-            stats->name = strdup(get_name(aeroporto));
-            stats->city = strdup(get_city(aeroporto));
-            stats->country = strdup(get_country(aeroporto));
+            stats->name = strdup(get_name_aeroporto(aeroporto));
+            stats->city = strdup(get_city_aeroporto(aeroporto));
+            stats->country = strdup(get_country_aeroporto(aeroporto));
             stats->departure_count = *count;
             
             g_ptr_array_add(stats_array, stats);

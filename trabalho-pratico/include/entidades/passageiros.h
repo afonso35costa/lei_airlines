@@ -40,31 +40,31 @@ bool is_valid_string(const char *str);
 // GETTERS - Funções para obter valores
 // ==============================================================================================================================================================================================
 
-char* get_document_number(const Passageiros *p);
-char* get_first_name(const Passageiros *p);
-char* get_last_name(const Passageiros *p);
-char* get_dob(const Passageiros *p);
-char* get_nationality(const Passageiros *p);
-char* get_gender(const Passageiros *p);
-char* get_email(const Passageiros *p);
-char* get_phone(const Passageiros *p);
-char* get_address(const Passageiros *p);
-char* get_photo(const Passageiros *p);
+char* get_document_number_passageiros(const Passageiros *p);
+char* get_first_name_passageiros(const Passageiros *p);
+char* get_last_name_passageiros(const Passageiros *p);
+char* get_dob_passageiros(const Passageiros *p);
+char* get_nationality_passageiros(const Passageiros *p);
+char* get_gender_passageiros(const Passageiros *p);
+char* get_email_passageiros(const Passageiros *p);
+char* get_phone_passageiros(const Passageiros *p);
+char* get_address_passageiros(const Passageiros *p);
+char* get_photo_passageiros(const Passageiros *p);
 
 // =================================================================================================================================
 // SETTERS - Funções para definir valores
 // =================================================================================================================================
 
-void set_document_number(Passageiros *p, const char *doc);
-void set_first_name(Passageiros *p, const char *name);
-void set_last_name(Passageiros *p, const char *name);
-void set_dob(Passageiros *p, const char *birth);
-void set_nationality(Passageiros *p, const char *nat);
-void set_gender(Passageiros *p, const char *gen);
-void set_email(Passageiros *p, const char *mail);
-void set_phone(Passageiros *p, const char *tel);
-void set_address(Passageiros *p, const char *addr);
-void set_photo(Passageiros *p, const char *pic);
+void set_document_number_passageiros(Passageiros *p, const char *doc);
+void set_first_name_passageiros(Passageiros *p, const char *name);
+void set_last_name_passageiros(Passageiros *p, const char *name);
+void set_dob_passageiros(Passageiros *p, const char *birth);
+void set_nationality_passageiros(Passageiros *p, const char *nat);
+void set_gender_passageiros(Passageiros *p, const char *gen);
+void set_email_passageiros(Passageiros *p, const char *mail);
+void set_phone_passageiros(Passageiros *p, const char *tel);
+void set_address_passageiros(Passageiros *p, const char *addr);
+void set_photo_passageiros(Passageiros *p, const char *pic);
 
 
 #endif 

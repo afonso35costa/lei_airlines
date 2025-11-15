@@ -22,7 +22,7 @@ Reservas* init_reserva(const char *reservation_id, char **flight_ids,
                       const char *qr_code);
 
 // Compara duas reservas por ID
-int compare_reservas(const Reservas *r1, const Reservas *r2);
+int servas(const Reservas *r1, const Reservas *r2);
 
 // Mostra dados da reserva
 void print_reserva(const Reservas *r);
@@ -35,26 +35,26 @@ void destroy_reserva(Reservas *r);
 // GETTERS - Funções para obter valores
 // ===========================================
 
-char* get_reservation_id(const Reservas *r);
-char** get_flight_ids(const Reservas *r);
-char* get_document_number_reserva(const Reservas *r);
-char* get_seat(const Reservas *r);
-double get_price(const Reservas *r);
-bool get_extra_luggage(const Reservas *r);
-bool get_priority_boarding(const Reservas *r);
-char* get_qr_code(const Reservas *r);
+char* get_reservation_id_reservas(const Reservas *r);
+char** get_flight_ids_reservas(const Reservas *r);
+char* get_document_number_reservas(const Reservas *r);
+char* get_seat_reservas(const Reservas *r);
+double get_price_reservas(const Reservas *r);
+bool get_extra_luggage_reservas(const Reservas *r);
+bool get_priority_boarding_reservas(const Reservas *r);
+char* get_qr_code_reservas(const Reservas *r);
 
 // ===========================================
 // SETTERS - Funções para definir valores
 // ===========================================
 
-void set_reservation_id(Reservas *r, const char *id);
-void set_flight_ids(Reservas *r, char **flight_ids);
+void set_reservation_id_reservas(Reservas *r, const char *id);
+void set_flight_ids_reservas(Reservas *r, char **flight_ids);
 void set_document_number_reserva(Reservas *r, const char *doc);
-void set_seat(Reservas *r, const char *seat);
-void set_price(Reservas *r, double price);
-void set_extra_luggage(Reservas *r, bool extra);
-void set_priority_boarding(Reservas *r, bool priority);
-void set_qr_code(Reservas *r, const char *qr);
+void set_seat_reservas(Reservas *r, const char *seat);
+void set_price_reservas(Reservas *r, double price);
+void set_extra_luggage_reservas(Reservas *r, bool extra);
+void set_priority_boarding_reservas(Reservas *r, bool priority);
+void set_qr_code_reservas(Reservas *r, const char *qr);
 
 #endif

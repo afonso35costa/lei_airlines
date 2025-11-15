@@ -84,8 +84,8 @@ int compare_voos(const Voo *v1, const Voo *v2) {
     if (v2 == NULL) return 1;
     
     // Compara pelo ID do voo (chave única)
-    char *id1 = get_flight_id(v1);
-    char *id2 = get_flight_id(v2);
+    char *id1 = get_flight_id_voo(v1);
+    char *id2 = get_flight_id_voo(v2);
     
     if (id1 == NULL && id2 == NULL) return 0;
     if (id1 == NULL) return -1;
@@ -123,82 +123,52 @@ void destroy_voo(Voo *v) {
 // GETTERS - Funções para obter valores
 // ===========================================
 
-char* get_flight_id(const Voo *v) {
+char* get_flight_id_voo(const Voo *v) {
     return (v != NULL) ? v->flight_id : NULL;
 }
 
-DataHora* get_departure(const Voo *v) {
+DataHora* get_departure_voo(const Voo *v) {
     return (v != NULL) ? v->departure : NULL;
 }
 
-DataHora* get_departure_time(const Voo *v) {
-    return (v != NULL && v->departure != NULL) ? v->departure : NULL;
-}
-
-DataHora* get_departure_date(const Voo *v) {
-    return (v != NULL && v->departure != NULL) ? v->departure : NULL;
-}
-
-DataHora* get_actual_departure(const Voo *v) {
+DataHora* get_actual_departure_voo(const Voo *v) {
     return (v != NULL) ? v->actual_departure : NULL;
 }
 
-DataHora* get_actual_departure_time(const Voo *v) {
-    return (v != NULL && v->actual_departure != NULL) ? v->actual_departure : NULL;
-}
-DataHora* get_actual_departure_date(const Voo *v) {
-    return (v != NULL && v->actual_departure != NULL) ? v->actual_departure : NULL;
-}
 
-DataHora* get_arrival(const Voo *v) {
+DataHora* get_arrival_voo(const Voo *v) {
     return (v != NULL) ? v->arrival : NULL;
 }
 
-DataHora* get_arrival_time(const Voo *v) {
-    return (v != NULL && v->arrival != NULL) ? v->arrival : NULL;
-}
-
-DataHora* get_arrival_date(const Voo *v) {
-    return (v != NULL && v->arrival != NULL) ? v->arrival : NULL;
-}
-
-DataHora* get_actual_arrival(const Voo *v) {
+DataHora* get_actual_arrival_voo(const Voo *v) {
     return (v != NULL) ? v->actual_arrival : NULL;
 }
 
-DataHora* get_actual_arrival_time(const Voo *v) {
-    return (v != NULL && v->actual_arrival != NULL) ? v->actual_arrival : NULL;
-}
-
-DataHora* get_actual_arrival_date(const Voo *v) {
-    return (v != NULL && v->actual_arrival != NULL) ? v->actual_arrival : NULL;
-}
-
-char* get_gate(const Voo *v) {
+char* get_gate_voo(const Voo *v) {
     return (v != NULL) ? v->gate : NULL;
 }
 
-char* get_status(const Voo *v) {
+char* get_status_voo(const Voo *v) {
     return (v != NULL) ? v->status : NULL;
 }
 
-char* get_origin(const Voo *v) {
+char* get_origin_voo(const Voo *v) {
     return (v != NULL) ? v->origin : NULL;
 }
 
-char* get_destination(const Voo *v) {
+char* get_destination_voo(const Voo *v) {
     return (v != NULL) ? v->destination : NULL;
 }
 
-char* get_aircraft(const Voo *v) {
+char* get_aircraft_voo(const Voo *v) {
     return (v != NULL) ? v->aircraft : NULL;
 }
 
-char* get_airline(const Voo *v) {
+char* get_airline_voo(const Voo *v) {
     return (v != NULL) ? v->airline : NULL;
 }
 
-char* get_tracking_url(const Voo *v) {
+char* get_tracking_url_voo(const Voo *v) {
     return (v != NULL) ? v->tracking_url : NULL;
 }
 
@@ -206,73 +176,73 @@ char* get_tracking_url(const Voo *v) {
 // SETTERS - Funções para definir valores
 // ===========================================
 
-void set_flight_id(Voo *v, const char *flight_id) {
+void set_flight_id_voo(Voo *v, const char *flight_id) {
     if (v == NULL) return;
     free(v->flight_id);
     v->flight_id = flight_id ? strdup(flight_id) : NULL;
 }
 
-void set_departure(Voo *v, DataHora *departure) {
+void set_departure_voo(Voo *v, DataHora *departure) {
     if (v == NULL) return;
     if (v->departure) destroy_data_hora(v->departure);
     v->departure = departure ? copy_data_hora(departure) : NULL;
 }
 
-void set_actual_departure(Voo *v, DataHora *actual_departure) {
+void set_actual_departure_voo(Voo *v, DataHora *actual_departure) {
     if (v == NULL) return;
     if (v->actual_departure) destroy_data_hora(v->actual_departure);
     v->actual_departure = actual_departure ? copy_data_hora(actual_departure) : NULL;
 }
 
-void set_arrival(Voo *v, DataHora *arrival) {
+void set_arrival_voo(Voo *v, DataHora *arrival) {
     if (v == NULL) return;
     if (v->arrival) destroy_data_hora(v->arrival);
     v->arrival = arrival ? copy_data_hora(arrival) : NULL;
 }
 
-void set_actual_arrival(Voo *v, DataHora *actual_arrival) {
+void set_actual_arrival_voo(Voo *v, DataHora *actual_arrival) {
     if (v == NULL) return;
     if (v->actual_arrival) destroy_data_hora(v->actual_arrival);
     v->actual_arrival = actual_arrival ? copy_data_hora(actual_arrival) : NULL;
 }
 
-void set_gate(Voo *v, const char *gate) {
+void set_gate_voo(Voo *v, const char *gate) {
     if (v == NULL) return;
     free(v->gate);
     v->gate = gate ? strdup(gate) : NULL;
 }
 
-void set_status(Voo *v, const char *status) {
+void set_status_voo(Voo *v, const char *status) {
     if (v == NULL) return;
     free(v->status);
     v->status = status ? strdup(status) : NULL;
 }
 
-void set_origin(Voo *v, const char *origin) {
+void set_origin_voo(Voo *v, const char *origin) {
     if (v == NULL) return;
     free(v->origin);
     v->origin = origin ? strdup(origin) : NULL;
 }
 
-void set_destination(Voo *v, const char *destination) {
+void set_destination_voo(Voo *v, const char *destination) {
     if (v == NULL) return;
     free(v->destination);
     v->destination = destination ? strdup(destination) : NULL;
 }
 
-void set_aircraft(Voo *v, const char *aircraft) {
+void set_aircraft_voo(Voo *v, const char *aircraft) {
     if (v == NULL) return;
     free(v->aircraft);
     v->aircraft = aircraft ? strdup(aircraft) : NULL;
 }
 
-void set_airline(Voo *v, const char *airline) {
+void set_airline_voo(Voo *v, const char *airline) {
     if (v == NULL) return;
     free(v->airline);
     v->airline = airline ? strdup(airline) : NULL;
 }
 
-void set_tracking_url(Voo *v, const char *tracking_url) {
+void set_tracking_url_voo(Voo *v, const char *tracking_url) {
     if (v == NULL) return;
     free(v->tracking_url);
     v->tracking_url = tracking_url ? strdup(tracking_url) : NULL;

@@ -25,7 +25,7 @@ void gestor_aeronaves_add(GestorAeronaves *ga, Aeronaves *aero) {
 void gestor_aeronaves_remove(GestorAeronaves *ga, const char *identifier) {
     for (guint i = 0; i < ga->array->len; i++) {
         Aeronaves *a = g_ptr_array_index(ga->array, i);
-        if (g_strcmp0(get_identifier(a), identifier) == 0) {
+        if (g_strcmp0(get_identifier_aeronave(a), identifier) == 0) {
             g_ptr_array_remove_index(ga->array, i);
             return;
         }
@@ -49,7 +49,7 @@ Aeronaves* gestor_aeronaves_find_by_id(GestorAeronaves *ga, const char *identifi
     
     for (guint i = 0; i < ga->array->len; i++) {
         Aeronaves *a = g_ptr_array_index(ga->array, i);
-        const char *id = get_identifier(a);
+        const char *id = get_identifier_aeronave(a);
         if (id && strcmp(id, identifier) == 0) {
             return a;
         }

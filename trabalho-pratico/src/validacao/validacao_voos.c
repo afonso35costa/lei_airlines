@@ -8,7 +8,7 @@
 #include "validacao_aeroportos.h"
 
 // Funções de validação individual
-
+/*
 int validar_flight_id(const char *flight_id) {
     if (!flight_id || strlen(flight_id) != 7) return 0;
     for (int i = 0; i < 2; i++) {
@@ -133,6 +133,20 @@ int validar_hora(const char *hora) {
 
     return 1;
 }
+*/
+
+int validar_flight_id_voos(const char *flight_id) {
+    if (!flight_id || strlen(flight_id) != 7) return 0;
+    for (int i = 0; i < 2; i++) {
+        if (!isupper(flight_id[i])) return 0;
+    }
+
+    for (int i = 2; i < 7; i++) {
+        if (!isdigit(flight_id[i])) return 0;
+    }
+
+    return 1;
+}
 
 // ============================================================
 // VALIDAÇÃO GERAL (com encapsulamento)
@@ -140,16 +154,5 @@ int validar_hora(const char *hora) {
 int validar_voo(const Voo *v) {
     if (!v) return 0;
 
-    return validar_flight_id(get_flight_id(v)) &&
-           validar_departure(get_departure_date(v), get_departure_time(v)) &&
-           validar_actual_departure(get_actual_departure_date(v), get_actual_departure_time(v) ) &&
-           validar_arrival(get_arrival_date(v), get_arrival_time(v)) &&
-           validar_actual_arrival(get_actual_arrival_date(v), get_actual_arrival_time(v)) &&
-           validar_aircraft(get_aircraft(v)) &&
-           validar_status(get_status(v)) &&
-           validar_data(get_data(get_departure(v))) &&
-           validar_hora(get_hora(get_departure(v))) &&
-           validar_data(get_data(get_arrival(v))) &&
-           validar_hora(get_hora(get_arrival(v)));
+    return validar_flight_id_voos(get_flight_id_voo(v));
 }
-

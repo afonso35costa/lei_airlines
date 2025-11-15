@@ -81,8 +81,8 @@ int compare_reservas(const Reservas *r1, const Reservas *r2) {
     if (r2 == NULL) return 1;
     
     // Compara pelo ID da reserva (chave única)
-    char *id1 = get_reservation_id(r1);
-    char *id2 = get_reservation_id(r2);
+    char *id1 = get_reservation_id_reservas(r1);
+    char *id2 = get_reservation_id_reservas(r2);
     
     if (id1 == NULL && id2 == NULL) return 0;
     if (id1 == NULL) return -1;
@@ -99,15 +99,15 @@ void print_reserva(const Reservas *r) {
     }
     
     printf("=== RESERVA ===\n");
-    printf("ID Reserva: %s\n", get_reservation_id(r) ? get_reservation_id(r) : "N/A");
-    printf("Documento: %s\n", get_document_number_reserva(r) ? get_document_number_reserva(r) : "N/A");
-    printf("Assento: %s\n", get_seat(r) ? get_seat(r) : "N/A");
-    printf("Preço: %.2f\n", get_price(r));
-    printf("Bagagem extra: %s\n", get_extra_luggage(r) ? "Sim" : "Não");
-    printf("Embarque prioritário: %s\n", get_priority_boarding(r) ? "Sim" : "Não");
+    printf("ID Reserva: %s\n", get_reservation_id_reservas(r) ? get_reservation_id_reservas(r) : "N/A");
+    printf("Documento: %s\n", get_document_number_reservas(r) ? get_document_number_reservas(r) : "N/A");
+    printf("Assento: %s\n", get_seat_reservas(r) ? get_seat_reservas(r) : "N/A");
+    printf("Preço: %.2f\n", get_price_reservas(r));
+    printf("Bagagem extra: %s\n", get_extra_luggage_reservas(r) ? "Sim" : "Não");
+    printf("Embarque prioritário: %s\n", get_priority_boarding_reservas(r) ? "Sim" : "Não");
     
     // Imprime voos
-    char **flights = get_flight_ids(r);
+    char **flights = get_flight_ids_reservas(r);
     if (flights != NULL) {
         printf("Voos: ");
         for (int i = 0; flights[i] != NULL; i++) {
@@ -118,7 +118,7 @@ void print_reserva(const Reservas *r) {
         printf("Voos: N/A\n");
     }
     
-    printf("QR Code: %s\n", get_qr_code(r) ? get_qr_code(r) : "N/A");
+    printf("QR Code: %s\n", get_qr_code_reservas(r) ? get_qr_code_reservas(r) : "N/A");
     printf("===============\n");
 }
 
@@ -148,35 +148,35 @@ void destroy_reserva(Reservas *r) {
 // GETTERS - Funções para obter valores
 // ============================================================================
 
-char* get_reservation_id(const Reservas *r) {
+char* get_reservation_id_reservas(const Reservas *r) {
     return (r != NULL) ? r->reservation_id : NULL;
 }
 
-char** get_flight_ids(const Reservas *r) {
+char** get_flight_ids_reservas(const Reservas *r) {
     return (r != NULL) ? r->flight_ids : NULL;
 }
 
-char* get_document_number_reserva(const Reservas *r) {
+char* get_document_number_reservas(const Reservas *r) {
     return (r != NULL) ? r->document_number : NULL;
 }
 
-char* get_seat(const Reservas *r) {
+char* get_seat_reservas(const Reservas *r) {
     return (r != NULL) ? r->seat : NULL;
 }
 
-double get_price(const Reservas *r) {
+double get_price_reservas(const Reservas *r) {
     return (r != NULL) ? r->price : 0.0;
 }
 
-bool get_extra_luggage(const Reservas *r) {
+bool get_extra_luggage_reservas(const Reservas *r) {
     return (r != NULL) ? r->extra_luggage : false;
 }
 
-bool get_priority_boarding(const Reservas *r) {
+bool get_priority_boarding_reservas(const Reservas *r) {
     return (r != NULL) ? r->priority_boarding : false;
 }
 
-char* get_qr_code(const Reservas *r) {
+char* get_qr_code_reservas(const Reservas *r) {
     return (r != NULL) ? r->qr_code : NULL;
 }
 
@@ -184,13 +184,13 @@ char* get_qr_code(const Reservas *r) {
 // SETTERS - Funções para definir valores
 // ============================================================================
 
-void set_reservation_id(Reservas *r, const char *id) {
+void set_reservation_id_reservas(Reservas *r, const char *id) {
     if (r == NULL) return;
     free(r->reservation_id);
     r->reservation_id = id ? strdup(id) : NULL;
 }
 
-void set_flight_ids(Reservas *r, char **flight_ids) {
+void set_flight_ids_reservas(Reservas *r, char **flight_ids) {
     if (r == NULL) return;
     
     // Liberta array anterior
@@ -218,23 +218,23 @@ void set_flight_ids(Reservas *r, char **flight_ids) {
     }
 }
 
-void set_document_number_reserva(Reservas *r, const char *doc) {
+void set_document_number_reservas(Reservas *r, const char *doc) {
     if (r == NULL) return;
     free(r->document_number);
     r->document_number = doc ? strdup(doc) : NULL;
 }
 
-void set_seat(Reservas *r, const char *seat) {
+void set_seat_reservas(Reservas *r, const char *seat) {
     if (r == NULL) return;
     free(r->seat);
     r->seat = seat ? strdup(seat) : NULL;
 }
 
-void set_price(Reservas *r, double price) {
+void set_price_reservas(Reservas *r, double price) {
     if (r != NULL) r->price = price;
 }
 
-void set_extra_luggage(Reservas *r, bool extra) {
+void set_extra_luggage_reservas(Reservas *r, bool extra) {
     if (r != NULL) r->extra_luggage = extra;
 }
 
@@ -242,7 +242,7 @@ void set_priority_boarding(Reservas *r, bool priority) {
     if (r != NULL) r->priority_boarding = priority;
 }
 
-void set_qr_code(Reservas *r, const char *qr) {
+void set_qr_code_reservas(Reservas *r, const char *qr) {
     if (r == NULL) return;
     free(r->qr_code);
     r->qr_code = qr ? strdup(qr) : NULL;

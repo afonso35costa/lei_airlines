@@ -7,7 +7,7 @@
 
 // VALIDAÇÕES INDIVIDUAIS
 
-
+/*
 int validar_identifier(const char *identifier) {
 
     if (!identifier || strlen(identifier) != 8)
@@ -49,18 +49,26 @@ int validar_capacity(int capacity) {
 int validar_range(int range) {
     return (range > 100 && range <= 20000);
 }
+*/
 
+int validar_ano_aeronave(const char *anoA) {
+    if (!anoA || strlen(anoA) != 4) return 0;  // Verifica se tem 4 caracteres
+    
+    for (int i = 0; i < 4; i++) {
+        if (!isdigit(anoA[i])) return 0;     // Verifica se todos são números, se encontrar algum digito retorna 0
+    }
+    
+    int year;
+    if (sscanf(anoA, "%d", &year) != 1) return 0;
+    if (year < 1900 || year > 2025) return 0;
+    
+    return 1;
+}
 
 // VALIDAÇÃO GERAL 
 
 int validar_aeronave(const Aeronaves *a) {
     if (!a) return 0;
 
-    return validar_identifier(get_identifier(a)) &&
-           validar_manufacturer(get_manufacturer(a)) &&
-           validar_model(get_model(a)) &&
-           validar_year(get_year(a)) &&
-           validar_capacity(get_capacity(a)) &&
-           validar_range(get_range(a));
+    return validar_ano_aeronave(get_year_aeronave(a));
 }
-

@@ -56,22 +56,25 @@ Aeroportos* init_aeroporto(const char *code, const char *name, const char *city,
     return a;
 }
 
-// FUNÇÃO DE IMPRESSÃO (para debug)
+// FUNÇÃO DE IMPRESSÃO 
 
-void print_aeroporto(const Aeroportos *a) {
-    if (!a) return;
-
-    printf("IATA: %s | ICAO: %s | Nome: %s | Cidade: %s | País: %s | Tipo: %s | "
-           "Lat: %.4f | Lon: %.4f\n",
-           a->code ? a->code : "(null)",
-           a->icao ? a->icao : "(null)",
-           a->name ? a->name : "(null)",
-           a->city ? a->city : "(null)",
-           a->country ? a->country : "(null)",
-           a->type ? a->type : "(null)",
-           a->latitude, a->longitude);
+void print_aeroporto_detalhado(const Aeroportos *a) {
+    if (a == NULL) {
+        printf("Aeroporto inválido\n");
+        return;
+    }
+    
+    printf("=== AEROPORTO ===\n");
+    printf("Código IATA: %s\n", get_code_aeroporto(a) ? get_code_aeroporto(a) : "N/A");
+    printf("Nome: %s\n", get_name_aeroporto(a) ? get_name_aeroporto(a) : "N/A");
+    printf("Cidade: %s\n", get_city_aeroporto(a) ? get_city_aeroporto(a) : "N/A");
+    printf("País: %s\n", get_country_aeroporto(a) ? get_country_aeroporto(a) : "N/A");
+    printf("Latitude: %.6f\n", get_latitude_aeroporto(a));
+    printf("Longitude: %.6f\n", get_longitude_aeroporto(a));
+    printf("Código ICAO: %s\n", get_icao_aeroporto(a) ? get_icao_aeroporto(a) : "N/A");
+    printf("Tipo: %s\n", get_type_aeroporto(a) ? get_type_aeroporto(a) : "N/A");
+    printf("==================\n");
 }
-
 // FUNÇÃO DE LIBERTAÇÃO DE MEMÓRIA
 
 void free_aeroporto(Aeroportos *a) {
@@ -88,79 +91,79 @@ void free_aeroporto(Aeroportos *a) {
 
 // GETTERS
 
-const char* get_code(const Aeroportos *a) {
+const char* get_code_aeroporto(const Aeroportos *a) {
     return a ? a->code : NULL;
 }
 
-const char* get_name(const Aeroportos *a) {
+const char* get_name_aeroporto(const Aeroportos *a) {
     return a ? a->name : NULL;
 }
 
-const char* get_city(const Aeroportos *a) {
+const char* get_city_aeroporto(const Aeroportos *a) {
     return a ? a->city : NULL;
 }
 
-const char* get_country(const Aeroportos *a) {
+const char* get_country_aeroporto(const Aeroportos *a) {
     return a ? a->country : NULL;
 }
 
-double get_latitude(const Aeroportos *a) {
+double get_latitude_aeroporto(const Aeroportos *a) {
     return a ? a->latitude : 0.0;
 }
 
-double get_longitude(const Aeroportos *a) {
+double get_longitude_aeroporto(const Aeroportos *a) {
     return a ? a->longitude : 0.0;
 }
 
-const char* get_icao(const Aeroportos *a) {
+const char* get_icao_aeroporto(const Aeroportos *a) {
     return a ? a->icao : NULL;
 }
 
-const char* get_type(const Aeroportos *a) {
+const char* get_type_aeroporto(const Aeroportos *a) {
     return a ? a->type : NULL;
 }
 
 // SETTERS
 
-void set_code(Aeroportos *a, const char *code) {
+void set_code_aeroporto(Aeroportos *a, const char *code) {
     if (!a) return;
     free(a->code);
     a->code = code ? strdup(code) : NULL;
 }
 
-void set_name(Aeroportos *a, const char *name) {
+void set_name_aeroporto(Aeroportos *a, const char *name) {
     if (!a) return;
     free(a->name);
     a->name = name ? strdup(name) : NULL;
 }
 
-void set_city(Aeroportos *a, const char *city) {
+void set_city_aeroporto(Aeroportos *a, const char *city) {
     if (!a) return;
     free(a->city);
     a->city = city ? strdup(city) : NULL;
 }
 
-void set_country(Aeroportos *a, const char *country) {
+void set_country_aeroporto(Aeroportos *a, const char *country) {
     if (!a) return;
     free(a->country);
     a->country = country ? strdup(country) : NULL;
 }
 
-void set_latitude(Aeroportos *a, double latitude) {
+void set_latitude_aeroporto(Aeroportos *a, double latitude) {
     if (a) a->latitude = latitude;
 }
 
-void set_longitude(Aeroportos *a, double longitude) {
+void set_longitude_aeroporto(Aeroportos *a, double longitude) {
     if (a) a->longitude = longitude;
 }
 
-void set_icao(Aeroportos *a, const char *icao) {
+void set_icao_aeroporto(Aeroportos *a, const char *icao) {
     if (!a) return;
     free(a->icao);
     a->icao = icao ? strdup(icao) : NULL;
 }
 
-void set_type(Aeroportos *a, const char *type) {
+void set_type_aeroporto(Aeroportos *a, const char *type) {
     if (!a) return;
     free(a->type);
     a->type = type ? strdup(type) : NULL;
