@@ -177,17 +177,32 @@ int validar_email_passageiro(const char *email) {
 
 int validar_genero_passageiro (const char *gender){
     if (!gender) return 0; // Verifica se o ponteiro é nulo
-    if (strcmp(gender, "small_airport") == 0 ||
-        strcmp(gender, "medium_airport") == 0 ||
-        strcmp(gender, "large_airport") == 0 ||
-        strcmp(gender, "heliport") == 0 ||
-        strcmp(gender, "seaplane_base") == 0) {
+    if (strcmp(gender, "M") == 0 ||
+        strcmp(gender, "F") == 0 ||
+        strcmp(gender, "O") == 0) {
         return 1; 
     }
     return 0;
 
 }
 
+int validar_dob_passageiro (const char *dob) {
+    if (!dob) return 0;
+    if (strlen(dob) != 10) return 0;
+    if (dob[4] != '-' || dob[7] != '-') return 0;
+
+    char ano[5], mes[3], dia[3];
+    strncpy(ano, dob, 4); ano[4] = '\0';
+    strncpy(mes, dob + 5, 2); mes[2] = '\0';
+    strncpy(dia, dob + 8, 2); dia[2] = '\0';
+
+    int y = atoi(ano), m = atoi(mes), d = atoi(dia);
+    if (y < 1900 || y > 2025) return 0;
+    if (m < 1 || m > 12) return 0;
+    if (d < 1 || d > 31) return 0;
+
+    return 1;
+}
 
 
 
@@ -200,7 +215,8 @@ int validar_passageiro(const Passageiros *p) {
     if (!p) return 0;
 
     return validar_document_number_passageiro(get_document_number_passageiros(p)) &&
-           validar_email_passageiro(get_email_passageiros(p));
+           validar_email_passageiro(get_email_passageiros(p)) &&
+           validar_genero_passageiro (get_gender_passageiros(p));
 }
 
 /*
