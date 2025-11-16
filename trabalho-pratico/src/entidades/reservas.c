@@ -7,7 +7,7 @@
 
 typedef struct reservas {
     char *reservation_id;             // número da reserva
-    char **flight_ids;                // identificadores de voo (assumindo máximo 10 voos)
+    char **flight_ids;                // identificadores de voo
     char *document_number;        // documento de identificação do passageiro
     char *seat;                   // número do assento (ex: "12A")
     double price;                     // preço da reserva

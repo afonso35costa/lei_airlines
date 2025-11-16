@@ -292,6 +292,7 @@ int main(int argc, char *argv[]) {
             q1_time += (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1e9;
 
         } else if (query_type == 2) {
+            q2_count++;
             clock_gettime(CLOCK_REALTIME, &start);
             if (n_args == 2) query2(g_aeroN, g_voos, atoi(arg1), NULL, fout);
             else query2(g_aeroN, g_voos, atoi(arg1), arg2, fout);
@@ -301,6 +302,7 @@ int main(int argc, char *argv[]) {
             q2_time += (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1e9;
 
         } else if (query_type == 3) {
+            q3_count++;
             clock_gettime(CLOCK_REALTIME, &start);
             query3(g_aero, g_voos, arg1, arg2, fout);
         // Se os ficheiro de resultados que a query criou for diferente do esperado, incrementar o contador de fails

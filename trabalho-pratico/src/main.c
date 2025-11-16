@@ -226,20 +226,10 @@ int main(int argc, char *argv[]) {
 
     int command_count = 0;
 
-    while (getline(&line, &len, f) != -1) {
 
-        // --- Remover \r e \n (compatível CRLF e LF) ---
-        line[strcspn(line, "\r\n")] = 0;
+    while (getline(&line, &len, f) != -1) {   // linha anterior while (fgets(&line, &len, f) != -1)
 
-        // --- Ignorar linhas completamente vazias ou só com espaços/tabs ---
-        int only_ws = 1;
-        for (int i = 0; line[i]; i++) {
-            if (line[i] != ' ' && line[i] != '\t') {
-                only_ws = 0;
-                break;
-            }
-        }
-        if (only_ws) continue;
+        if (strlen(line) <= 1) continue;
 
         // Agora sim, a linha contém uma query válida
         command_count++;
@@ -254,10 +244,10 @@ int main(int argc, char *argv[]) {
 
         // --- Interpretar query ---
         int query_type;
-        char arg1[256] = {0};
-        char arg2[256] = {0};
+        char arg1[256], arg2[256];
+        arg1[0] = arg2[0] = '\0';
 
-        int n_args = sscanf(line, "%d %255s %255s", &query_type, arg1, arg2);
+        int n_args = sscanf(line, "%d %s %s", &query_type, arg1, arg2);
 
         // -------------------------
         // Execução das queries

@@ -51,8 +51,17 @@ int validar_range(int range) {
 }
 */
 
-int validar_ano_aeronave(int anoA) {
-    return anoA >= 1000 && anoA <= 2025;
+int validar_ano_aeronave(const char *anoA) {
+    if (!anoA || strlen(anoA) != 4) {
+        return 0;
+    }
+
+    for (int i = 0; i < 4; i++) {
+        if (!isdigit(anoA[i])) {
+            return 0;
+        }
+    }
+    return (atoi(anoA) <= 2025);
 }
 
 // VALIDAÇÃO GERAL 

@@ -45,14 +45,12 @@ Reservas *parse_reserva_line(const char *line) {
     if (!temp) return NULL;
 
     char *rest = temp;
-    char *token = strsep(&rest, ",");
     char *campos[8] = {0};
     int i = 0;
 
-    while ((token) != NULL && i < 8) {
-        campos[i] = strip_quotes(token);
+    while (rest && i < 8) {
+        campos[i] = ignorar_virgulas(&rest);
         i++;
-        token = strsep(&rest, ",");
     }
 
     char **flight_ids = parse_flight_ids(campos[1]);
@@ -64,6 +62,8 @@ Reservas *parse_reserva_line(const char *line) {
                                price, extra, priority, campos[7]);
 
     if (flight_ids) { for (int j=0; flight_ids[j]; j++) free(flight_ids[j]); free(flight_ids); }
+
+    for (int j = 0; j < 8; j++) free(campos[j]);
     free(temp);
     return r;
 }

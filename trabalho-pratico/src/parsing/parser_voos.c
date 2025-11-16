@@ -34,6 +34,7 @@ Voo *parse_voo_line(const char *line) {
     Voo *v = init_voo(campos[0], dep, act_dep, arr, act_arr,
                         campos[5], campos[6], campos[7], campos[8],
                         campos[9], campos[10], campos[11]);
+    for (int j = 0; j < 12; j++) free(campos[j]);
 
     free(temp);
     return v;

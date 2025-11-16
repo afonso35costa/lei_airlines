@@ -8,7 +8,6 @@
 
 #define ERRO_FILE "resultados/aeroportos_errors.csv"
 
-// parse_aeroporto_line com debug
 Aeroportos *parse_aeroporto_line(const char *line) {
     if (!line) {
         return NULL;
@@ -18,33 +17,18 @@ Aeroportos *parse_aeroporto_line(const char *line) {
     char *temp = malloc(len);
     if (!temp) { perror("malloc"); exit(1); }
     memcpy(temp, line, len);
-    if (!temp) {
-        return NULL;
-    }
-
-
-    if (!temp) {
-        return NULL;
-    }
 
     char *rest = temp;
-    char *token = strsep(&rest, ",");
     char *campos[8] = {0};
     int i = 0;
 
-    while ((token) != NULL && i < 8) {
-        campos[i] = strip_quotes(token);
+    while (rest && i < 8) {
+        campos[i] = ignorar_virgulas(&rest);
         i++;
-        token = strsep(&rest, ",");
     }
-// Comentar esta parte
-    if (i < 8) {
-        for (int j = 0; j < i; j++) free(campos[j]);
-        free(temp);
-        return NULL;
-    }
+    // ---------------------------------------------
 
-    double latitude = atof(campos[4]);
+    double latitude  = atof(campos[4]);
     double longitude = atof(campos[5]);
 
     Aeroportos *a = init_aeroporto(campos[0], campos[1], campos[2], campos[3],

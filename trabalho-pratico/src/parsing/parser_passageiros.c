@@ -16,20 +16,19 @@ Passageiros *parse_passageiro_line(const char *line) {
     if (!temp) return NULL;
 
     char *rest = temp;
-    char *token = strsep(&rest, ",");
     char *campos[10] = {0};
     int i = 0;
 
-    while ((token) != NULL && i < 10) {
-        campos[i] = strip_quotes(token);
+    while (rest && i < 10) {
+        campos[i] = ignorar_virgulas(&rest);
         i++;
-        token = strsep(&rest, ",");
     }
 
     Passageiros *p = init_passageiro(campos[0], campos[1], campos[2], campos[3],
                                      campos[4], campos[5], campos[6], campos[7],
                                      campos[8], campos[9]);
 
+    for (int j = 0; j < 10; j++) free(campos[j]);
     free(temp);
     return p;
 }

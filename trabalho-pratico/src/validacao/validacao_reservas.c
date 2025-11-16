@@ -3,88 +3,10 @@
 #include <string.h>
 #include <ctype.h>
 #include "validacao_reservas.h"
+#include "validacao_voos.h"
 #include "reservas.h"
 
-// ============================================================
-// FUNÇÕES DE VALIDAÇÃO INDIVIDUAIS
-// ============================================================
 
-/*
-int validar_reservation_id(const char *reservation_id) {
-    if (!reservation_id || strlen(reservation_id) != 10) return 0;
-
-    if (reservation_id[0] != 'R')
-        return 0;
-
-    for (int i = 1; i < 10; i++) {
-        if (!isdigit(reservation_id[i]))
-            return 0;
-    }
-
-    return 1;
-}
-
-// ID do voo (alfanumérico)
-int validar_flight_ids(const char *flight_ids) {
-    if (!flight_ids || strlen(flight_ids) != 7) return 0;
-    for (int i = 0; i < 2; i++) {
-        if (!isupper(flight_ids[i])) return 0;
-    }
-
-    for (int i = 2; i < 7; i++) {
-        if (!isdigit(flight_ids[i])) return 0;
-    }
-
-    return 1;
-}
-
-// Documento do passageiro (alfanumérico, 5–15 chars)
-int validar_document_number_reserva(const char *document_number) {
-    if (!document_number || strlen(document_number) != 9) return 0;
-    for (int i = 0; i < 9; i++) {
-        if (!isdigit(document_number[i])) return 0;
-    }
-    return 1;
-}
-
-// Lugar (ex: 12A, 3C)
-int validar_seat(const char *seat) {
-    if (!seat) return 0;
-    int len = strlen(seat);
-    if (len < 1 || len > 4) return 0;
-
-    int i = 0;
-    while (isdigit(seat[i])) i++;
-    if (i == 0 || i >= len) return 0; // precisa número + letra
-    char letra = toupper(seat[i]);
-    return (letra >= 'A' && letra <= 'F');
-}
-
-// Preço (valor positivo)
-int validar_price(double price) {
-    return price > 0.0 && price < 999999.0;
-}
-
-// Bagagem extra (valor >= 0 e < 100 kg)
-int validar_extra_luggage(bool extra_luggage) {
-    return (extra_luggage == true || extra_luggage == false);
-}
-
-// Priority boarding (bool - 0 ou 1)
-int validar_priority_boarding(bool priority_boarding) {
-    return (priority_boarding == true || priority_boarding == false);
-}
-
-// Código QR (alfanumérico + pode conter '-')
-int validar_qr_code(const char *qr) {
-    if (!qr) return 0;
-    int len = strlen(qr);
-    if (len < 4 || len > 20) return 0;
-    for (int i = 0; i < len; i++)
-        if (!isalnum(qr[i]) && qr[i] != '-') return 0;
-    return 1;
-}
-*/
 
 int validar_reservation_id_reservas(const char *reservation_id) {
     if (!reservation_id || strlen(reservation_id) != 10) return 0;
@@ -103,23 +25,19 @@ int validar_reservation_id_reservas(const char *reservation_id) {
 
 int validar_document_number_reserva(const char *document_number) {
     if (!document_number || strlen(document_number) != 9 ) return 0;
-    for (int i = 0; i < strlen(document_number); i++) {
-        if (!isalnum(document_number[i])) return 0;
+    for (int i = 0; i < 9; i++) {
+        if (!isdigit(document_number[i])) return 0;
     }
     return 1;
 }
 
-int validar_listas_reservas(const char *flight_id) {
-    if (!flight_id) return 0;
-        
-        int len = strlen(flight_id);
-        if (len < 2) return 0;
-        
-        // Verificar se começa com '[' e termina com ']'
-        if (flight_id[0] != '[' || flight_id[len - 1] != ']') return 0;
-        
-        return 1;
+int validar_listas_reservas(const char **flight_ids) {
+    if (!flight_ids) return 0;
 
+    for (int i = 0; flight_ids[i] != NULL; i++) {
+        if (!validar_flight_id_voos(flight_ids[i])) return 0;
+    }
+    return 1;
 }
 // ============================================================
 // FUNÇÃO DE VALIDAÇÃO GERAL (COM ENCAPSULAMENTO)

@@ -5,7 +5,7 @@
 #include "gestor_aeroportos.h"
 #include "gestor_aeronaves.h"
 #include "gestor_voos.h"
-#include "aeroportos.h"de
+#include "aeroportos.h"
 #include "aeronaves.h"
 #include "voos.h"
 #include "datas.h"
@@ -19,7 +19,7 @@ void query1(GestorAeroportos *ga, const char *code, FILE *out) {
 
     // se não existir → linha vazia
     if (!a) {
-        fprintf(out, "\n");
+        fprintf(out, "Nao existe \n");
         return;
     }
 
@@ -42,18 +42,11 @@ typedef struct {
     int flight_count;
 } AircraftStats;
 
-// Função de comparação para ordenação
-static gint compare_aircraft_stats(gconstpointer a, gconstpointer b) {
-    const AircraftStats *aa = (const AircraftStats *)a;
-    const AircraftStats *bb = (const AircraftStats *)b;
-    
-    // Primeiro ordena por número de voos (descendente)
-    if (aa->flight_count != bb->flight_count) {
-        return bb->flight_count - aa->flight_count;
-    }
-    
-    // Em caso de empate, ordena por identificador (crescente, lexicográfico)
-    return strcmp(aa->identifier, bb->identifier);
+// Função de comparação para ordenar os voos em ordem decrescente
+int compare_aircraft_stats(const void *a, const void *b) {
+    AircraftStats *stats_a = *(AircraftStats **)a;
+    AircraftStats *stats_b = *(AircraftStats **)b;
+    return stats_b->flight_count - stats_a->flight_count;  // Ordem decrescente
 }
 
 // Liberta estrutura AircraftStats
@@ -79,7 +72,26 @@ void query2(GestorAeronaves *gae, GestorVoos *gv, int n, const char *manufacture
     }
 
     // 2️⃣ Hash table para contar voos por aeronave
+    /* Hash table para contar voos por aeronave.
+       Se for passado `manufacturer`, inicializa apenas com aeronaves desse fabricante,
+       caso contrário inicializa com todas (contagem a 0). */
     GHashTable *flight_counts = g_hash_table_new_full(g_str_hash, g_str_equal, free, free);
+    for (guint i = 0; i < gestor_aeronaves_get_length(gae); i++) {
+        Aeronaves *a = gestor_aeronaves_get(gae, i);
+        if (!a) continue;
+
+        char *id = get_identifier_aeronave(a);
+        if (!id) continue;
+
+        if (manufacturer) {
+            char *manu = get_manufacturer_aeronave(a);
+            if (!manu || strcmp(manu, manufacturer) != 0) continue;
+        }
+
+        int *cnt = malloc(sizeof(int));
+        *cnt = 0;
+        g_hash_table_insert(flight_counts, strdup(id), cnt);
+    }
 
     // 3️⃣ Iterar sobre todos os voos
     for (guint i = 0; i < gestor_voos_get_length(gv); i++) {
