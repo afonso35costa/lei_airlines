@@ -128,17 +128,16 @@ void destroy_reserva(Reservas *r) {
     
     // Liberta strings simples
     free(r->reservation_id);
-    free(r->document_number);
-    free(r->seat);
-    free(r->qr_code);
-    
-    // Liberta array de flight_ids
-    if (r->flight_ids != NULL) {
+
+    if (r->flight_ids) {
         for (int i = 0; r->flight_ids[i] != NULL; i++) {
             free(r->flight_ids[i]);
         }
         free(r->flight_ids);
     }
+    free(r->document_number);
+    free(r->seat);
+    free(r->qr_code);
     
     // Liberta a estrutura principal
     free(r);

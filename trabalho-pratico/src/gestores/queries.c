@@ -19,6 +19,7 @@ void query1(GestorAeroportos *ga, const char *code, FILE *out) {
 
     // se não existir → linha vazia
     if (!a) {
+        fprintf(out, "\n");
         return;
     }
 
