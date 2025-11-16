@@ -14,13 +14,17 @@ Aeronaves *parse_aeronave_line(const char *line) {
     char *temp = strdup(line);
     if (!temp) return NULL;
 
-    char *token, *rest = temp;
-    char *campos[6]; int i = 0;
+    char *rest = temp;
+    char *token = strsep(&rest, ",");
+    char *campos[6] = {0};
+    int i = 0;
 
-    while ((token = strsep(&rest, ",")) != NULL && i < 6)
-        campos[i++] = strip_quotes(token);
+    while ((token) != NULL && i < 6) {
+        campos[i] = strip_quotes(token);
+        i++;
+        token = strsep(&rest, ",");
+    }
 
-    if (i < 6) { free(temp); return NULL; }
 
     int year = atoi(campos[3]);
     int capacity = atoi(campos[4]);
@@ -30,6 +34,7 @@ Aeronaves *parse_aeronave_line(const char *line) {
 
     free(temp);
     return a;
+
 }
 
 Aeronaves *parse_and_validate_aeronave_line(const char *line, FILE *ferr) {

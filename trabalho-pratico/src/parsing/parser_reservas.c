@@ -9,12 +9,14 @@
 #define RESERVAS_ERRO_FILE "resultados/reservas_errors.csv"
 
 // Converte string "true"/"false" para bool
+
 static bool str_to_bool(const char *str) {
     if (!str) return false;
     return (strcmp(str, "true") == 0) ? true : false;
 }
 
 // Função auxiliar para parsing do campo flight_ids ["id1","id2",...]
+
 static char **parse_flight_ids(char *str) {
     if (!str) return NULL;
 
@@ -42,13 +44,16 @@ Reservas *parse_reserva_line(const char *line) {
     char *temp = strdup(line);
     if (!temp) return NULL;
 
-    char *token, *rest = temp;
-    char *campos[8]; int i = 0;
+    char *rest = temp;
+    char *token = strsep(&rest, ",");
+    char *campos[8] = {0};
+    int i = 0;
 
-    while ((token = strsep(&rest, ",")) != NULL && i < 8)
-        campos[i++] = strip_quotes(token);
-
-    if (i < 8) { free(temp); return NULL; }
+    while ((token) != NULL && i < 8) {
+        campos[i] = strip_quotes(token);
+        i++;
+        token = strsep(&rest, ",");
+    }
 
     char **flight_ids = parse_flight_ids(campos[1]);
     double price = atof(campos[4]);

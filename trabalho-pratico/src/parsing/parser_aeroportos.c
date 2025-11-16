@@ -32,12 +32,12 @@ Aeroportos *parse_aeroporto_line(const char *line) {
     char *campos[8] = {0};
     int i = 0;
 
-    while ((token) != NULL && (i < 8)) {
+    while ((token) != NULL && i < 8) {
         campos[i] = strip_quotes(token);
         i++;
         token = strsep(&rest, ",");
     }
-
+// Comentar esta parte
     if (i < 8) {
         for (int j = 0; j < i; j++) free(campos[j]);
         free(temp);

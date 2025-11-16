@@ -42,13 +42,12 @@ Aeronaves* init_aeronave(const char *identifier, const char *manufacturer,
     if (a == NULL) return NULL;
 
     // Copia cada string (duplica para evitar dangling pointers)
-    a->identifier   = identifier   ? strdup(identifier)   : NULL;
-    a->manufacturer = manufacturer ? strdup(manufacturer) : NULL;
-    a->model        = model        ? strdup(model)        : NULL;
-
-    a->year = year;
-    a->capacity = capacity;
-    a->range = range;
+    set_identifier_aeronave(a, identifier);
+    set_manufacturer_aeronave(a, manufacturer);
+    set_model_aeronave(a, model);
+    set_year_aeronave(a, year);
+    set_capacity_aeronave(a, capacity);
+    set_range_aeronave(a, range);
 
     return a;
 }
@@ -120,29 +119,32 @@ int get_range_aeronave(const Aeronaves *a) {
 void set_identifier_aeronave(Aeronaves *a, const char *identifier) {
     if (!a) return;
     free(a->identifier);
-    a->identifier = identifier ? strdup(identifier) : NULL;
+    a->identifier = strdup(identifier);
 }
 
 void set_manufacturer_aeronave(Aeronaves *a, const char *manufacturer) {
     if (!a) return;
     free(a->manufacturer);
-    a->manufacturer = manufacturer ? strdup(manufacturer) : NULL;
+    a->manufacturer = strdup(manufacturer);
 }
 
 void set_model_aeronave(Aeronaves *a, const char *model) {
     if (!a) return;
     free(a->model);
-    a->model = model ? strdup(model) : NULL;
+    a->model = strdup(model);
 }
 
-void set_year_aeronave(Aeronaves *a, int year) {
-    if (a) a->year = year;
+void set_year_aeronave(Aeronaves *a, const int year) {
+    if (!a) return;
+    a->year = year;
 }
 
-void set_capacity_aeronave(Aeronaves *a, int capacity) {
-    if (a) a->capacity = capacity;
+void set_capacity_aeronave(Aeronaves *a, const int capacity) {
+    if (!a) return;
+    a->capacity = capacity;
 }
 
-void set_range_aeronave(Aeronaves *a, int range) {
-    if (a) a->range = range;
+void set_range_aeronave(Aeronaves *a, const int range) {
+    if (!a) return;
+    a->range = range;
 }

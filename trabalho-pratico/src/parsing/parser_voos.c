@@ -15,13 +15,16 @@ Voo *parse_voo_line(const char *line) {
     char *temp = strdup(line);
     if (!temp) return NULL;
 
-    char *token, *rest = temp;
-    char *campos[12]; int i = 0;
+    char *rest = temp;
+    char *token = strsep(&rest, ",");
+    char *campos[12] = {0};
+    int i = 0;
 
-    while ((token = strsep(&rest, ",")) != NULL && i < 12)
-        campos[i++] = strip_quotes(token);
-
-    if (i < 12) { free(temp); return NULL; }
+    while ((token) != NULL && i < 12) {
+        campos[i] = strip_quotes(token);
+        i++;
+        token = strsep(&rest, ",");
+    }
 
     DataHora *dep = ler_data_hora(campos[1]);
     DataHora *act_dep = ler_data_hora(campos[2]);

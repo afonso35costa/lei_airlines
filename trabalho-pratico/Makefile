@@ -46,6 +46,9 @@ PROGRAM_TESTES = programa-testes
 # ------------------------------
 INCLUDE_DIRS = -I$(INCDIR) -I$(INCDIR)/entidades -I$(INCDIR)/gestores -I$(INCDIR)/parsing -I$(INCDIR)/utils -I$(INCDIR)/validacao
 
+# Comando make
+all: $(PROGRAM_PRINCIPAL) $(PROGRAM_TESTES)
+
 # ------------------------------
 # Regras principais
 # ------------------------------

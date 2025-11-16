@@ -129,10 +129,12 @@ int main(int argc, char *argv[]) {
         //Aeroportos adicionados
     }
 
+    printf("DEBUG: aeroportos processados\n");
+
     // -------------------------------------------------------------
     // Processar voos
     // -------------------------------------------------------------
-    while (getline(&line, &len, faero) != -1) {
+    while (getline(&line, &len, fvoos) != -1) {
         // Remove newline no fim, se existir
         size_t nread = strlen(line);
         if (nread > 0 && line[nread - 1] == '\n') {
@@ -150,10 +152,14 @@ int main(int argc, char *argv[]) {
         //Voos adicionados
     }
 
+
+    printf("DEBUG: voos processados\n");
+
+
     // -------------------------------------------------------------
     // Processar aeronaves
     // -------------------------------------------------------------
-    while (getline(&line, &len, faero) != -1) {
+    while (getline(&line, &len, faeron) != -1) {
         // Remove newline no fim, se existir
         size_t nread = strlen(line);
         if (nread > 0 && line[nread - 1] == '\n') {
@@ -161,7 +167,6 @@ int main(int argc, char *argv[]) {
         }
 
         Aeronaves *a = parse_and_validate_aeronave_line(line, err_faeron);
-
         //Aeronaves validadas
 
         if (a) {
@@ -170,6 +175,8 @@ int main(int argc, char *argv[]) {
 
         //Aeronaves adicionadas
     }
+
+    printf("DEBUG: aeronaves processadas\n");
 
     // -------------------------------------------------------------
     // Processar passageiros
@@ -184,6 +191,8 @@ int main(int argc, char *argv[]) {
         Passageiros *p = parse_and_validate_passageiro_line(line, err_fpass);
     }
     
+    printf("DEBUG: passageiros processados\n");
+
     // -------------------------------------------------------------
     // Processar reservas
     // -------------------------------------------------------------
@@ -196,6 +205,8 @@ int main(int argc, char *argv[]) {
 
         Reservas *r = parse_and_validate_reserva_line(line, err_fres);
     }
+
+    printf("DEBUG: reservas processadas\n");
 
     // -------------------------------------------------------------
     // Fechar ficheiros CSV e de erros
@@ -212,10 +223,13 @@ int main(int argc, char *argv[]) {
     if (!f) { perror("Erro ao abrir ficheiro de comandos"); return 1; }
 
     int command_count = 0;
-    while (getline(&line, &len, f) != -1) {
+    while (getline(&line, &len, f) != -1) {   // linha anterior while (fgets(&line, &len, f) != -1)
         if (strlen(line) <= 1) continue;
         command_count++;
         char output_path[MAX_LINE];
+
+        printf("CHEGUEI\n");
+
         snprintf(output_path, MAX_LINE, "resultados/command%d_output.txt", command_count);
 
         FILE *fout = fopen(output_path, "w");
