@@ -77,7 +77,7 @@ void print_aeroporto_detalhado(const Aeroportos *a) {
 }
 // FUNÇÃO DE LIBERTAÇÃO DE MEMÓRIA
 
-void free_aeroporto(Aeroportos *a) {
+void destroy_aeroporto(Aeroportos *a) {
     if (!a) return;
 
     free(a->code);

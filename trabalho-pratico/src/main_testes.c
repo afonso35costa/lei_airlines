@@ -22,6 +22,7 @@
 
 // Função para comparar dois ficheiros linha a linha AINDA A IMPLEMENTAR MELHOR
 int check_results_file(FILE *fout, const char *expected_results_path, int file_nr) {
+    fseek(fout, 0, SEEK_SET); // voltar ao início do ficheiro de output
     FILE *fesperado = fopen(expected_results_path, "r");
     if (!fesperado) {
         perror(expected_results_path);

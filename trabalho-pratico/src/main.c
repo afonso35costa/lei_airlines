@@ -189,6 +189,7 @@ int main(int argc, char *argv[]) {
         }
 
         Passageiros *p = parse_and_validate_passageiro_line(line, err_fpass);
+        destroy_passageiro(p);
     }
     
     printf("DEBUG: passageiros processados\n");
@@ -204,6 +205,7 @@ int main(int argc, char *argv[]) {
         }
 
         Reservas *r = parse_and_validate_reserva_line(line, err_fres);
+        destroy_reserva(r);
     }
 
     printf("DEBUG: reservas processadas\n");

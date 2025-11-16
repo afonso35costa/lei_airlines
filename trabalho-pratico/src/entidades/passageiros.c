@@ -50,17 +50,17 @@ Passageiros* init_passageiro(const char *document_number, const char *first_name
     if (p == NULL) return NULL;
     
     // Aloca e copia cada string (strdup faz malloc + strcpy)
-    p->document_number = document_number ? strdup(document_number) : NULL;
-    p->first_name = first_name ? strdup(first_name) : NULL;
-    p->last_name = last_name ? strdup(last_name) : NULL;
-    p->dob = dob ? strdup(dob) : NULL;
-    p->nationality = nationality ? strdup(nationality) : NULL;
-    p->gender = gender ? strdup(gender) : NULL;
-    p->email = email ? strdup(email) : NULL;
-    p->phone = phone ? strdup(phone) : NULL;
-    p->address = address ? strdup(address) : NULL;
-    p->photo = photo ? strdup(photo) : NULL;
-    
+    p->document_number = strdup(document_number);
+    p->first_name = strdup(first_name);
+    p->last_name = strdup(last_name);
+    p->dob = strdup(dob);
+    p->nationality = strdup(nationality);
+    p->gender = strdup(gender);
+    p->email = strdup(email);
+    p->phone = strdup(phone);
+    p->address = strdup(address);
+    p->photo = strdup(photo);
+
     return p;
 }
 

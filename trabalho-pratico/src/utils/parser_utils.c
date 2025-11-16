@@ -22,10 +22,12 @@ char* strip_quotes(const char *str) {
 
 // Ignora virgulas dentro de aspas
 char* ignorar_virgulas(char **str) {
-    char *src = *str;
-    if (!src) return NULL;
+    if (!str || !*str) return NULL;
 
-    char *out = malloc(strlen(src) + 1);
+    char *src = *str;
+    char *out = malloc(strlen(src) + 1); // buffer temporário para o campo
+    if (!out) { perror("malloc"); exit(1); }
+
     char *o = out;
     int in_quotes = 0;
 
@@ -34,14 +36,16 @@ char* ignorar_virgulas(char **str) {
             in_quotes = !in_quotes; // alterna dentro/fora de aspas
         }
         else if (*src == ',' && !in_quotes) {
-            src++;  // consumir vírgula separadora real
+            src++;  // vírgula real → campo terminado
             break;
         }
         *o++ = *src++;
     }
+    *o = '\0';          // termina string
+    *str = src;         // atualiza posição do ponteiro no chamador
 
-    *o = '\0';
-    *str = src;
-
-    return strip_quotes(out); // já removemos aspas como antes
+    // Remove aspas externas
+    char *result = strip_quotes(out); // strip_quotes já faz strdup
+    free(out);                          // libera buffer temporário
+    return result;                      // devolve nova string alocada
 }

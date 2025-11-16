@@ -35,7 +35,7 @@ static char **parse_flight_ids(char *str) {
     while ((token = strsep(&rest, ",")) != NULL && i < 10) {
         arr[i++] = strdup(strip_quotes(token));
     }
-    arr[i] = NULL;
+    free(s);
     return arr;
 }
 

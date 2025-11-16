@@ -16,20 +16,8 @@ Aeroportos* init_aeroporto(const char *code, const char *name, const char *city,
                            const char *icao, const char *type);
 
 // Liberta a memória associada a um aeroporto
-void free_aeroporto(Aeroportos *a);
+void destroy_aeroporto(Aeroportos *a);
 
-// Imprime os dados do aeroporto (para debug)
-void print_aeroporto(const Aeroportos *a);
-
-
-
-//FUNÇÕES DE VALIDAÇÃO
-
-// Valida os dados do aeroporto
-bool validate_aeroporto(const Aeroportos *a);
-
-// Valida strings genéricas (não nulas, não vazias)
-bool is_valid_string(const char *str);
 
 
 
@@ -57,17 +45,6 @@ void set_longitude_aeroporto(Aeroportos *a, double longitude);
 void set_icao_aeroporto(Aeroportos *a, const char *icao);
 void set_type_aeroporto(Aeroportos *a, const char *type);
 
-
-//PARSER - Funções para leitura e carregamento
-
-// Lê uma linha CSV e cria um aeroporto
-Aeroportos* parse_aeroporto_from_CSV(const char *linha);
-
-// Carrega aeroportos de um ficheiro CSV
-int load_aeroportos_from_file(const char *filename, Aeroportos ***aeroportos, int *count);
-
-// Liberta o array de aeroportos
-void free_aeroportos_array(Aeroportos **aeroportos, int count);
 
 #endif
 
