@@ -80,9 +80,6 @@ void free_aeronave(Aeronaves *a) {
     free(a->identifier);
     free(a->manufacturer);
     free(a->model);
-    free(a->year);
-    free(a->capacity);
-    free(a->range);
     free(a);
 }
 
@@ -119,19 +116,19 @@ int get_range_aeronave(const Aeronaves *a) {
 void set_identifier_aeronave(Aeronaves *a, const char *identifier) {
     if (!a) return;
     free(a->identifier);
-    a->identifier = strdup(identifier);
+    a->identifier = identifier ? strdup(identifier):NULL;
 }
 
 void set_manufacturer_aeronave(Aeronaves *a, const char *manufacturer) {
     if (!a) return;
     free(a->manufacturer);
-    a->manufacturer = strdup(manufacturer);
+    a->manufacturer = manufacturer ? strdup(manufacturer):NULL ;
 }
 
 void set_model_aeronave(Aeronaves *a, const char *model) {
     if (!a) return;
     free(a->model);
-    a->model = strdup(model);
+    a->model = model ? strdup(model) : NULL;
 }
 
 void set_year_aeronave(Aeronaves *a, const int year) {

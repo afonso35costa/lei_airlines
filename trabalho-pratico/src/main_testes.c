@@ -167,7 +167,7 @@ int main(int argc, char *argv[]) {
     // -------------------------------------------------------------
     // Processar voos
     // -------------------------------------------------------------
-    while (getline(&line, &len, faero) != -1) {
+    while (getline(&line, &len, fvoos) != -1) {
         // Remove newline no fim, se existir
         size_t nread = strlen(line);
         if (nread > 0 && line[nread - 1] == '\n') {
@@ -188,7 +188,7 @@ int main(int argc, char *argv[]) {
     // -------------------------------------------------------------
     // Processar aeronaves
     // -------------------------------------------------------------
-    while (getline(&line, &len, faero) != -1) {
+    while (getline(&line, &len, faeron) != -1) {
         // Remove newline no fim, se existir
         size_t nread = strlen(line);
         if (nread > 0 && line[nread - 1] == '\n') {

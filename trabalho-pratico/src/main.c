@@ -222,39 +222,65 @@ int main(int argc, char *argv[]) {
     FILE *f = fopen(commands_file, "r");
     if (!f) { perror("Erro ao abrir ficheiro de comandos"); return 1; }
 
+    printf("DEBUG: a ler ficheiro de comandos...\n");
+
     int command_count = 0;
-    while (getline(&line, &len, f) != -1) {   // linha anterior while (fgets(&line, &len, f) != -1)
-        if (strlen(line) <= 1) continue;
+
+    while (getline(&line, &len, f) != -1) {
+
+        // --- Remover \r e \n (compatível CRLF e LF) ---
+        line[strcspn(line, "\r\n")] = 0;
+
+        // --- Ignorar linhas completamente vazias ou só com espaços/tabs ---
+        int only_ws = 1;
+        for (int i = 0; line[i]; i++) {
+            if (line[i] != ' ' && line[i] != '\t') {
+                only_ws = 0;
+                break;
+            }
+        }
+        if (only_ws) continue;
+
+        // Agora sim, a linha contém uma query válida
         command_count++;
+        printf("CHEGUEI (query %d)\n", command_count);
+
+        // Criar ficheiro de output desta query
         char output_path[MAX_LINE];
-
-        printf("CHEGUEI\n");
-
         snprintf(output_path, MAX_LINE, "resultados/command%d_output.txt", command_count);
 
         FILE *fout = fopen(output_path, "w");
         if (!fout) { perror("Erro ao criar output"); continue; }
 
+        // --- Interpretar query ---
         int query_type;
-        char arg1[256], arg2[256];
-        arg1[0] = arg2[0] = '\0';
+        char arg1[256] = {0};
+        char arg2[256] = {0};
 
-        int n_args = sscanf(line, "%d %s %s", &query_type, arg1, arg2);
+        int n_args = sscanf(line, "%d %255s %255s", &query_type, arg1, arg2);
 
-        // Escolha da query
+        // -------------------------
+        // Execução das queries
+        // -------------------------
         if (query_type == 1) {
-            query1(g_aero, arg1, fout);
-        } else if (query_type == 2) {
-            if (n_args == 2) query2(g_aeroN, g_voos, atoi(arg1), NULL, fout);
-            else query2(g_aeroN, g_voos, atoi(arg1), arg2, fout);
-        } else if (query_type == 3) {
+            if (n_args >= 2) query1(g_aero, arg1, fout);
+        }
+        else if (query_type == 2) {
+            if (n_args == 2) {
+                query2(g_aeroN, g_voos, atoi(arg1), NULL, fout);
+            } else if (n_args == 3) {
+                query2(g_aeroN, g_voos, atoi(arg1), arg2, fout);
+            }
+        }
+        else if (query_type == 3) {
             if (n_args == 3) query3(g_aero, g_voos, arg1, arg2, fout);
         }
 
         fclose(fout);
-
     }
+
     fclose(f);
+    printf("DEBUG: queries terminadas\n");
 
     // ------------------------- LIBERTAÇÃO MEMÓRIA -------------------------
     gestor_aeroportos_free(g_aero);
