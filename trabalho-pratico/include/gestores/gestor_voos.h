@@ -19,7 +19,7 @@ void gestor_voos_remove(GestorVoos *gv, const char *flight_id);
 Voo* gestor_voos_get(GestorVoos *gv, int index);
 
 // Retorna o array de voos
-GestorVoos* gestor_voos_get_array(GestorVoos *gv);
+GPtrArray* gestor_voos_get_array(GestorVoos *gv);
 
 // Retorna o número de voos no gestor
 guint gestor_voos_get_length(GestorVoos *gv);

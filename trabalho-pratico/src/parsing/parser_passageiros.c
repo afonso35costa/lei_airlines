@@ -43,7 +43,7 @@ Passageiros *parse_and_validate_passageiro_line(const char *line, FILE *ferr) {
         if (ferr) {
             fprintf(ferr, "%s\n", line);
         }
-        free(p);
+        destroy_passageiro(p);
         return NULL;
     }
 

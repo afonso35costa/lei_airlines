@@ -1,1 +1,1 @@
-AFF,USAF Academy Airfield,Colorado Springs,US,53
+IXJ,Jammu Airport,Jammu,IN,53

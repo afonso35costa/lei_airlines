@@ -1,1 +1,1 @@
-PGZ,Ponta Grossa Airport - Comandante Antonio Amilton Beraldo,Ponta Grossa,BR,52
+BFT,Beaufort Executive Airport,Beaufort,US,49

@@ -1,1 +1,1 @@
-LUA,Lukla Airport,Lukla,NP,27
+DZN,Zhezkazgan National Airport,Zhezkazgan,KZ,25

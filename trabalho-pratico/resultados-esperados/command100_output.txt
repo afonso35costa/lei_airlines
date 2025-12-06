@@ -1,1 +1,1 @@
-PGZ,Ponta Grossa Airport - Comandante Antonio Amilton Beraldo,Ponta Grossa,BR,82
+MWF,Maewo-Naone Airport,Maewo Island,VU,80

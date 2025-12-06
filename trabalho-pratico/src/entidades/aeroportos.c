@@ -13,6 +13,7 @@ typedef struct aeroportos {
     double longitude;  // longitude em graus decimais
     char *icao;        // código ICAO
     char *type;        // tipo do aeroporto (small_airport, large_airport, etc.)
+    int departures;   // número de partidas
 } Aeroportos;
 
 // FUNÇÃO CONSTRUTORA - Cria uma aeronave e aloca memória
@@ -30,6 +31,7 @@ Aeroportos* create_aeroporto(void) {
     a->longitude = 0.0;
     a->icao = NULL;
     a->type = NULL;
+    a->departures = 0;
 
     return a;
 }
@@ -123,6 +125,10 @@ const char* get_type_aeroporto(const Aeroportos *a) {
     return a ? a->type : NULL;
 }
 
+int get_departures_aeroporto(const Aeroportos *a) {
+    return a ? a->departures : 0;
+}
+
 // SETTERS
 
 void set_code_aeroporto(Aeroportos *a, const char *code) {
@@ -167,4 +173,8 @@ void set_type_aeroporto(Aeroportos *a, const char *type) {
     if (!a) return;
     free(a->type);
     a->type = type ? strdup(type) : NULL;
+}
+
+void set_departures_aeroporto(Aeroportos *a, int departures) {
+    if (a) a->departures = departures;
 }

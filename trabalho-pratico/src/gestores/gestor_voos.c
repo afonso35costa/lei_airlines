@@ -36,9 +36,9 @@ Voo* gestor_voos_get(GestorVoos *gv, int index) {
     return g_ptr_array_index(gv->array, index);
 }
 
-//Retorna o array de voos
-GestorVoos* gestor_voos_get_array(GestorVoos *gv) {
-    return gv->array;
+// Retorna o array de voos
+GPtrArray* gestor_voos_get_array(GestorVoos *gv) {
+    return gv ? gv->array : NULL;
 }
 
 //Length do array de voos

@@ -9,6 +9,7 @@
 #include "aeronaves.h"
 #include "voos.h"
 #include "datas.h"
+#include "queries.h"
 
 void query1(GestorAeroportos *ga, const char *code, FILE *out) {
     if (!ga || !code || !out)
@@ -23,6 +24,10 @@ void query1(GestorAeroportos *ga, const char *code, FILE *out) {
         return;
     }
 
+// NUNCA ESCREVER COISAS NUM FICHEIRO NA FUNÇÃO DE QUERY
+// CRIAR MÓDULO INPUT/OUTPUT PARA ISSO
+
+
     // Formato exigido:
     // code,name,city,country,type
     fprintf(out, "%s,%s,%s,%s,%s\n",
@@ -35,204 +40,135 @@ void query1(GestorAeroportos *ga, const char *code, FILE *out) {
 }
 
 // Estrutura auxiliar para estatísticas de aeronaves
-typedef struct {
+struct aircraft_stats {
     char *identifier;
     char *manufacturer;
     char *model;
     int flight_count;
-} AircraftStats;
+};
 
-// Função de comparação para qsort
-int compare_aircraft_stats_qsort(const void *pa, const void *pb) {
-    AircraftStats *a = *(AircraftStats **)pa;
-    AircraftStats *b = *(AircraftStats **)pb;
+// Função que percorre todos os voos e verifica a aeronave ligada a cada voo
 
-    // Ordena por flight_count decrescente
-    if (b->flight_count != a->flight_count)
-        return b->flight_count - a->flight_count;
-
-    // Em caso de empate, ordena por identifier crescente
-    return strcmp(a->identifier, b->identifier);
-}
-
-// Liberta estrutura AircraftStats
-static void free_aircraft_stats(gpointer data) {
-    AircraftStats *stats = (AircraftStats *)data;
-    if (stats) {
-        free(stats->identifier);
-        free(stats->manufacturer);
-        free(stats->model);
-        free(stats);
-    }
-}
-
-void query2(GestorAeronaves *gae, GestorVoos *gv, int n, const char *manufacturer, FILE *out) {
-    if (!gae || !gv || !out || n <= 0) return;
-
-    // 1️⃣ Construir hash table de aeronaves para lookup rápido
-    GHashTable *aircraft_table = g_hash_table_new(g_str_hash, g_str_equal);
-    for (guint i = 0; i < gestor_aeronaves_get_length(gae); i++) {
-        Aeronaves *a = gestor_aeronaves_get(gae, i);
-        if (a && get_identifier_aeronave(a))
-            g_hash_table_insert(aircraft_table, get_identifier_aeronave(a), a);
-    }
-
-    // 2️⃣ Hash table para contar voos por aeronave
-    /* Hash table para contar voos por aeronave. Se for passado manufacturer, inicializa apenas com aeronaves desse fabricante, caso contrário inicializa com todas (contagem a 0). */
-    GHashTable *flight_counts = g_hash_table_new_full(g_str_hash, g_str_equal, free, free);
-    for (guint i = 0; i < gestor_aeronaves_get_length(gae); i++) {
-        Aeronaves *a = gestor_aeronaves_get(gae, i);
-        if (!a) continue;
-        char *id = get_identifier_aeronave(a);
-        if (!id) continue;
-        if (manufacturer) {
-            char *manu = get_manufacturer_aeronave(a);
-            if (!manu || strcmp(manu, manufacturer) != 0) continue;
-        }
-        int *cnt = malloc(sizeof(int));
-        *cnt = 0;
-        g_hash_table_insert(flight_counts, strdup(id), cnt);
-    }
-
-    // 3️⃣ Iterar sobre todos os voos
-    for (guint i = 0; i < gestor_voos_get_length(gv); i++) {
-        Voo *voo = gestor_voos_get(gv, i);
-        if (!voo) continue;
-
-        // Ignora voos cancelados
-        char *status = get_status_voo(voo);
-        if (!status || strcmp(status, "Cancelled") == 0) continue;
-
-        char *aircraft_id = get_aircraft_voo(voo);
-        if (!aircraft_id) continue;
-
-        // Busca aeronave na hash table
-        Aeronaves *aeronave = g_hash_table_lookup(aircraft_table, aircraft_id);
-        if (!aeronave) continue;
-
-        // Filtra por fabricante se especificado
-        if (manufacturer && get_manufacturer_aeronave(aeronave)) {
-            if (strcmp(get_manufacturer_aeronave(aeronave), manufacturer) != 0) continue;
-        }
-
-        // Incrementa contador
-        gpointer existing = g_hash_table_lookup(flight_counts, aircraft_id);
-        if (existing) {
-            int *count = (int *)existing;
-            (*count)++;
-        } else {
-            int *new_count = malloc(sizeof(int));
-            *new_count = 1;
-            g_hash_table_insert(flight_counts, strdup(aircraft_id), new_count);
-        }
-    }
-
-    // 4️⃣ Converte hash table em array para ordenação
-    GPtrArray *stats_array = g_ptr_array_new_with_free_func(free_aircraft_stats);
-    GHashTableIter iter;
-    gpointer key, value;
-    g_hash_table_iter_init(&iter, flight_counts);
-    while (g_hash_table_iter_next(&iter, &key, &value)) {
-        char *identifier = (char *)key;
-        int *count = (int *)value;
-        Aeronaves *aeronave = g_hash_table_lookup(aircraft_table, identifier);
-        if (aeronave) {
-            AircraftStats *stats = malloc(sizeof(AircraftStats));
-            stats->identifier = strdup(identifier);
-            stats->manufacturer = strdup(get_manufacturer_aeronave(aeronave));
-            stats->model = strdup(get_model_aeronave(aeronave));
-            stats->flight_count = *count;
-            g_ptr_array_add(stats_array, stats);
-        }
-    }
-
-    // 5️⃣ Ordena e escreve resultados
-    g_ptr_array_sort(stats_array, compare_aircraft_stats_qsort);
-    guint limit = (n < (int)stats_array->len) ? n : stats_array->len;
-    for (guint i = 0; i < limit; i++) {
-        AircraftStats *stats = g_ptr_array_index(stats_array, i);
-        fprintf(out, "%s,%s,%s,%d\n", stats->identifier, stats->manufacturer, stats->model, stats->flight_count);
-    }
-
-    // 6️⃣ Limpa memória
-    g_ptr_array_unref(stats_array);
-    g_hash_table_destroy(flight_counts);
-    g_hash_table_destroy(aircraft_table);
-}
-
-/* Top N aeronaves com mais Voos (podendo ser filtradas por manufacturer)
-
-void query2(GestorAeronaves *gan, GestorVoos *gv, FILE *out) {
-    if (!gan || !gv || !out) {
+void percorre_voos_aeronaves(GestorVoos *gv, GestorAeronaves *ga) {
+    if (!gv || !ga) {
         return;
     }
 
-    // Hash table para contar voos por aeronave
-    GHashTable *flight_counts = g_hash_table_new_full(g_str_hash, g_str_equal, 
-                                                      free, free);
-    
-    // Itera sobre todos os voos
     for (guint i = 0; i < gestor_voos_get_length(gv); i++) {
         Voo *voo = gestor_voos_get(gv, i);
-        if (!voo) continue;
+        if (!voo) {
+            continue;
+        }
 
         char *aircraft_id = get_aircraft_voo(voo);
-        if (!aircraft_id) continue;
-
-        gpointer existing = g_hash_table_lookup(flight_counts, aircraft_id);
-        
-        if (existing) {
-            int *count = (int *)existing;
-            (*count)++;
-        } else {
-            int *new_count = malloc(sizeof(int));
-            *new_count = 1;
-            g_hash_table_insert(flight_counts, strdup(aircraft_id), new_count);
+        if (strcmp(get_status_voo(voo), "Cancelled") != 0) {
+            HashValue *hv = gestor_aeronaves_get(ga, aircraft_id);
+            if (hv) {
+                add_voo_value(hv);
+            }
         }
+        
     }
-    
-    // Converte hash table para array para ordenação
-    GPtrArray *stats_array = g_ptr_array_new_with_free_func(free_aircraft_stats);
-    
+}
+
+// Função de comparação para ordenação de AircraftStats    
+
+gint compare_aircraft_stats(gconstpointer a, gconstpointer b) {
+        const AircraftStats *aa = (const AircraftStats *)a;
+        const AircraftStats *bb = (const AircraftStats *)b;
+
+        if (aa->flight_count != bb->flight_count)
+            return bb->flight_count - aa->flight_count; // descendente por contagem
+
+        return strcmp(aa->identifier, bb->identifier); // ascendente por identificador
+}
+
+void free_aircraft_stats(gpointer data) {
+    AircraftStats *stats = (AircraftStats *)data;
+    if (!stats) return;
+    free(stats->identifier);
+    free(stats->manufacturer);
+    free(stats->model);
+    free(stats);
+}
+
+// Função que passa cada value da hash table de aeronaves para um array de AircraftStats e o ordena automaticamente
+
+GList *ordena_tudo (GestorAeronaves *ga) {
+    if (!ga) return NULL;
+
+    GList *stats_list = NULL;
+
+    // Percorre a hash table
     GHashTableIter iter;
     gpointer key, value;
-    g_hash_table_iter_init(&iter, flight_counts);
-    
+    g_hash_table_iter_init(&iter, gestor_aeronaves_get_hash(ga));
     while (g_hash_table_iter_next(&iter, &key, &value)) {
-        char *identifier = (char *)key;
-        int *count = (int *)value;
+        HashValue *hv = (HashValue *)value;
+        if (!hv) continue;
+
+        AircraftStats *stats = malloc(sizeof(AircraftStats));
+        if (!stats) continue;
         
-        // Procura dados completos da aeronave
-        Aeronaves *aeronave = gestor_aeronaves_get(gan, identifier);
-        if (aeronave) {
-            AircraftStats *stats = malloc(sizeof(AircraftStats));
-            stats->identifier = strdup(identifier);
-            stats->manufacturer = strdup(get_manufacturer_aeronave(aeronave));
-            stats->model = strdup(get_model_aeronave(aeronave));
-            stats->flight_count = *count;
-            
-            g_ptr_array_add(stats_array, stats);
-        }
+        Aeronaves *aero = get_aeronave_value(hv);
+        stats->identifier = strdup(get_identifier_aeronave(aero));
+        stats->manufacturer = strdup(get_manufacturer_aeronave(aero));
+        stats->model = strdup(get_model_aeronave(aero));
+        stats->flight_count = get_num_voos_aeronave(hv);
+
+        stats_list = g_list_append(stats_list, stats);
     }
-    
-    // Ordena o array
-    g_ptr_array_sort(stats_array, compare_aircraft_stats_qsort);
-    
-    // Escreve resultados
-    for (guint i = 0; i < stats_array->len; i++) {
-        AircraftStats *stats = g_ptr_array_index(stats_array, i);
-        fprintf(out, "%s,%s,%s,%d\n",
+
+    // Ordena a lista
+    stats_list = g_list_sort(stats_list, compare_aircraft_stats);
+    return stats_list;
+
+}
+
+// Resolução da query 2 que é dar o N número de aeronaves com mais voos
+void query2(GList *stats_list, int N, const char *manufacturer_filter, FILE *out) {
+    if (!stats_list || N <= 0 || !out) {
+        return;
+    }
+
+    int count = 0;
+    GList *current = stats_list;
+
+    while (current != NULL && count < N) {
+        AircraftStats *stats = (AircraftStats *)current->data;
+        if (!stats) {
+            current = current->next;
+            continue;
+        }
+
+        // Aplica filtro de fabricante se fornecido
+        if (manufacturer_filter == NULL || strcmp(manufacturer_filter, "") == 0 ||
+            strcmp(stats->manufacturer, manufacturer_filter) == 0) {
+
+            // Escreve no ficheiro de output
+            fprintf(out, "%s,%s,%s,%d\n",
                 stats->identifier,
                 stats->manufacturer,
                 stats->model,
-                stats->flight_count);
+                stats->flight_count
+            );
+
+            count++;
+        }
+
+        current = current->next;
     }
 
-    // Liberta memória
-    g_ptr_array_free(stats_array, TRUE);
-    g_hash_table_destroy(flight_counts);
+    // Se nao houver estatisticas para mostrar, escreve linha vazia
+    if (count == 0) {
+        fprintf(out, "\n");
+    }
+
 }
-*/
+
+
+
+//
 
 // ============================================================
 // QUERY 3 - Aeroporto com mais partidas entre datas
@@ -247,129 +183,96 @@ typedef struct {
     int departure_count;
 } AirportStats;
 
-// Função de comparação para aeroportos
-static gint compare_airport_stats(gconstpointer a, gconstpointer b) {
-    const AirportStats *aa = (const AirportStats *)a;
-    const AirportStats *bb = (const AirportStats *)b;
-    
-    // Primeiro ordena por número de partidas (descendente)
-    if (aa->departure_count != bb->departure_count) {
-        return bb->departure_count - aa->departure_count;
-    }
-    
-    // Em caso de empate, ordena por código (crescente, lexicográfico)
-    return strcmp(aa->code, bb->code);
-}
+// Função que percorre todos os voos e conta partidas por aeroporto
 
-// Liberta estrutura AirportStats
-static void free_airport_stats(gpointer data) {
-    AirportStats *stats = (AirportStats *)data;
-    if (stats) {
-        free(stats->code);
-        free(stats->name);
-        free(stats->city);
-        free(stats->country);
-        free(stats);
-    }
-}
+void percorre_voos_aeroportos(GestorVoos *gv, GestorAeroportos *ga, char* start_date, char* end_date) {
 
-void query3(GestorAeroportos *ga, GestorVoos *gv, DataHora *start_date, DataHora *end_date, FILE *out) {
-    if (!ga || !gv || !out || !start_date || !end_date) {
-        return;
-    }
-
-    // Hash table para contar partidas por aeroporto
-    GHashTable *departure_counts = g_hash_table_new_full(g_str_hash, g_str_equal, 
-                                                         free, free);
-    
-    // Itera sobre todos os voos
-    for (guint i = 0; i < gestor_voos_get_length(gv); i++) {
-        Voo *voo = gestor_voos_get(gv, i);
-
-        // Verifica se o voo não foi cancelado
-        if (!voo || !get_status_voo(voo) || strcmp(get_status_voo(voo), "Cancelled") == 0) {
-            continue;
-        }
-        
-        // Verifica se tem data real de partida (actual_departure)
-        DataHora *actual_dep = get_actual_departure_voo(voo);
-        if (!actual_dep) {
-            continue;
-        }
-        
-        // Verifica se a data está no intervalo usando comparar_data_hora
-        // actual_dep >= start_date && actual_dep <= end_date
-        if (comparar_data_hora(actual_dep, start_date) < 0 || 
-            comparar_data_hora(actual_dep, end_date) > 0) {
-            continue;
-        }
-        
-        // Verifica se o aeroporto de origem existe
-        char *origin_code = get_origin_voo(voo);
-        if (!origin_code) {
-            continue;
-        }
-        
-        // Incrementa contador para este aeroporto
-        gpointer existing = g_hash_table_lookup(departure_counts, origin_code);
-        
-        if (existing) {
-            int *count = (int *)existing;
-            (*count)++;
-        } else {
-            int *new_count = malloc(sizeof(int));
-            *new_count = 1;
-            g_hash_table_insert(departure_counts, strdup(origin_code), new_count);
-        }
-    }
-    
-    // Verifica se houve voos no intervalo
-    if (g_hash_table_size(departure_counts) == 0) {
-        fprintf(out, "\n");  // Linha vazia se não houver voos
-        g_hash_table_destroy(departure_counts);
-        return;
-    }
-    
-    // Converte hash table para GPtrArray para ordenação
-    GPtrArray *stats_array = g_ptr_array_new_with_free_func(free_airport_stats);
-    
+    // RESET na contagem de partidas de todos os aeroportos
     GHashTableIter iter;
     gpointer key, value;
-    g_hash_table_iter_init(&iter, departure_counts);
-    
+    g_hash_table_iter_init(&iter, gestor_aeroportos_get_hash(ga));
     while (g_hash_table_iter_next(&iter, &key, &value)) {
-        char *code = (char *)key;
-        int *count = (int *)value;
-        
-        // Procura dados completos do aeroporto
-        Aeroportos *aeroporto = gestor_aeroportos_get(ga, code);
-        if (aeroporto) {
-            AirportStats *stats = malloc(sizeof(AirportStats));
-            stats->code = strdup(code);
-            stats->name = strdup(get_name_aeroporto(aeroporto));
-            stats->city = strdup(get_city_aeroporto(aeroporto));
-            stats->country = strdup(get_country_aeroporto(aeroporto));
-            stats->departure_count = *count;
-            
-            g_ptr_array_add(stats_array, stats);
+        Aeroportos *aero = (Aeroportos*)value;
+        if (aero) {
+            set_departures_aeroporto(aero, 0);
         }
     }
-    
-    // Ordena o array
-    g_ptr_array_sort(stats_array, compare_airport_stats);
-    
-    // Escreve apenas o primeiro resultado (aeroporto com mais partidas)
-    if (stats_array->len > 0) {
-        AirportStats *winner = g_ptr_array_index(stats_array, 0);
-        fprintf(out, "%s,%s,%s,%s,%d\n",
-                winner->code,
-                winner->name,
-                winner->city,
-                winner->country,
-                winner->departure_count);
+
+    // Verifica se os gestores são válidos
+    if (!gv || !ga) {
+        return;
     }
-    
-    // Limpa memória
-    g_ptr_array_unref(stats_array);
-    g_hash_table_destroy(departure_counts);
+    DataHora *start = ler_data(start_date);
+    DataHora *end = ler_data(end_date);
+    if (!start || !end) {
+        destroy_data_hora(start);
+        destroy_data_hora(end);
+        return;
+    }
+
+    for (guint i = 0; i < gestor_voos_get_length(gv); i++) {
+    //  for (guint i = 0; i < 5; i++) {
+
+        Voo *voo = gestor_voos_get(gv, i);
+        if (!voo) {
+            continue;
+        }
+
+        char *origin = get_origin_voo(voo);
+        DataHora *departure = get_actual_departure_voo(voo);
+        if (!origin || !departure) {
+            continue;
+        }
+
+
+        if (strcmp(get_status_voo(voo), "Cancelled") != 0 && esta_entre_datas(departure, start, end)) {
+            add_departures_aeroporto(ga, origin);
+        }
+    }
+}
+
+// Resolução da query 3 que é dar o aeroporto com mais partidas entre datas
+
+void query3(GestorAeroportos *ga, FILE *out) {
+    if (!ga || !out) {
+        return;
+    }
+
+    // Percorre a hash table de aeroportos para encontrar o com mais partidas
+    GHashTableIter iter;
+    gpointer key, value;
+    g_hash_table_iter_init(&iter, gestor_aeroportos_get_hash(ga));
+
+    Aeroportos *top_airport = NULL;
+    int max_departures = -1;
+
+    while (g_hash_table_iter_next(&iter, &key, &value)) {
+        Aeroportos *aero = (Aeroportos *)value;
+        if (!aero) continue;
+
+        int departures = get_departures_aeroporto(aero);
+        if (departures > max_departures) {
+            max_departures = departures;
+            top_airport = aero;
+        }
+        else if (departures == max_departures) {
+            // Em caso de empate, escolher o que vem primeiro lexicograficamente pelo código
+            if (top_airport && strcmp(get_code_aeroporto(aero), get_code_aeroporto(top_airport)) < 0) {
+                top_airport = aero;
+            }
+        }
+    }
+
+    // Escreve o resultado no ficheiro de output
+    if (top_airport && max_departures > 0) {
+        fprintf(out, "%s,%s,%s,%s,%d\n",
+            get_code_aeroporto(top_airport),
+            get_name_aeroporto(top_airport),
+            get_city_aeroporto(top_airport),
+            get_country_aeroporto(top_airport),
+            max_departures
+        );
+    } else {
+        fprintf(out, "\n"); // Nenhum aeroporto com partidas (>0) encontrado
+    }
 }

@@ -1,1 +1,1 @@
-JAX,Jacksonville International Airport,Jacksonville,US,101
+OGG,Kahului International Airport,Kahului,US,101

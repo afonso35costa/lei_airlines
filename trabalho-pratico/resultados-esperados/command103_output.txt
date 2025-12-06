@@ -1,1 +1,1 @@
-WRB,Robins Air Force Base,Warner Robins,US,94
+ARQ,El Troncal Airport,Arauquita,CO,91

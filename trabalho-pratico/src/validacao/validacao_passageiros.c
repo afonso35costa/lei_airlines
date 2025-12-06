@@ -121,7 +121,7 @@ int validar_photo(const char *photo) {
 
 int validar_document_number_passageiro(const char *document_number) {
     if (!document_number || strlen(document_number) != 9 ) return 0;
-    for (int i = 0; i < strlen(document_number); i++) {
+    for (int i = 0; i < (int)strlen(document_number); i++) {
         if (!isalnum(document_number[i])) return 0;
     }
     return 1;

@@ -1,1 +1,1 @@
-TGN,Latrobe Valley Airport,Morwell,AU,24
+AFL,Piloto Osvaldo Marques Dias Airport,Alta Floresta,BR,25

@@ -31,7 +31,7 @@ int validar_document_number_reserva(const char *document_number) {
     return 1;
 }
 
-int validar_listas_reservas(const char **flight_ids) {
+int validar_listas_reservas(char **flight_ids) {
     if (!flight_ids) return 0;
 
     for (int i = 0; flight_ids[i] != NULL; i++) {

@@ -1,1 +1,1 @@
-IKG,Karakol Airport,Karakol,KG,104
+AOK,Karpathos Airport,Karpathos Island,GR,99

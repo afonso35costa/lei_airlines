@@ -15,6 +15,11 @@ GestorAeroportos* gestor_aeroportos_create(void) {
     return ga;
 }
 
+//Devolve hash table interna (para uso em queries)
+GHashTable* gestor_aeroportos_get_hash(GestorAeroportos *ga) {
+    return ga->hash;
+}
+
 // Adiciona aeroporto
 void gestor_aeroportos_add(GestorAeroportos *ga, Aeroportos *aeroporto) {
     g_hash_table_insert(ga->hash, g_strdup(get_code_aeroporto(aeroporto)), aeroporto);
@@ -34,4 +39,17 @@ Aeroportos* gestor_aeroportos_get(GestorAeroportos *ga, const char *code) {
 void gestor_aeroportos_free(GestorAeroportos *ga) {
     g_hash_table_destroy(ga->hash);
     free(ga);
+}
+
+void add_departures_aeroporto(GestorAeroportos *ga, const char *code) {
+    Aeroportos *a = gestor_aeroportos_get(ga, code);
+    if (a) {
+        int current_departures = get_departures_aeroporto(a);
+        set_departures_aeroporto(a, current_departures + 1);
+    }
+}
+
+// Funcao que devolve o numero de aeroportos no gestor
+guint gestor_aeroportos_get_length(GestorAeroportos *ga) {
+    return g_hash_table_size(ga->hash);
 }

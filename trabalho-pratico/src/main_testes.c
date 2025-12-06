@@ -16,37 +16,75 @@
 #include "gestor_aeroportos.h"
 #include "gestor_voos.h"
 #include "gestor_aeronaves.h"
+#include "queries.h"
 
 
 #define MAX_LINE 1024
 
-// Função para comparar dois ficheiros linha a linha AINDA A IMPLEMENTAR MELHOR
-int check_results_file(FILE *fout, const char *expected_results_path, int file_nr) {
-    fseek(fout, 0, SEEK_SET); // voltar ao início do ficheiro de output
-    FILE *fesperado = fopen(expected_results_path, "r");
-    if (!fesperado) {
-        perror(expected_results_path);
-        return -1;
+// Função para comparar dois ficheiros linha a linha
+
+
+int check_results_file(const char *path_res, const char *path_exp, int query_number) {
+
+    FILE *file_res = fopen(path_res, "r");
+    if (!file_res) return 1;
+
+    fseek(file_res, 0, SEEK_SET);
+
+    FILE *file_exp = fopen(path_exp, "r");
+    if (!file_exp) {
+        fclose(file_res);
+        return 1;
     }
 
-    char *line_out = NULL;
-    char *line_expected = NULL;
-    size_t len_out = 0;
-    size_t len_expected = 0;
+    char *line_res = NULL;
+    char *line_exp = NULL;
+    size_t len_res = 0, len_exp = 0;
+    ssize_t read_res, read_exp;
     int line_number = 0;
-    while (getline(&line_out, &len_out, fout) != -1 && getline(&line_expected, &len_expected, fesperado) != -1) {
+
+    while (1) {
+        read_res = getline(&line_res, &len_res, file_res);
+        read_exp = getline(&line_exp, &len_exp, file_exp);
+
+        // EOF nos dois ficheiros
+        if (read_res == -1 && read_exp == -1)
+            break;
+
         line_number++;
-        if (strcmp(line_out, line_expected) != 0) {
-            printf("\tDiscrepância na Query %d: linha %d de \"resultados/command%d_output.txt\"\n", file_nr, line_number, file_nr);
-            fclose(fesperado);
-            return -1;
+
+        // Um ficheiro terminou antes do outro
+        if (read_res == -1 || read_exp == -1) {
+            printf("Discrepância na query %d: linha %d de %s\n",
+                   query_number, line_number, path_res);
+            fclose(file_res);
+            fclose(file_exp);
+            free(line_res);
+            free(line_exp);
+            return 1;
+        }
+
+        // Normaliza linhas vazias removendo apenas o \n ou \r\n no final
+        if (read_res > 0 && (line_res[read_res-1] == '\n' || line_res[read_res-1] == '\r'))
+            line_res[--read_res] = '\0';
+        if (read_exp > 0 && (line_exp[read_exp-1] == '\n' || line_exp[read_exp-1] == '\r'))
+            line_exp[--read_exp] = '\0';
+
+        // Linhas diferentes
+        if (strcmp(line_res, line_exp) != 0) {
+            printf("Discrepância na query %d: linha %d de %s\n", query_number, line_number, path_res);
+            fclose(file_res);
+            fclose(file_exp);
+            free(line_res);
+            free(line_exp);
+            return 1;
         }
     }
 
-    fclose(fesperado);
-    free(line_out);
-    free(line_expected);
-    
+    free(line_res);
+    free(line_exp);
+    fclose(file_res);
+    fclose(file_exp);
     return 0;
 }
 
@@ -70,7 +108,7 @@ int main(int argc, char *argv[]) {
 
     char *csv_path = argv[1];
     char *commands_file = argv[2];
-    char *results_path = argv[3];
+    char *expected_results_path = argv[3];
 
     // -------------------------------------------------------------
     // Inicializar gestores
@@ -197,15 +235,18 @@ int main(int argc, char *argv[]) {
         }
 
         Aeronaves *a = parse_and_validate_aeronave_line(line, err_faeron);
+        HashValue *hv = hash_value_create();
 
-        //Aeronaves validadas
-
-        if (a) {
-            gestor_aeronaves_add(g_aeroN, a);
+        if (a && hv) {
+            add_aeronave_value(hv, a);
+            gestor_aeronaves_add(g_aeroN, hv);
         }
 
         //Aeronaves adicionadas
     }
+
+    percorre_voos_aeronaves(g_voos, g_aeroN);
+    GList *stats_list = ordena_tudo(g_aeroN);
 
     // -------------------------------------------------------------
     // Processar passageiros
@@ -218,6 +259,7 @@ int main(int argc, char *argv[]) {
         }
 
         Passageiros *p = parse_and_validate_passageiro_line(line, err_fpass);
+        destroy_passageiro(p);
     }
     
     // -------------------------------------------------------------
@@ -231,6 +273,7 @@ int main(int argc, char *argv[]) {
         }
 
         Reservas *r = parse_and_validate_reserva_line(line, err_fres);
+        destroy_reserva(r);
     }
 
     // -------------------------------------------------------------
@@ -272,6 +315,9 @@ int main(int argc, char *argv[]) {
         char output_path[MAX_LINE];
         snprintf(output_path, MAX_LINE, "resultados/command%d_output.txt", command_count);
 
+        char results_path[MAX_LINE];
+        snprintf(results_path, MAX_LINE, "%s/command%d_output.txt", expected_results_path, command_count);
+
         FILE *fout = fopen(output_path, "w");
         if (!fout) { perror("Erro ao criar output"); continue; }
 
@@ -281,38 +327,41 @@ int main(int argc, char *argv[]) {
 
         int n_args = sscanf(line, "%d %s %s", &query_type, arg1, arg2);
 
+
         // Escolha da query
         if (query_type == 1) {
             q1_count++;
 
             clock_gettime(CLOCK_REALTIME, &start);
             query1(g_aero, arg1, fout);
+            fclose(fout);
         // Se os ficheiro de resultados que a query criou for diferente do esperado, incrementar o contador de fails
-            if (check_results_file(fout, output_path, command_count) != 0) q1_fail++;
+            if (check_results_file(output_path, results_path, command_count) != 0) q1_fail++;
             clock_gettime(CLOCK_REALTIME, &end);
             q1_time += (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1e9;
 
         } else if (query_type == 2) {
             q2_count++;
             clock_gettime(CLOCK_REALTIME, &start);
-            if (n_args == 2) query2(g_aeroN, g_voos, atoi(arg1), NULL, fout);
-            else query2(g_aeroN, g_voos, atoi(arg1), arg2, fout);
+            if (n_args == 2) query2(stats_list, atoi(arg1), NULL, fout);
+            else query2(stats_list, atoi(arg1), arg2, fout);
+            fclose(fout);
         // Se os ficheiro de resultados que a query criou for diferente do esperado, incrementar o contador de fails
-            if (check_results_file(fout, output_path, command_count) != 0) q2_fail++;
+            if (check_results_file(output_path, results_path, command_count) != 0) q2_fail++;
             clock_gettime(CLOCK_REALTIME, &end);
             q2_time += (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1e9;
 
         } else if (query_type == 3) {
             q3_count++;
             clock_gettime(CLOCK_REALTIME, &start);
-            query3(g_aero, g_voos, arg1, arg2, fout);
+            percorre_voos_aeroportos(g_voos, g_aero, arg1, arg2);
+            query3(g_aero, fout);
+            fclose(fout);
         // Se os ficheiro de resultados que a query criou for diferente do esperado, incrementar o contador de fails
-            if (check_results_file(fout, output_path, command_count) != 0) q3_fail++;
+            if (check_results_file(output_path, results_path, command_count) != 0) q3_fail++;
             clock_gettime(CLOCK_REALTIME, &end);
             q3_time += (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1e9;
         }
-
-        fclose(fout);
 
     }
     fclose(f);

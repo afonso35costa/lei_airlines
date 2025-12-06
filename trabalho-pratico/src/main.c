@@ -14,7 +14,7 @@
 #include "gestor_aeroportos.h"
 #include "gestor_voos.h"
 #include "gestor_aeronaves.h"
-
+#include "queries.h"
 
 #define MAX_LINE 1024
 
@@ -42,6 +42,7 @@ int main(int argc, char *argv[]) {
     GestorAeroportos *g_aero = gestor_aeroportos_create();
     GestorVoos *g_voos = gestor_voos_create();
     GestorAeronaves *g_aeroN = gestor_aeronaves_create();
+
 
     // -------------------------------------------------------------
     // Abrir ficheiros CSV e ficheiros de erro
@@ -167,14 +168,16 @@ int main(int argc, char *argv[]) {
         }
 
         Aeronaves *a = parse_and_validate_aeronave_line(line, err_faeron);
-        //Aeronaves validadas
-
-        if (a) {
-            gestor_aeronaves_add(g_aeroN, a);
+        HashValue *hv = hash_value_create();
+        if (a && hv) {
+            add_aeronave_value(hv, a);
+            gestor_aeronaves_add(g_aeroN, hv);
         }
-
         //Aeronaves adicionadas
     }
+
+    percorre_voos_aeronaves(g_voos, g_aeroN);
+    GList *stats_list = ordena_tudo(g_aeroN);
 
     printf("DEBUG: aeronaves processadas\n");
 
@@ -259,13 +262,16 @@ int main(int argc, char *argv[]) {
         }
         else if (query_type == 2) {
             if (n_args == 2) {
-                query2(g_aeroN, g_voos, atoi(arg1), NULL, fout);
+                query2(stats_list, atoi(arg1), NULL, fout);
             } else if (n_args == 3) {
-                query2(g_aeroN, g_voos, atoi(arg1), arg2, fout);
+                query2(stats_list, atoi(arg1), arg2, fout);
             }
         }
         else if (query_type == 3) {
-            if (n_args == 3) query3(g_aero, g_voos, arg1, arg2, fout);
+            if (n_args == 3) {
+                percorre_voos_aeroportos(g_voos, g_aero, arg1, arg2);
+                query3(g_aero, fout);
+            }
         }
 
         fclose(fout);

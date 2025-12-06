@@ -10,14 +10,14 @@
 
 // Converte string "true"/"false" para bool
 
-static bool str_to_bool(const char *str) {
+bool str_to_bool(const char *str) {
     if (!str) return false;
     return (strcmp(str, "true") == 0) ? true : false;
 }
 
 // Função auxiliar para parsing do campo flight_ids ["id1","id2",...]
 
-static char **parse_flight_ids(char *str) {
+char **parse_flight_ids(char *str) {
     if (!str) return NULL;
 
     char *s_orig = strdup(str);

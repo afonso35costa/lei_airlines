@@ -1,1 +1,1 @@
-WRB,Robins Air Force Base,Warner Robins,US,105
+OGG,Kahului International Airport,Kahului,US,102

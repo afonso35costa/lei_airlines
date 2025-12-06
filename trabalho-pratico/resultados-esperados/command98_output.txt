@@ -1,1 +1,1 @@
-MHO,Mount House Airport,Wunaamin Miliwundi Ranges,AU,37
+RES,Resistencia International Airport,Resistencia,AR,38

@@ -53,7 +53,7 @@ char *data_hora_para_texto(DataHora *dh) {
     int minuto = dh->hora % 100;
 
     char *buffer = malloc(20);
-    sprintf(buffer, "%04d-%02d-%02d %02d:%02d", ano, mes, dia, hora, minuto);
+    sprintf(buffer, "%04d-%02d-%02d %02d:%02d", (unsigned)ano, (unsigned)mes, (unsigned)dia, (unsigned)hora, (unsigned)minuto);
     return buffer;
 }
 
@@ -65,7 +65,7 @@ char *data_para_texto(DataHora *dh) {
     int dia = dh->data % 100;
 
     char *buffer = malloc(12);
-    sprintf(buffer, "%04d-%02d-%02d", ano, mes, dia);
+    sprintf(buffer, "%04d-%02d-%02d", (unsigned)ano, (unsigned)mes, (unsigned)dia);
     return buffer;
 }
 
@@ -108,13 +108,18 @@ int diferenca_em_anos(int data1, int data2) {
 
 // ------------------------- Funções de comparação -------------------------
 
-// Verifica se uma data/hora está entre duas outras (inclusive)
-bool esta_entre_datas(DataHora *alvo, DataHora *inicio, DataHora *fim) {
-    if (!alvo || !inicio || !fim) return false;
-    if (alvo->data < inicio->data || alvo->data > fim->data) return false;
-    if (alvo->data == inicio->data && alvo->hora < inicio->hora) return false;
-    if (alvo->data == fim->data && alvo->hora > fim->hora) return false;
-    return true;
+/* Verifica se uma data/hora está entre duas outras (inclusive)
+int esta_entre_datas(DataHora *alvo, DataHora *inicio, DataHora *fim) {
+    if (!alvo || !inicio || !fim) return 0;
+    if (alvo->data < inicio->data || alvo->data > fim->data) return 0;
+   // if (alvo->data == inicio->data && alvo->hora < inicio->hora) return 0;
+   // if (alvo->data == fim->data && alvo->hora > fim->hora) return 0;
+    return 1;
+}
+    */
+
+int esta_entre_datas(DataHora *alvo, DataHora *inicio, DataHora *fim) {
+    return (alvo->data >= inicio->data && alvo->data <= fim->data);
 }
 
 // ------------------------- Funções de libertação -------------------------
