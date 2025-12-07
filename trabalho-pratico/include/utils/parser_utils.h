@@ -5,6 +5,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+// Typedefs para parser geral
+typedef void *(*FuncaoParser)(const char *line, FILE *err_file);
+typedef void (*FuncaoAddGestor)(void *objeto, void *gestor);
+
 // Funcao strip_quotes - remove aspas de string
 char* strip_quotes(const char *str);
 // Funcao ignorar_virgulas - ignora virgulas dentro de aspas

@@ -11,32 +11,13 @@
 #include "datas.h"
 #include "queries.h"
 
-void query1(GestorAeroportos *ga, const char *code, FILE *out) {
+Aeroportos *query1(GestorAeroportos *ga, const char *code, FILE *out) {
     if (!ga || !code || !out)
-        return;
+        return NULL;
 
     // procurar aeroporto
     Aeroportos *a = gestor_aeroportos_get(ga, code);
-
-    // se não existir → linha vazia
-    if (!a) {
-        fprintf(out, "\n");
-        return;
-    }
-
-// NUNCA ESCREVER COISAS NUM FICHEIRO NA FUNÇÃO DE QUERY
-// CRIAR MÓDULO INPUT/OUTPUT PARA ISSO
-
-
-    // Formato exigido:
-    // code,name,city,country,type
-    fprintf(out, "%s,%s,%s,%s,%s\n",
-        get_code_aeroporto(a),
-        get_name_aeroporto(a),
-        get_city_aeroporto(a),
-        get_country_aeroporto(a),
-        get_type_aeroporto(a)
-    );
+    return a;
 }
 
 // Estrutura auxiliar para estatísticas de aeronaves
@@ -62,37 +43,29 @@ void percorre_voos_aeronaves(GestorVoos *gv, GestorAeronaves *ga) {
 
         char *aircraft_id = get_aircraft_voo(voo);
         if (strcmp(get_status_voo(voo), "Cancelled") != 0) {
-            HashValue *hv = gestor_aeronaves_get(ga, aircraft_id);
-            if (hv) {
-                add_voo_value(hv);
+            Aeronaves *aero = gestor_aeronaves_get(ga, aircraft_id);
+            if (aero) {
+                int current_count = get_num_voos_aeronave(aero);
+                set_num_voos_aeronave(aero, current_count + 1);
             }
         }
         
     }
 }
 
-// Função de comparação para ordenação de AircraftStats    
+// Função de comparação para ordenação de Aeronaves    
 
-gint compare_aircraft_stats(gconstpointer a, gconstpointer b) {
-        const AircraftStats *aa = (const AircraftStats *)a;
-        const AircraftStats *bb = (const AircraftStats *)b;
+gint compare_aeronaves(gconstpointer a, gconstpointer b) {
+        const Aeronaves *aa = (const Aeronaves *)a;
+        const Aeronaves *bb = (const Aeronaves *)b;
 
-        if (aa->flight_count != bb->flight_count)
-            return bb->flight_count - aa->flight_count; // descendente por contagem
+        if (get_num_voos_aeronave(aa) != get_num_voos_aeronave(bb))
+            return get_num_voos_aeronave(bb) - get_num_voos_aeronave(aa); // descendente por contagem
 
-        return strcmp(aa->identifier, bb->identifier); // ascendente por identificador
+        return strcmp(get_identifier_aeronave(aa), get_identifier_aeronave(bb)); // ascendente por identificador
 }
 
-void free_aircraft_stats(gpointer data) {
-    AircraftStats *stats = (AircraftStats *)data;
-    if (!stats) return;
-    free(stats->identifier);
-    free(stats->manufacturer);
-    free(stats->model);
-    free(stats);
-}
-
-// Função que passa cada value da hash table de aeronaves para um array de AircraftStats e o ordena automaticamente
+// Função que passa cada value da hash table de aeronaves para um array de AircraftStats e o ordena
 
 GList *ordena_tudo (GestorAeronaves *ga) {
     if (!ga) return NULL;
@@ -103,85 +76,60 @@ GList *ordena_tudo (GestorAeronaves *ga) {
     GHashTableIter iter;
     gpointer key, value;
     g_hash_table_iter_init(&iter, gestor_aeronaves_get_hash(ga));
+
     while (g_hash_table_iter_next(&iter, &key, &value)) {
-        HashValue *hv = (HashValue *)value;
-        if (!hv) continue;
-
-        AircraftStats *stats = malloc(sizeof(AircraftStats));
-        if (!stats) continue;
-        
-        Aeronaves *aero = get_aeronave_value(hv);
-        stats->identifier = strdup(get_identifier_aeronave(aero));
-        stats->manufacturer = strdup(get_manufacturer_aeronave(aero));
-        stats->model = strdup(get_model_aeronave(aero));
-        stats->flight_count = get_num_voos_aeronave(hv);
-
-        stats_list = g_list_append(stats_list, stats);
+        Aeronaves *aero = (Aeronaves *)value;
+        if (!aero) continue;
+        stats_list = g_list_append(stats_list, aero);
     }
 
     // Ordena a lista
-    stats_list = g_list_sort(stats_list, compare_aircraft_stats);
+    stats_list = g_list_sort(stats_list, compare_aeronaves);
     return stats_list;
-
 }
 
-// Resolução da query 2 que é dar o N número de aeronaves com mais voos
-void query2(GList *stats_list, int N, const char *manufacturer_filter, FILE *out) {
+Aeronaves **query2(GList *stats_list, int N, const char *manufacturer_filter, FILE *out) {
     if (!stats_list || N <= 0 || !out) {
-        return;
+        return NULL;
     }
+
+    Aeronaves **result = malloc(sizeof(Aeronaves *) * N);
+    if (!result) return NULL;
 
     int count = 0;
     GList *current = stats_list;
 
     while (current != NULL && count < N) {
-        AircraftStats *stats = (AircraftStats *)current->data;
+        Aeronaves *stats = (Aeronaves *)current->data;
         if (!stats) {
             current = current->next;
             continue;
         }
 
         // Aplica filtro de fabricante se fornecido
-        if (manufacturer_filter == NULL || strcmp(manufacturer_filter, "") == 0 ||
-            strcmp(stats->manufacturer, manufacturer_filter) == 0) {
+        if (manufacturer_filter == NULL || strcmp(manufacturer_filter, "") == 0 || strcmp(get_manufacturer_aeronave(stats), manufacturer_filter) == 0) {
 
-            // Escreve no ficheiro de output
-            fprintf(out, "%s,%s,%s,%d\n",
-                stats->identifier,
-                stats->manufacturer,
-                stats->model,
-                stats->flight_count
-            );
-
+            // Guarda a referência no array de resultados
+            result[count] = stats;
             count++;
         }
 
         current = current->next;
     }
 
-    // Se nao houver estatisticas para mostrar, escreve linha vazia
+    // Se nao houver estatisticas para mostrar retorna NULL
     if (count == 0) {
-        fprintf(out, "\n");
+        free(result);
+        return NULL;
     }
 
+    return result;
 }
-
-
-
-//
 
 // ============================================================
 // QUERY 3 - Aeroporto com mais partidas entre datas
 // ============================================================
 
-// Estrutura auxiliar para estatísticas de aeroportos
-typedef struct {
-    char *code;
-    char *name;
-    char *city;
-    char *country;
-    int departure_count;
-} AirportStats;
 
 // Função que percorre todos os voos e conta partidas por aeroporto
 
@@ -229,13 +177,15 @@ void percorre_voos_aeroportos(GestorVoos *gv, GestorAeroportos *ga, char* start_
             add_departures_aeroporto(ga, origin);
         }
     }
+    destroy_data_hora(start);
+    destroy_data_hora(end);
 }
 
 // Resolução da query 3 que é dar o aeroporto com mais partidas entre datas
 
-void query3(GestorAeroportos *ga, FILE *out) {
+Aeroportos *query3(GestorAeroportos *ga, FILE *out) {
     if (!ga || !out) {
-        return;
+        return NULL;
     }
 
     // Percorre a hash table de aeroportos para encontrar o com mais partidas
@@ -265,14 +215,7 @@ void query3(GestorAeroportos *ga, FILE *out) {
 
     // Escreve o resultado no ficheiro de output
     if (top_airport && max_departures > 0) {
-        fprintf(out, "%s,%s,%s,%s,%d\n",
-            get_code_aeroporto(top_airport),
-            get_name_aeroporto(top_airport),
-            get_city_aeroporto(top_airport),
-            get_country_aeroporto(top_airport),
-            max_departures
-        );
-    } else {
-        fprintf(out, "\n"); // Nenhum aeroporto com partidas (>0) encontrado
+        return top_airport;
     }
+    return NULL;
 }

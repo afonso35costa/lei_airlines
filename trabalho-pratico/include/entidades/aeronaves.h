@@ -28,6 +28,7 @@ const char* get_model_aeronave(const Aeronaves *a);
 const char* get_year_aeronave(const Aeronaves *a);
 const char* get_capacity_aeronave(const Aeronaves *a);
 const char* get_range_aeronave(const Aeronaves *a);
+int get_num_voos_aeronave(const Aeronaves *a);
 
 
 // SETTERS - Funções para definir valores
@@ -38,6 +39,7 @@ void set_model_aeronave(Aeronaves *a, const char *model);
 void set_year_aeronave(Aeronaves *a, const char *year);
 void set_capacity_aeronave(Aeronaves *a, const char *capacity);
 void set_range_aeronave(Aeronaves *a, const char *range);
+void set_num_voos_aeronave(Aeronaves *a, int num_voos);
 
 
 #endif

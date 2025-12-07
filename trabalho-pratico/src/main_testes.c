@@ -8,15 +8,13 @@
 #include "aeronaves.h"
 #include "passageiros.h"
 #include "reservas.h"
-#include "parser_aeroportos.h"
-#include "parser_voos.h"
-#include "parser_aeronaves.h"
-#include "parser_passageiros.h"
-#include "parser_reservas.h"
 #include "gestor_aeroportos.h"
 #include "gestor_voos.h"
 #include "gestor_aeronaves.h"
 #include "queries.h"
+#include "leitura.h"
+#include "escrita.h"
+#include "parser_geral.h"
 
 
 #define MAX_LINE 1024
@@ -52,23 +50,6 @@ int check_results_file(const char *path_res, const char *path_exp, int query_num
             break;
 
         line_number++;
-
-        // Um ficheiro terminou antes do outro
-        if (read_res == -1 || read_exp == -1) {
-            printf("Discrepância na query %d: linha %d de %s\n",
-                   query_number, line_number, path_res);
-            fclose(file_res);
-            fclose(file_exp);
-            free(line_res);
-            free(line_exp);
-            return 1;
-        }
-
-        // Normaliza linhas vazias removendo apenas o \n ou \r\n no final
-        if (read_res > 0 && (line_res[read_res-1] == '\n' || line_res[read_res-1] == '\r'))
-            line_res[--read_res] = '\0';
-        if (read_exp > 0 && (line_exp[read_exp-1] == '\n' || line_exp[read_exp-1] == '\r'))
-            line_exp[--read_exp] = '\0';
 
         // Linhas diferentes
         if (strcmp(line_res, line_exp) != 0) {
@@ -117,58 +98,21 @@ int main(int argc, char *argv[]) {
     GestorVoos *g_voos = gestor_voos_create();
     GestorAeronaves *g_aeroN = gestor_aeronaves_create();
 
-    // -------------------------------------------------------------
+   // -------------------------------------------------------------
     // Abrir ficheiros CSV e ficheiros de erro
     // -------------------------------------------------------------
-    char path_aero[512], path_voos[512], path_aeron[512], path_pass[512], path_res[512];
-    char err_aero[512], err_voos[512], err_aeron[512], err_pass[512], err_res[512];
 
-    snprintf(path_aero, sizeof(path_aero), "%s/airports.csv", csv_path);
-    snprintf(path_voos, sizeof(path_voos), "%s/flights.csv", csv_path);
-    snprintf(path_aeron, sizeof(path_aeron), "%s/aircrafts.csv", csv_path);
-    snprintf(path_pass, sizeof(path_pass), "%s/passengers.csv", csv_path);
-    snprintf(path_res, sizeof(path_res), "%s/reservations.csv", csv_path);
+    FILE *faero = abrir_ficheiro_leitura(csv_path, "airports.csv");
+    FILE *fvoos = abrir_ficheiro_leitura(csv_path, "flights.csv");
+    FILE *faeron = abrir_ficheiro_leitura(csv_path, "aircrafts.csv");
+    FILE *fpass = abrir_ficheiro_leitura(csv_path, "passengers.csv");
+    FILE *fres = abrir_ficheiro_leitura(csv_path, "reservations.csv");
 
-    snprintf(err_aero, sizeof(err_aero), "resultados/airports_errors.csv");
-    snprintf(err_voos, sizeof(err_voos), "resultados/flights_errors.csv");
-    snprintf(err_aeron, sizeof(err_aeron), "resultados/aircrafts_errors.csv");
-    snprintf(err_pass, sizeof(err_pass), "resultados/passengers_errors.csv");
-    snprintf(err_res, sizeof(err_res), "resultados/reservations_errors.csv");
-
-    FILE *faero = fopen(path_aero, "r");
-    if (!faero) perror(path_aero);
-
-    FILE *fvoos = fopen(path_voos, "r");
-    if (!fvoos) perror(path_voos);
-
-    FILE *faeron = fopen(path_aeron, "r");
-    if (!faeron) perror(path_aeron);
-
-    FILE *fpass = fopen(path_pass, "r");
-    if (!fpass) perror(path_pass);
-
-    FILE *fres = fopen(path_res, "r");
-    if (!fres) perror(path_res);
-
-    FILE *err_faero = fopen(err_aero, "w");
-    if (!err_faero) perror(err_aero);
-
-    FILE *err_fvoos = fopen(err_voos, "w");
-    if (!err_fvoos) perror(err_voos);
-
-    FILE *err_faeron = fopen(err_aeron, "w");
-    if (!err_faeron) perror(err_aeron);
-
-    FILE *err_fpass = fopen(err_pass, "w");
-    if (!err_fpass) perror(err_pass);
-
-    FILE *err_fres = fopen(err_res, "w");
-    if (!err_fres) perror(err_res);
-
-    if (!faero || !fvoos || !faeron || !fpass || !fres || !err_faero || !err_fvoos || !err_faeron || !err_fpass || !err_fres) {
-    fprintf(stderr, "Erro ao abrir ficheiros.\n");
-    return 1;
-}
+    FILE *err_faero = abrir_ficheiro_escrita("resultados/airports_errors.txt");
+    FILE *err_fvoos = abrir_ficheiro_escrita("resultados/flights_errors.txt");
+    FILE *err_faeron = abrir_ficheiro_escrita("resultados/aircrafts_errors.txt");
+    FILE *err_fpass = abrir_ficheiro_escrita("resultados/passengers_errors.txt");
+    FILE *err_fres = abrir_ficheiro_escrita("resultados/reservations_errors.txt");
 
     // -------------------------------------------------------------
     // Ler headers e copiar para ficheiros de erro
@@ -181,100 +125,18 @@ int main(int argc, char *argv[]) {
     if (getline(&line, &len, faeron) != -1) fprintf(err_faeron, "%s", line);
     if (getline(&line, &len, fpass) != -1) fprintf(err_fpass, "%s", line);
     if (getline(&line, &len, fres) != -1) fprintf(err_fres, "%s", line);
-
     // -------------------------------------------------------------
     // Processar aeroportos
     // -------------------------------------------------------------
-    while (getline(&line, &len, faero) != -1) {
-        // Remove newline no fim, se existir
-        size_t nread = strlen(line);
-        if (nread > 0 && line[nread - 1] == '\n') {
-            line[nread - 1] = '\0';
-        }
 
-        Aeroportos *a = parse_and_validate_aeroporto_line(line, err_faero);
-
-        //Aeroportos validados
-        
-        if (a) {
-            gestor_aeroportos_add(g_aero, a);
-        }
-
-        //Aeroportos adicionados
-    }
-
-    // -------------------------------------------------------------
-    // Processar voos
-    // -------------------------------------------------------------
-    while (getline(&line, &len, fvoos) != -1) {
-        // Remove newline no fim, se existir
-        size_t nread = strlen(line);
-        if (nread > 0 && line[nread - 1] == '\n') {
-            line[nread - 1] = '\0';
-        }
-
-        Voo *a = parse_and_validate_voo_line(line, err_fvoos);
-
-        //Voos validados
-
-        if (a) {
-            gestor_voos_add(g_voos, a);
-        }
-
-        //Voos adicionados
-    }
-
-    // -------------------------------------------------------------
-    // Processar aeronaves
-    // -------------------------------------------------------------
-    while (getline(&line, &len, faeron) != -1) {
-        // Remove newline no fim, se existir
-        size_t nread = strlen(line);
-        if (nread > 0 && line[nread - 1] == '\n') {
-            line[nread - 1] = '\0';
-        }
-
-        Aeronaves *a = parse_and_validate_aeronave_line(line, err_faeron);
-        HashValue *hv = hash_value_create();
-
-        if (a && hv) {
-            add_aeronave_value(hv, a);
-            gestor_aeronaves_add(g_aeroN, hv);
-        }
-
-        //Aeronaves adicionadas
-    }
+    processar_ficheiro(faero, (FuncaoParser) parse_and_validate_aeroporto_line, action_add_aeroporto, g_aero, err_faero);
+    processar_ficheiro(fvoos, (FuncaoParser) parse_and_validate_voo_line, action_add_voo, g_voos, err_fvoos);
+    processar_ficheiro(faeron, (FuncaoParser) parse_and_validate_aeronave_line, action_add_aeronave, g_aeroN, err_faeron);
+    processar_ficheiro(fpass, (FuncaoParser) parse_and_validate_passageiro_line, action_add_passageiro, NULL, err_fpass);
+    processar_ficheiro(fres, (FuncaoParser) parse_and_validate_reserva_line, action_add_reserva, NULL, err_fres);
 
     percorre_voos_aeronaves(g_voos, g_aeroN);
     GList *stats_list = ordena_tudo(g_aeroN);
-
-    // -------------------------------------------------------------
-    // Processar passageiros
-    // -------------------------------------------------------------
-    while (getline(&line, &len, fpass) != -1) {
-        // Remove newline no fim, se existir
-        size_t nread = strlen(line);
-        if (nread > 0 && line[nread - 1] == '\n') {
-            line[nread - 1] = '\0';
-        }
-
-        Passageiros *p = parse_and_validate_passageiro_line(line, err_fpass);
-        destroy_passageiro(p);
-    }
-    
-    // -------------------------------------------------------------
-    // Processar reservas
-    // -------------------------------------------------------------
-    while (getline(&line, &len, fres) != -1) {
-        // Remove newline no fim, se existir
-        size_t nread = strlen(line);
-        if (nread > 0 && line[nread - 1] == '\n') {
-            line[nread - 1] = '\0';
-        }
-
-        Reservas *r = parse_and_validate_reserva_line(line, err_fres);
-        destroy_reserva(r);
-    }
 
     // -------------------------------------------------------------
     // Fechar ficheiros CSV e de erros
@@ -333,7 +195,7 @@ int main(int argc, char *argv[]) {
             q1_count++;
 
             clock_gettime(CLOCK_REALTIME, &start);
-            query1(g_aero, arg1, fout);
+            escreve_aeroporto1(query1(g_aero, arg1, fout), fout);
             fclose(fout);
         // Se os ficheiro de resultados que a query criou for diferente do esperado, incrementar o contador de fails
             if (check_results_file(output_path, results_path, command_count) != 0) q1_fail++;
@@ -343,8 +205,8 @@ int main(int argc, char *argv[]) {
         } else if (query_type == 2) {
             q2_count++;
             clock_gettime(CLOCK_REALTIME, &start);
-            if (n_args == 2) query2(stats_list, atoi(arg1), NULL, fout);
-            else query2(stats_list, atoi(arg1), arg2, fout);
+            if (n_args == 2) escreve_aeronaves(query2(stats_list, atoi(arg1), NULL, fout), atoi(arg1), fout);
+            else escreve_aeronaves(query2(stats_list, atoi(arg1), arg2, fout), atoi(arg1), fout);
             fclose(fout);
         // Se os ficheiro de resultados que a query criou for diferente do esperado, incrementar o contador de fails
             if (check_results_file(output_path, results_path, command_count) != 0) q2_fail++;
@@ -355,7 +217,7 @@ int main(int argc, char *argv[]) {
             q3_count++;
             clock_gettime(CLOCK_REALTIME, &start);
             percorre_voos_aeroportos(g_voos, g_aero, arg1, arg2);
-            query3(g_aero, fout);
+            escreve_aeroporto3(query3(g_aero, fout), fout);
             fclose(fout);
         // Se os ficheiro de resultados que a query criou for diferente do esperado, incrementar o contador de fails
             if (check_results_file(output_path, results_path, command_count) != 0) q3_fail++;
@@ -371,6 +233,7 @@ int main(int argc, char *argv[]) {
     gestor_aeronaves_free(g_aeroN);
     gestor_voos_free(g_voos);
     free(line);
+    g_list_free_full(stats_list, (GDestroyNotify) free_aeronave);
 
     // Proporção de fails por query
     printf("Q1: %d de %d testes ok!\n", q1_count - q1_fail,  q1_count);

@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <string.h>
 
 #include "aeronaves.h"
 
@@ -11,6 +12,7 @@ typedef struct aeronaves {
     char *year;             // ano de fabrico
     char *capacity;         // capacidade máxima de passageiros
     char *range;            // alcance máximo em km
+    int num_voos;           // Numero de voos
 } Aeronaves;
 
 
@@ -35,23 +37,21 @@ Aeronaves* criar_aeronave(void) {
 
 
 // FUNÇÃO INICIALIZADORA - Inicializa uma aeronave com valores
-
 Aeronaves* init_aeronave(const char *identifier, const char *manufacturer,
                          const char *model, const char *year, const char *capacity, const char *range) {
     Aeronaves *a = criar_aeronave();
     if (a == NULL) return NULL;
 
-    // Copia cada string (duplica para evitar dangling pointers)
-    set_identifier_aeronave(a, identifier);
-    set_manufacturer_aeronave(a, manufacturer);
-    set_model_aeronave(a, model);
-    set_year_aeronave(a, year);
-    set_capacity_aeronave(a, capacity);
-    set_range_aeronave(a, range);
+    a->identifier   = identifier  ? strdup(identifier)  : NULL;
+    a->manufacturer = manufacturer ? strdup(manufacturer) : NULL;
+    a->model        = model       ? strdup(model)       : NULL;
+    a->year         = year        ? strdup(year)        : NULL;
+    a->capacity     = capacity    ? strdup(capacity)    : NULL;
+    a->range        = range       ? strdup(range)       : NULL;
+    a->num_voos     = 0;
 
     return a;
 }
-
 
 // FUNÇÃO DE IMPRESSÃO 
 
@@ -113,6 +113,9 @@ const char* get_range_aeronave(const Aeronaves *a) {
     return a ? a->range : NULL;
 }
 
+int get_num_voos_aeronave(const Aeronaves *a) {
+    return a ? a->num_voos : -1;
+}
 
 // SETTERS
 
@@ -150,4 +153,9 @@ void set_range_aeronave(Aeronaves *a, const char *range) {
     if (!a) return;
     free(a->range);
     a->range = range ? strdup(range) : NULL;
+}
+
+void set_num_voos_aeronave(Aeronaves *a, int num_voos) {
+    if (!a) return;
+    a->num_voos = num_voos;
 }

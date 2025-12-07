@@ -28,7 +28,9 @@ EXISTING_SOURCES = $(SRCDIR)/gestores/gestor_aeroportos.c \
 				   $(SRCDIR)/validacao/validacao_voos.c \
 				   $(SRCDIR)/validacao/validacao_aeroportos.c \
 				   $(SRCDIR)/validacao/validacao_passageiros.c \
-				   $(SRCDIR)/validacao/validacao_reservas.c
+				   $(SRCDIR)/validacao/validacao_reservas.c \
+				   $(SRCDIR)/io/leitura.c \
+				   $(SRCDIR)/io/escrita.c \
 
 ENTITY_SOURCES = $(wildcard $(SRCDIR)/entidades/*.c)
 PARSING_SOURCES = $(wildcard $(SRCDIR)/parsing/*.c)
@@ -44,7 +46,7 @@ PROGRAM_TESTES = programa-testes
 # ------------------------------
 # Includes para subpastas
 # ------------------------------
-INCLUDE_DIRS = -I$(INCDIR) -I$(INCDIR)/entidades -I$(INCDIR)/gestores -I$(INCDIR)/parsing -I$(INCDIR)/utils -I$(INCDIR)/validacao
+INCLUDE_DIRS = -I$(INCDIR) -I$(INCDIR)/entidades -I$(INCDIR)/gestores -I$(INCDIR)/parsing -I$(INCDIR)/utils -I$(INCDIR)/validacao -I$(INCDIR)/io
 
 # Comando make
 all: $(PROGRAM_PRINCIPAL) $(PROGRAM_TESTES)
