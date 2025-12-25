@@ -1,7 +1,7 @@
 # Compilador e flags
 # ------------------------------
 CC = gcc
-CFLAGS = -Wall -Wextra -g -DDEBUG
+CFLAGS = -Werror=discarded-qualifiers -Wall -Wextra -g -DDEBUG
 #GLIB_CFLAGS = `pkg-config --cflags glib-2.0`
 #GLIB_LIBS = `pkg-config --libs glib-2.0`
 
@@ -21,6 +21,8 @@ INCDIR = include
 EXISTING_SOURCES = $(SRCDIR)/gestores/gestor_aeroportos.c \
                    $(SRCDIR)/gestores/gestor_aeronaves.c \
                    $(SRCDIR)/gestores/gestor_voos.c \
+                   $(SRCDIR)/gestores/gestor_reservas.c \
+                   $(SRCDIR)/gestores/gestor_passageiros.c \
                    $(SRCDIR)/gestores/queries.c \
 				   $(SRCDIR)/utils/datas.c \
 				   $(SRCDIR)/utils/parser_utils.c \

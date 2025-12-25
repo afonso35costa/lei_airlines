@@ -16,7 +16,7 @@ struct conta_voos {
 GestorAeronaves* gestor_aeronaves_create(void) {
     GestorAeronaves *ga = malloc(sizeof(GestorAeronaves));
     if (!ga) return NULL;
-    ga->hash = g_hash_table_new_full(g_str_hash, g_str_equal, free, free);
+    ga->hash = g_hash_table_new_full(g_str_hash, g_str_equal, free, (GDestroyNotify)destroy_aeronave);
     return ga;
 }
 

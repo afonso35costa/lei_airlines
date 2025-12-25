@@ -91,36 +91,6 @@ int compare_reservas(const Reservas *r1, const Reservas *r2) {
     return strcmp(id1, id2);
 }
 
-// FUNÇÃO DE IMPRESSÃO - Mostrar dados da reserva
-void print_reserva(const Reservas *r) {
-    if (r == NULL) {
-        printf("Reserva inválida\n");
-        return;
-    }
-    
-    printf("=== RESERVA ===\n");
-    printf("ID Reserva: %s\n", get_reservation_id_reservas(r) ? get_reservation_id_reservas(r) : "N/A");
-    printf("Documento: %s\n", get_document_number_reservas(r) ? get_document_number_reservas(r) : "N/A");
-    printf("Assento: %s\n", get_seat_reservas(r) ? get_seat_reservas(r) : "N/A");
-    printf("Preço: %.2f\n", get_price_reservas(r));
-    printf("Bagagem extra: %s\n", get_extra_luggage_reservas(r) ? "Sim" : "Não");
-    printf("Embarque prioritário: %s\n", get_priority_boarding_reservas(r) ? "Sim" : "Não");
-    
-    // Imprime voos
-    char **flights = get_flight_ids_reservas(r);
-    if (flights != NULL) {
-        printf("Voos: ");
-        for (int i = 0; flights[i] != NULL; i++) {
-            printf("%s%s", flights[i], flights[i+1] ? ", " : "");
-        }
-        printf("\n");
-    } else {
-        printf("Voos: N/A\n");
-    }
-    
-    printf("QR Code: %s\n", get_qr_code_reservas(r) ? get_qr_code_reservas(r) : "N/A");
-    printf("===============\n");
-}
 
 // FUNÇÃO DESTRUTORA - Libertar toda a memória
 void destroy_reserva(Reservas *r) {
@@ -153,6 +123,16 @@ char* get_reservation_id_reservas(const Reservas *r) {
 
 char** get_flight_ids_reservas(const Reservas *r) {
     return (r != NULL) ? r->flight_ids : NULL;
+}
+
+int get_num_flights_reserva(const Reservas *r) {
+    if (r == NULL || r->flight_ids == NULL) return 0;
+    
+    int count = 0;
+    while (r->flight_ids[count] != NULL) {
+        count++;
+    }
+    return count;
 }
 
 char* get_document_number_reservas(const Reservas *r) {

@@ -17,8 +17,9 @@ bool str_to_bool(const char *str) {
 
 // Função auxiliar para parsing do campo flight_ids ["id1","id2",...]
 
-char **parse_flight_ids(char *str) {
-    if (!str) return NULL;
+char **parse_flight_ids(char *str) {  // str = "['TI12433', 'TI12434']"
+
+    if (!str) return NULL;  
 
     char *s_orig = strdup(str);
     if (!s_orig) return NULL;
@@ -32,13 +33,15 @@ char **parse_flight_ids(char *str) {
         start++; // apenas start aponta para o início real do conteúdo
     }
 
-    char **arr = malloc(11 * sizeof(char*));
+    char **arr = malloc(strlen(str));
     if (!arr) { free(s_orig); return NULL; }
 
     char *rest = start;
     int i = 0;
     char *token;
-    while ((token = strsep(&rest, ",")) != NULL && i < 10) {
+
+    char *p = rest;
+    while ((token = strsep(&rest, ",")) != NULL) {
         arr[i++] = strip_quotes(token); // malloc seguro
     }
     arr[i] = NULL; // terminador NULL
@@ -60,7 +63,6 @@ Reservas *parse_reserva_line(const char *line) {
         campos[i] = ignorar_virgulas(&rest);
         i++;
     }
-
     char **flight_ids = parse_flight_ids(campos[1]);
     double price = atof(campos[4]);
     bool extra = str_to_bool(campos[5]);
@@ -88,7 +90,7 @@ Reservas *parse_and_validate_reserva_line(const char *line, FILE *ferr) {
         return NULL;
 
     Reservas *r = parse_reserva_line(line);
-
+    /*
     if (!validar_reserva(r)) {
         if (ferr) {
             fprintf(ferr, "%s\n", line);
@@ -96,6 +98,7 @@ Reservas *parse_and_validate_reserva_line(const char *line, FILE *ferr) {
         destroy_reserva(r);
         return NULL;
     }
+        */
 
     return r; // válido ✅
 }

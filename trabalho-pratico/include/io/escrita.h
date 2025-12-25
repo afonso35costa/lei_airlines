@@ -12,13 +12,13 @@ typedef void (*FuncaoEscreve)(void *objeto, FILE *out);
 FILE* abrir_ficheiro_escrita(const char* path_filename);
 
 // Funcao que escreve aeroportos em ficheiro
-void escreve_aeroporto1 (Aeroportos *a, FILE *out);
+void escreve_aeroporto1 (Aeroportos *a, FILE *out, char* qtype);
 
 // Funcao que escreve aeronaves em ficheiro
-void escreve_aeronaves (Aeronaves **a, int num_aeronaves, FILE *out);
+void escreve_aeronaves (Aeronaves **a, int num_aeronaves, FILE *out, char* qtype);
 
 // Funcao que escreve aerporto mais num_departures
-void escreve_aeroporto3 (Aeroportos *a, FILE *out);
+void escreve_aeroporto3 (Aeroportos *a, FILE *out, char* qtype);
 
 
 

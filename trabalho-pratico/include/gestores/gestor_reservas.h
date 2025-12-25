@@ -1,30 +1,30 @@
-/* 
 #ifndef GESTOR_RESERVAS_H
 #define GESTOR_RESERVAS_H
 
+#include <glib.h>
 #include "reservas.h"
 
-#define TABLE_SIZE_R 20000
+typedef struct gestor_reservas GestorReservas;
 
-typedef struct nodo_reserva {
-    char *key;               // reservation_id
-    Reservas *valor;
-    struct nodo_reserva *next;
-} NodoReserva;
+// Cria um gestor de reservas vazio
+GestorReservas* gestor_reservas_create(void);
 
-typedef struct gestor_reservas {
-    NodoReserva **tabela;
-} GestorReservas;
+// Adiciona uma reserva ao gestor
+void gestor_reservas_add(GestorReservas *gr, Reservas *r);
 
+// Remove reserva pelo identificador
+void gestor_reservas_remove(GestorReservas *gr, const char *reservation_id);
 
-GestorReservas *criar_gestor_reservas();
-int inserir_reserva(GestorReservas *g, Reservas *r);
-Reservas *procurar_reserva(GestorReservas *g, const char *reservation_id);
-int remover_reserva(GestorReservas *g, const char *reservation_id);
-void libertar_gestor_reservas(GestorReservas *g);
+// Retorna ponteiro para reserva pelo índice
+Reservas* gestor_reservas_get(GestorReservas *gr, int index);
 
+// Retorna o array de reservas
+GPtrArray* gestor_reservas_get_array(GestorReservas *gr);
 
-void print_todas_reservas(GestorReservas *g);
+// Retorna o número de reservas no gestor
+guint gestor_reservas_get_length(GestorReservas *gr);
+
+// Liberta toda a memória associada ao gestor e às reservas
+void gestor_reservas_free(GestorReservas *gr);
 
 #endif
-*/

@@ -9,6 +9,7 @@
 #include "gestor_aeroportos.h"
 #include "gestor_voos.h"
 #include "gestor_aeronaves.h"
+#include "gestor_reservas.h"
 #include "queries.h"
 #include "leitura.h"
 #include "escrita.h"
@@ -31,8 +32,10 @@ int main(int argc, char *argv[]) {
     // Inicializar gestores
     // -------------------------------------------------------------
     GestorAeroportos *g_aero = gestor_aeroportos_create();
-    GestorVoos *g_voos = gestor_voos_create();
+    ArrayVoos *array_voos = array_voos_create();
+    HashVoos *hash_voos = hash_voos_create();
     GestorAeronaves *g_aeroN = gestor_aeronaves_create();
+    GestorReservas *g_reservas = gestor_reservas_create();
 
 
     // -------------------------------------------------------------
@@ -67,13 +70,13 @@ int main(int argc, char *argv[]) {
     // Processar aeroportos
     // -------------------------------------------------------------
 
-    processar_ficheiro(faero, (FuncaoParser) parse_and_validate_aeroporto_line, action_add_aeroporto, g_aero, err_faero);
-    processar_ficheiro(fvoos, (FuncaoParser) parse_and_validate_voo_line, action_add_voo, g_voos, err_fvoos);
-    processar_ficheiro(faeron, (FuncaoParser) parse_and_validate_aeronave_line, action_add_aeronave, g_aeroN, err_faeron);
-    processar_ficheiro(fpass, (FuncaoParser) parse_and_validate_passageiro_line, action_add_passageiro, NULL, err_fpass);
-    processar_ficheiro(fres, (FuncaoParser) parse_and_validate_reserva_line, action_add_reserva, NULL, err_fres);
+    processar_ficheiro(faero, (FuncaoParser) parse_and_validate_aeroporto_line, action_add_aeroporto, g_aero, NULL, err_faero);
+    processar_ficheiro(fvoos, (FuncaoParser) parse_and_validate_voo_line, action_add_voo, array_voos, hash_voos, err_fvoos);
+    processar_ficheiro(faeron, (FuncaoParser) parse_and_validate_aeronave_line, action_add_aeronave, g_aeroN, NULL, err_faeron);
+    processar_ficheiro(fpass, (FuncaoParser) parse_and_validate_passageiro_line, action_add_passageiro, NULL, NULL, err_fpass);
+    processar_ficheiro(fres, (FuncaoParser) parse_and_validate_reserva_line, action_add_reserva, g_reservas, NULL, err_fres);
 
-    percorre_voos_aeronaves(g_voos, g_aeroN);
+    percorre_voos_aeronaves(array_voos, g_aeroN);
     GList *stats_list = ordena_tudo(g_aeroN);
 
     // -------------------------------------------------------------
@@ -105,29 +108,29 @@ int main(int argc, char *argv[]) {
         FILE *fout = abrir_ficheiro_escrita(path_filename);
 
         // --- Interpretar query ---
-        int query_type;
+        char query_type[10];
         char arg1[256], arg2[256];
         arg1[0] = arg2[0] = '\0';
 
-        int n_args = sscanf(line, "%d %s %s", &query_type, arg1, arg2);
+        int n_args = sscanf(line, "%s %s %s", query_type, arg1, arg2);
 
         // -------------------------
         // Execução das queries
         // -------------------------
-        if (query_type == 1) {
-            if (n_args >= 2) escreve_aeroporto1(query1(g_aero, arg1, fout), fout);
+        if (strcmp(query_type, "1S") == 0 || strcmp(query_type, "1") == 0) {
+            if (n_args >= 2) escreve_aeroporto1(query1(g_aero,g_reservas, hash_voos, arg1, fout), fout, query_type);
         }
-        else if (query_type == 2) {
+        else if (strcmp(query_type, "2") == 0 || strcmp(query_type, "2S") == 0) {
             if (n_args == 2) {
-                escreve_aeronaves(query2(stats_list, atoi(arg1), NULL, fout), atoi(arg1), fout);
+                escreve_aeronaves(query2(stats_list, atoi(arg1), NULL, fout), atoi(arg1), fout, query_type);
             } else if (n_args == 3) {
-                escreve_aeronaves(query2(stats_list, atoi(arg1), arg2, fout), atoi(arg1), fout);
+                escreve_aeronaves(query2(stats_list, atoi(arg1), arg2, fout), atoi(arg1), fout, query_type);
             }
         }
-        else if (query_type == 3) {
+        else if (strcmp(query_type, "3") == 0 || strcmp(query_type, "3S") == 0) {
             if (n_args == 3) {
-                percorre_voos_aeroportos(g_voos, g_aero, arg1, arg2);
-                escreve_aeroporto3(query3(g_aero, fout), fout);
+                percorre_voos_aeroportos(array_voos, g_aero, arg1, arg2);
+                escreve_aeroporto3(query3(g_aero, fout), fout, query_type);
             }
         }
         fclose(fout);
@@ -138,10 +141,12 @@ int main(int argc, char *argv[]) {
 
     // ------------------------- LIBERTAÇÃO MEMÓRIA -------------------------
     gestor_aeroportos_free(g_aero);
+    g_list_free_full(stats_list, NULL);
     gestor_aeronaves_free(g_aeroN);
-    gestor_voos_free(g_voos);
+    hash_voos_free(hash_voos);
+    array_voos_free(array_voos);
+    gestor_reservas_free(g_reservas);
     free(line);
-    g_list_free_full(stats_list, (GDestroyNotify) free_aeronave);
 
     printf("DEBUG: programa terminado\n");
 

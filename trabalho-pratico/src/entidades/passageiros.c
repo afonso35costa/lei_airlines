@@ -81,25 +81,6 @@ int compare_passageiros(const Passageiros *p1, const Passageiros *p2) {
     return strcmp(doc1, doc2);
 }
 
-// FUNÇÃO DE IMPRESSÃO - mostrar dados do passageiro 
-void print_passageiro(const Passageiros *p) {
-    if (p == NULL) {
-        printf("Passageiro inválido\n");
-        return;
-    }
-    
-    printf("=== PASSAGEIRO ===\n");
-    printf("Documento: %s\n", get_document_number_passageiros(p) ? get_document_number_passageiros(p) : "N/A");
-    printf("Nome: %s %s\n", get_first_name_passageiros(p) ? get_first_name_passageiros(p) : "", get_last_name_passageiros(p) ? get_last_name_passageiros(p) : "");
-    printf("Data nascimento: %s\n", get_dob_passageiros(p) ? get_dob_passageiros(p) : "N/A");
-    printf("Nacionalidade: %s\n", get_nationality_passageiros(p) ? get_nationality_passageiros(p) : "N/A");
-    printf("Género: %s\n", get_gender_passageiros(p) ? get_gender_passageiros(p) : "N/A");
-    printf("Email: %s\n", get_email_passageiros(p) ? get_email_passageiros(p) : "N/A");
-    printf("Telefone: %s\n", get_phone_passageiros(p) ? get_phone_passageiros(p) : "N/A");
-    printf("Morada: %s\n", get_address_passageiros(p) ? get_address_passageiros(p) : "N/A");
-    printf("Fotografia: %s\n", get_photo_passageiros(p) ? get_photo_passageiros(p) : "N/A");
-    printf("==================\n");
-}
 
 // FUNÇÃO DESTRUTORA -Função que liberta toda a memória associada a um passageiro 
 

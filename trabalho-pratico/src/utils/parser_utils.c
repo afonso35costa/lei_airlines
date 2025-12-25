@@ -6,8 +6,9 @@
 char* strip_quotes(const char *str) {
     if (!str) return NULL;
     size_t len = strlen(str);
+    while(*str == ' ') { str++; len--; } // remove leading spaces
 
-    if (len >= 2 && str[0] == '\"' && str[len - 1] == '\"') {
+    if (len >= 2 && ((str[0] == '\"' && str[len - 1] == '\"') || (str[0] == '\'' && str[len - 1] == '\''))) {
         // Proteção contra len < 2
         char *result = malloc(len - 1);
         if (!result) return NULL;
@@ -30,7 +31,6 @@ char* ignorar_virgulas(char **str) {
 
     char *o = out;
     int in_quotes = 0;
-
     while (*src) {
         if (*src == '"') {
             in_quotes = !in_quotes; // alterna dentro/fora de aspas

@@ -11,6 +11,7 @@
 #include "gestor_aeroportos.h"
 #include "gestor_voos.h"
 #include "gestor_aeronaves.h"
+#include "gestor_reservas.h"
 #include "queries.h"
 #include "leitura.h"
 #include "escrita.h"
@@ -18,6 +19,7 @@
 
 
 #define MAX_LINE 1024
+
 
 // Função para comparar dois ficheiros linha a linha
 
@@ -95,8 +97,10 @@ int main(int argc, char *argv[]) {
     // Inicializar gestores
     // -------------------------------------------------------------
     GestorAeroportos *g_aero = gestor_aeroportos_create();
-    GestorVoos *g_voos = gestor_voos_create();
+    ArrayVoos *array_voos = array_voos_create();
+    HashVoos *hash_voos = hash_voos_create();
     GestorAeronaves *g_aeroN = gestor_aeronaves_create();
+    GestorReservas *g_reservas = gestor_reservas_create();
 
    // -------------------------------------------------------------
     // Abrir ficheiros CSV e ficheiros de erro
@@ -129,13 +133,13 @@ int main(int argc, char *argv[]) {
     // Processar aeroportos
     // -------------------------------------------------------------
 
-    processar_ficheiro(faero, (FuncaoParser) parse_and_validate_aeroporto_line, action_add_aeroporto, g_aero, err_faero);
-    processar_ficheiro(fvoos, (FuncaoParser) parse_and_validate_voo_line, action_add_voo, g_voos, err_fvoos);
-    processar_ficheiro(faeron, (FuncaoParser) parse_and_validate_aeronave_line, action_add_aeronave, g_aeroN, err_faeron);
-    processar_ficheiro(fpass, (FuncaoParser) parse_and_validate_passageiro_line, action_add_passageiro, NULL, err_fpass);
-    processar_ficheiro(fres, (FuncaoParser) parse_and_validate_reserva_line, action_add_reserva, NULL, err_fres);
+    processar_ficheiro(faero, (FuncaoParser) parse_and_validate_aeroporto_line, action_add_aeroporto, g_aero, NULL, err_faero);
+    processar_ficheiro(fvoos, (FuncaoParser) parse_and_validate_voo_line, action_add_voo, array_voos, hash_voos, err_fvoos);
+    processar_ficheiro(faeron, (FuncaoParser) parse_and_validate_aeronave_line, action_add_aeronave, g_aeroN, NULL, err_faeron);
+    processar_ficheiro(fpass, (FuncaoParser) parse_and_validate_passageiro_line, action_add_passageiro, NULL, NULL, err_fpass);
+    processar_ficheiro(fres, (FuncaoParser) parse_and_validate_reserva_line, action_add_reserva, g_reservas, NULL, err_fres);
 
-    percorre_voos_aeronaves(g_voos, g_aeroN);
+    percorre_voos_aeronaves(array_voos, g_aeroN);
     GList *stats_list = ordena_tudo(g_aeroN);
 
     // -------------------------------------------------------------
@@ -183,57 +187,61 @@ int main(int argc, char *argv[]) {
         FILE *fout = fopen(output_path, "w");
         if (!fout) { perror("Erro ao criar output"); continue; }
 
-        int query_type;
+        char query_type[10];
         char arg1[256], arg2[256];
         arg1[0] = arg2[0] = '\0';
 
-        int n_args = sscanf(line, "%d %s %s", &query_type, arg1, arg2);
+        int n_args = sscanf(line, "%s %s %s", query_type, arg1, arg2);
 
 
         // Escolha da query
-        if (query_type == 1) {
+        if (strcmp(query_type, "1") == 0 || strcmp(query_type, "1S") == 0) {
             q1_count++;
-
             clock_gettime(CLOCK_REALTIME, &start);
-            escreve_aeroporto1(query1(g_aero, arg1, fout), fout);
+            escreve_aeroporto1(query1(g_aero, g_reservas, hash_voos, arg1, fout), fout, query_type);
             fclose(fout);
         // Se os ficheiro de resultados que a query criou for diferente do esperado, incrementar o contador de fails
             if (check_results_file(output_path, results_path, command_count) != 0) q1_fail++;
             clock_gettime(CLOCK_REALTIME, &end);
             q1_time += (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1e9;
 
-        } else if (query_type == 2) {
+        } else if (strcmp(query_type, "2") == 0 || strcmp(query_type, "2S") == 0) {
             q2_count++;
             clock_gettime(CLOCK_REALTIME, &start);
-            if (n_args == 2) escreve_aeronaves(query2(stats_list, atoi(arg1), NULL, fout), atoi(arg1), fout);
-            else escreve_aeronaves(query2(stats_list, atoi(arg1), arg2, fout), atoi(arg1), fout);
+            if (n_args == 2) escreve_aeronaves(query2(stats_list, atoi(arg1), NULL, fout), atoi(arg1), fout, query_type);
+            else escreve_aeronaves(query2(stats_list, atoi(arg1), arg2, fout), atoi(arg1), fout, query_type);
             fclose(fout);
         // Se os ficheiro de resultados que a query criou for diferente do esperado, incrementar o contador de fails
             if (check_results_file(output_path, results_path, command_count) != 0) q2_fail++;
             clock_gettime(CLOCK_REALTIME, &end);
             q2_time += (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1e9;
 
-        } else if (query_type == 3) {
+        } else if (strcmp(query_type, "3") == 0 || strcmp(query_type, "3S") == 0) {
             q3_count++;
             clock_gettime(CLOCK_REALTIME, &start);
-            percorre_voos_aeroportos(g_voos, g_aero, arg1, arg2);
-            escreve_aeroporto3(query3(g_aero, fout), fout);
+            percorre_voos_aeroportos(array_voos, g_aero, arg1, arg2);
+            escreve_aeroporto3(query3(g_aero, fout), fout, query_type);
             fclose(fout);
         // Se os ficheiro de resultados que a query criou for diferente do esperado, incrementar o contador de fails
             if (check_results_file(output_path, results_path, command_count) != 0) q3_fail++;
             clock_gettime(CLOCK_REALTIME, &end);
             q3_time += (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1e9;
         }
-
+        else {
+            fclose(fout);
+            continue; // Query inválida
+        }
     }
     fclose(f);
 
     // ------------------------- LIBERTAÇÃO MEMÓRIA -------------------------
     gestor_aeroportos_free(g_aero);
+    g_list_free(stats_list);
     gestor_aeronaves_free(g_aeroN);
-    gestor_voos_free(g_voos);
+    hash_voos_free(hash_voos);
+    array_voos_free(array_voos);
+    gestor_reservas_free(g_reservas);
     free(line);
-    g_list_free_full(stats_list, (GDestroyNotify) free_aeronave);
 
     // Proporção de fails por query
     printf("Q1: %d de %d testes ok!\n", q1_count - q1_fail,  q1_count);

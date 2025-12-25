@@ -5,18 +5,45 @@
 #include "gestor_aeroportos.h"
 #include "gestor_aeronaves.h"
 #include "gestor_voos.h"
+#include "gestor_reservas.h"
 #include "aeroportos.h"
 #include "aeronaves.h"
+#include "reservas.h"
 #include "voos.h"
 #include "datas.h"
 #include "queries.h"
 
-Aeroportos *query1(GestorAeroportos *ga, const char *code, FILE *out) {
-    if (!ga || !code || !out)
+Aeroportos *query1(GestorAeroportos *ga, GestorReservas *gr, HashVoos *gv, const char *code, FILE *out) {
+    if (!ga || !gr || !gv || !code || !out)
         return NULL;
-
     // procurar aeroporto
     Aeroportos *a = gestor_aeroportos_get(ga, code);
+    if (a) {
+        for (guint i = 0; i < gestor_reservas_get_length(gr); i++) {
+            Reservas *r = gestor_reservas_get(gr, i);
+            if (r) {
+                char **flight_ids = get_flight_ids_reservas(r);
+
+                for (guint j = 0; j < get_num_flights_reserva(r); j++) {
+                    Voo *v = hash_voos_get(gv, flight_ids[j]);
+                    if (!v) {
+                        return NULL;
+                    }
+                    if (v && strcmp(get_status_voo(v), "Cancelled") != 0) {
+                        // verificar se o aeroporto é origem ou destino
+                        if (g_strcmp0(get_origin_voo(v), code) == 0) {
+                            int count = get_arr_count_aeroporto(a);
+                            set_arr_count_aeroporto(a, count + 1);
+                        }
+                        if (g_strcmp0(get_destination_voo(v), code) == 0) {
+                            int count = get_dep_count_aeroporto(a);
+                            set_dep_count_aeroporto(a, count + 1);
+                        }
+                    }
+                }
+            }
+        }
+    }
     return a;
 }
 
@@ -30,13 +57,13 @@ struct aircraft_stats {
 
 // Função que percorre todos os voos e verifica a aeronave ligada a cada voo
 
-void percorre_voos_aeronaves(GestorVoos *gv, GestorAeronaves *ga) {
+void percorre_voos_aeronaves(ArrayVoos *gv, GestorAeronaves *ga) {
     if (!gv || !ga) {
         return;
     }
 
-    for (guint i = 0; i < gestor_voos_get_length(gv); i++) {
-        Voo *voo = gestor_voos_get(gv, i);
+    for (guint i = 0; i < array_voos_get_length(gv); i++) {
+        Voo *voo = array_voos_get(gv, i);
         if (!voo) {
             continue;
         }
@@ -100,17 +127,17 @@ Aeronaves **query2(GList *stats_list, int N, const char *manufacturer_filter, FI
     GList *current = stats_list;
 
     while (current != NULL && count < N) {
-        Aeronaves *stats = (Aeronaves *)current->data;
-        if (!stats) {
+        Aeronaves *aeron = (Aeronaves *)current->data;
+        if (!aeron) {
             current = current->next;
             continue;
         }
 
         // Aplica filtro de fabricante se fornecido
-        if (manufacturer_filter == NULL || strcmp(manufacturer_filter, "") == 0 || strcmp(get_manufacturer_aeronave(stats), manufacturer_filter) == 0) {
+        if (manufacturer_filter == NULL || strcmp(manufacturer_filter, "") == 0 || strcmp(get_manufacturer_aeronave(aeron), manufacturer_filter) == 0) {
 
             // Guarda a referência no array de resultados
-            result[count] = stats;
+            result[count] = aeron;
             count++;
         }
 
@@ -133,7 +160,7 @@ Aeronaves **query2(GList *stats_list, int N, const char *manufacturer_filter, FI
 
 // Função que percorre todos os voos e conta partidas por aeroporto
 
-void percorre_voos_aeroportos(GestorVoos *gv, GestorAeroportos *ga, char* start_date, char* end_date) {
+void percorre_voos_aeroportos(ArrayVoos *gv, GestorAeroportos *ga, char* start_date, char* end_date) {
 
     // RESET na contagem de partidas de todos os aeroportos
     GHashTableIter iter;
@@ -158,10 +185,10 @@ void percorre_voos_aeroportos(GestorVoos *gv, GestorAeroportos *ga, char* start_
         return;
     }
 
-    for (guint i = 0; i < gestor_voos_get_length(gv); i++) {
+    for (guint i = 0; i < array_voos_get_length(gv); i++) {
     //  for (guint i = 0; i < 5; i++) {
 
-        Voo *voo = gestor_voos_get(gv, i);
+        Voo *voo = array_voos_get(gv, i);
         if (!voo) {
             continue;
         }

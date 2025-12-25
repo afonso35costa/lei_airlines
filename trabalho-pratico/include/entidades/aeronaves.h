@@ -16,9 +16,7 @@ Aeronaves* init_aeronave(const char *identifier, const char *manufacturer,
                          const char *model, const char *year, const char *capacity, const char *range);
 
 // Liberta a memória associada a uma aeronave
-void free_aeronave(Aeronaves *a);
-
-void print_aeronave_formatada(const Aeronaves *a);
+void destroy_aeronave(Aeronaves *a);
 
 // GETTERS - Funções para obter valores
 

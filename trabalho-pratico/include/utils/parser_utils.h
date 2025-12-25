@@ -7,7 +7,7 @@
 
 // Typedefs para parser geral
 typedef void *(*FuncaoParser)(const char *line, FILE *err_file);
-typedef void (*FuncaoAddGestor)(void *objeto, void *gestor);
+typedef void (*FuncaoAddGestor)(void *objeto, void *gestor1, void *gestor2);
 
 // Funcao strip_quotes - remove aspas de string
 char* strip_quotes(const char *str);

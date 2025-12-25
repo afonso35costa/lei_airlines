@@ -14,6 +14,8 @@ typedef struct aeroportos {
     char *icao;        // código ICAO
     char *type;        // tipo do aeroporto (small_airport, large_airport, etc.)
     int departures;   // número de partidas
+    int dep_count;    // número de passageiros que partiram
+    int arr_count;    // número de passageiros que chegaram
 } Aeroportos;
 
 // FUNÇÃO CONSTRUTORA - Cria uma aeronave e aloca memória
@@ -32,6 +34,8 @@ Aeroportos* create_aeroporto(void) {
     a->icao = NULL;
     a->type = NULL;
     a->departures = 0;
+    a->dep_count = 0;
+    a->arr_count = 0;
 
     return a;
 }
@@ -58,25 +62,6 @@ Aeroportos* init_aeroporto(const char *code, const char *name, const char *city,
     return a;
 }
 
-// FUNÇÃO DE IMPRESSÃO 
-
-void print_aeroporto_detalhado(const Aeroportos *a) {
-    if (a == NULL) {
-        printf("Aeroporto inválido\n");
-        return;
-    }
-    
-    printf("=== AEROPORTO ===\n");
-    printf("Código IATA: %s\n", get_code_aeroporto(a) ? get_code_aeroporto(a) : "N/A");
-    printf("Nome: %s\n", get_name_aeroporto(a) ? get_name_aeroporto(a) : "N/A");
-    printf("Cidade: %s\n", get_city_aeroporto(a) ? get_city_aeroporto(a) : "N/A");
-    printf("País: %s\n", get_country_aeroporto(a) ? get_country_aeroporto(a) : "N/A");
-    printf("Latitude: %.6f\n", get_latitude_aeroporto(a));
-    printf("Longitude: %.6f\n", get_longitude_aeroporto(a));
-    printf("Código ICAO: %s\n", get_icao_aeroporto(a) ? get_icao_aeroporto(a) : "N/A");
-    printf("Tipo: %s\n", get_type_aeroporto(a) ? get_type_aeroporto(a) : "N/A");
-    printf("==================\n");
-}
 // FUNÇÃO DE LIBERTAÇÃO DE MEMÓRIA
 
 void destroy_aeroporto(Aeroportos *a) {
@@ -129,6 +114,14 @@ int get_departures_aeroporto(const Aeroportos *a) {
     return a ? a->departures : 0;
 }
 
+int get_dep_count_aeroporto(const Aeroportos *a) {
+    return a ? a->dep_count : 0;
+}
+
+int get_arr_count_aeroporto(const Aeroportos *a) {
+    return a ? a->arr_count : 0;
+}
+
 // SETTERS
 
 void set_code_aeroporto(Aeroportos *a, const char *code) {
@@ -177,4 +170,12 @@ void set_type_aeroporto(Aeroportos *a, const char *type) {
 
 void set_departures_aeroporto(Aeroportos *a, int departures) {
     if (a) a->departures = departures;
+}
+
+void set_dep_count_aeroporto(Aeroportos *a, int dep_count) {
+    if (a) a->dep_count = dep_count;
+}
+
+void set_arr_count_aeroporto(Aeroportos *a, int arr_count) {
+    if (a) a->arr_count = arr_count;
 }

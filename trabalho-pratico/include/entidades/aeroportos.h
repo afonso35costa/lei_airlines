@@ -32,6 +32,8 @@ double get_longitude_aeroporto(const Aeroportos *a);
 const char* get_icao_aeroporto(const Aeroportos *a);
 const char* get_type_aeroporto(const Aeroportos *a);
 int get_departures_aeroporto(const Aeroportos *a);
+int get_dep_count_aeroporto(const Aeroportos *a);
+int get_arr_count_aeroporto(const Aeroportos *a);
 
 
 
@@ -46,7 +48,8 @@ void set_longitude_aeroporto(Aeroportos *a, double longitude);
 void set_icao_aeroporto(Aeroportos *a, const char *icao);
 void set_type_aeroporto(Aeroportos *a, const char *type);
 void set_departures_aeroporto(Aeroportos *a, int departures);
-
+void set_dep_count_aeroporto(Aeroportos *a, int dep_count);
+void set_arr_count_aeroporto(Aeroportos *a, int arr_count);
 
 #endif
 

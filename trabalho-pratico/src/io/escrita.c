@@ -19,48 +19,87 @@ FILE* abrir_ficheiro_escrita(const char* path_filename) {
 
 // Escreve aeroporto em ficheiro
 
-void escreve_aeroporto1 (Aeroportos *a, FILE *out) {
+void escreve_aeroporto1 (Aeroportos *a, FILE *out, char* qtype) {
     if (!a) fprintf(out, "\n");
 
-    else {
-        fprintf(out, "%s,%s,%s,%s,%s\n",
+    else if (strcmp(qtype, "1") == 0) {
+        fprintf(out, "%s;%s;%s;%s;%s;%d;%d\n",
         get_code_aeroporto(a),
         get_name_aeroporto(a),
         get_city_aeroporto(a),
         get_country_aeroporto(a),
-        get_type_aeroporto(a)
+        get_type_aeroporto(a),
+        get_dep_count_aeroporto(a),
+        get_arr_count_aeroporto(a)
+    );
+    }
+    else if (strcmp(qtype, "1S") == 0) {
+        fprintf(out, "%s=%s=%s=%s=%s=%d=%d\n",
+        get_code_aeroporto(a),
+        get_name_aeroporto(a),
+        get_city_aeroporto(a),
+        get_country_aeroporto(a),
+        get_type_aeroporto(a),
+        get_dep_count_aeroporto(a),
+        get_arr_count_aeroporto(a)
     );
     }
 }
 
 // Escreve array de aeronaves em ficheiro
 
-void escreve_aeronaves (Aeronaves **stats, int num_aeronaves, FILE *out) {
+void escreve_aeronaves (Aeronaves **stats, int num_aeronaves, FILE *out, char* qtype) {
     if (!stats) {
         fprintf(out, "\n");
         return;
     }
-    for (int i = 0; i < num_aeronaves; i++) {
-        fprintf(out, "%s,%s,%s,%d\n",
+    if (strcmp (qtype, "2") == 0) {
+        for (int i = 0; i < num_aeronaves; i++) {
+            fprintf(out, "%s;%s;%s;%d\n",
+                    get_identifier_aeronave(stats[i]),
+                    get_manufacturer_aeronave(stats[i]),
+                    get_model_aeronave(stats[i]),
+                    get_num_voos_aeronave(stats[i])
+                );
+        }
+        for (int i = num_aeronaves; i < num_aeronaves; i++) {
+            destroy_aeronave(stats[i]);
+        }
+        free(stats);
+        return;
+    }
+    else if (strcmp (qtype, "2S") == 0) {
+        for (int i = 0; i < num_aeronaves; i++) {
+        fprintf(out, "%s=%s=%s=%d\n",
                 get_identifier_aeronave(stats[i]),
                 get_manufacturer_aeronave(stats[i]),
                 get_model_aeronave(stats[i]),
                 get_num_voos_aeronave(stats[i])
             );
-    }
-    for (int i = num_aeronaves; i < num_aeronaves; i++) {
-        free_aeronave(stats[i]);
+        }
+        for (int i = num_aeronaves; i < num_aeronaves; i++) {
+            destroy_aeronave(stats[i]);
+        }
     }
     free(stats);
 }
 
 // Escreve aeroporto e num_departures
 
-void escreve_aeroporto3 (Aeroportos *a, FILE *out) {
+void escreve_aeroporto3 (Aeroportos *a, FILE *out, char* qtype) {
     if (!a) fprintf(out, "\n");
 
-    else { 
-        fprintf(out, "%s,%s,%s,%s,%d\n",
+    else if (strcmp(qtype, "3") == 0) { 
+        fprintf(out, "%s;%s;%s;%s;%d\n",
+        get_code_aeroporto(a),
+        get_name_aeroporto(a),
+        get_city_aeroporto(a),
+        get_country_aeroporto(a),
+        get_departures_aeroporto(a)
+    );
+    } 
+    else if (strcmp(qtype, "3S") == 0) {
+        fprintf(out, "%s=%s=%s=%s=%d\n",
         get_code_aeroporto(a),
         get_name_aeroporto(a),
         get_city_aeroporto(a),

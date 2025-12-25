@@ -6,7 +6,7 @@
 #include "aeronaves.h"
 
 typedef struct aeronaves {
-    char *identifier;     // identificador único (tail number)
+    char *identifier;     // identificador único (tail number) 
     char *manufacturer;   // fabricante
     char *model;          // modelo
     char *year;             // ano de fabrico
@@ -53,28 +53,10 @@ Aeronaves* init_aeronave(const char *identifier, const char *manufacturer,
     return a;
 }
 
-// FUNÇÃO DE IMPRESSÃO 
-
-void print_aeronave_formatada(const Aeronaves *a) {
-    if (a == NULL) {
-        printf("Aeronave inválida\n");
-        return;
-    }
-    
-    printf("=== AERONAVE ===\n");
-    printf("Identificador: %s\n", get_identifier_aeronave(a) ? get_identifier_aeronave(a) : "N/A");
-    printf("Fabricante: %s\n", get_manufacturer_aeronave(a) ? get_manufacturer_aeronave(a) : "N/A");
-    printf("Modelo: %s\n", get_model_aeronave(a) ? get_model_aeronave(a) : "N/A");
-    printf("Ano: %s\n", get_year_aeronave(a));
-    printf("Capacidade: %s\n", get_capacity_aeronave(a));
-    printf("Alcance: %s km\n", get_range_aeronave(a));
-    printf("=================\n");
-}
-
 
 // FUNÇÃO DE LIBERTAÇÃO DE MEMÓRIA
 
-void free_aeronave(Aeronaves *a) {
+void destroy_aeronave(Aeronaves *a) {
     if (a == NULL) return;
 
     free(a->identifier);
@@ -85,7 +67,6 @@ void free_aeronave(Aeronaves *a) {
     free(a->range);
     free(a);
 }
-
 
 // GETTERS
 

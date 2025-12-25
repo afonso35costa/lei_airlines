@@ -10,10 +10,11 @@
 #include "gestor_aeroportos.h"
 #include "gestor_aeronaves.h"
 #include "gestor_voos.h"
+#include "gestor_reservas.h"
 
 // Parser geral para ficheiros CSV
 
-void processar_ficheiro(FILE *f, FuncaoParser funcao_parser, FuncaoAddGestor funcao_add, void *gestor, FILE *err_file) {
+void processar_ficheiro(FILE *f, FuncaoParser funcao_parser, FuncaoAddGestor funcao_add, void *gestor1, void *gestor2, FILE *err_file) {
 
     char *line = NULL;
     size_t len = 0;
@@ -27,7 +28,7 @@ void processar_ficheiro(FILE *f, FuncaoParser funcao_parser, FuncaoAddGestor fun
         void *obj = funcao_parser(line, err_file);
 
         if (obj)
-            funcao_add(obj, gestor);
+            funcao_add(obj, gestor1, gestor2);
     }
 
     free(line);
@@ -37,19 +38,23 @@ void processar_ficheiro(FILE *f, FuncaoParser funcao_parser, FuncaoAddGestor fun
 void action_add_aeroporto(void *ptr, void* g_aero) {
     Aeroportos *a = ptr;
     GestorAeroportos *gestor = g_aero;
-    gestor_aeroportos_add(gestor, a);
+    if (a) gestor_aeroportos_add(gestor, a);
 }
 
 void action_add_aeronave(void *ptr, void* g_aeroN) {
     Aeronaves *a = ptr;
     GestorAeronaves *gestor = g_aeroN;
-    gestor_aeronaves_add(gestor, a);
+    if (a) gestor_aeronaves_add(gestor, a);
 }
 
-void action_add_voo(void *ptr, void* g_voos) {
+void action_add_voo(void *ptr, void* array_voos, void* hash_voos) {
     Voo *v = ptr;
-    GestorVoos *gestor = g_voos;
-    gestor_voos_add(gestor, v);
+    ArrayVoos *gestor_array = array_voos;
+    HashVoos *gestor_hash = hash_voos;
+    if (v) {
+        array_voos_add(gestor_array, v);
+        hash_voos_add(gestor_hash, v);
+    }
 }
 
 void action_add_passageiro(void *ptr) {
@@ -57,7 +62,9 @@ void action_add_passageiro(void *ptr) {
     destroy_passageiro(p);
 }
 
-void action_add_reserva(void *ptr) {
+void action_add_reserva(void *ptr, void* g_reservas) {
     Reservas *r = ptr;
-    destroy_reserva(r);
+    GestorReservas *gestor = g_reservas;
+    if (r) gestor_reservas_add(gestor, r);
 }
+
