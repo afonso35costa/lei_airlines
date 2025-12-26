@@ -33,14 +33,19 @@ char **parse_flight_ids(char *str) {  // str = "['TI12433', 'TI12434']"
         start++; // apenas start aponta para o início real do conteúdo
     }
 
-    char **arr = malloc(strlen(str));
+    // Primeiro, conta o número de tokens
+    int num_tokens = 1; // pelo menos 1 token
+    for (char *p = s_orig; *p; p++) {
+        if (*p == ';') num_tokens++;
+    }
+
+    char **arr = malloc((num_tokens) * sizeof(char*));
     if (!arr) { free(s_orig); return NULL; }
 
     char *rest = start;
     int i = 0;
     char *token;
-
-    char *p = rest;
+    
     while ((token = strsep(&rest, ",")) != NULL) {
         arr[i++] = strip_quotes(token); // malloc seguro
     }

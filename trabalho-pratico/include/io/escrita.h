@@ -20,6 +20,6 @@ void escreve_aeronaves (Aeronaves **a, int num_aeronaves, FILE *out, char* qtype
 // Funcao que escreve aerporto mais num_departures
 void escreve_aeroporto3 (Aeroportos *a, FILE *out, char* qtype);
 
-
+void escreve_tempos5 (Time **time, int num_companhias, FILE *out, char *q_type);
 
 #endif

@@ -77,7 +77,7 @@ int main(int argc, char *argv[]) {
     processar_ficheiro(fres, (FuncaoParser) parse_and_validate_reserva_line, action_add_reserva, g_reservas, NULL, err_fres);
 
     percorre_voos_aeronaves(array_voos, g_aeroN);
-    GList *stats_list = ordena_tudo(g_aeroN);
+    GList *stats_list = ordena_aeronaves(g_aeroN);
 
     // -------------------------------------------------------------
     // Fechar ficheiros CSV e de erros
@@ -103,9 +103,11 @@ int main(int argc, char *argv[]) {
         // Agora sim, a linha contém uma query válida
         command_count++;
 
-        // Criar ficheiro de output desta query
-        char *path_filename = "resultados/command_output.txt"; // CORRIGIR
-        FILE *fout = abrir_ficheiro_escrita(path_filename);
+        char output_path[MAX_LINE];
+        snprintf(output_path, MAX_LINE, "resultados/command%d_output.txt", command_count);
+
+        FILE *fout = fopen(output_path, "w");
+        if (!fout) { perror("Erro ao criar output"); continue; }
 
         // --- Interpretar query ---
         char query_type[10];
@@ -118,21 +120,27 @@ int main(int argc, char *argv[]) {
         // Execução das queries
         // -------------------------
         if (strcmp(query_type, "1S") == 0 || strcmp(query_type, "1") == 0) {
-            if (n_args >= 2) escreve_aeroporto1(query1(g_aero,g_reservas, hash_voos, arg1, fout), fout, query_type);
+            if (n_args >= 2) escreve_aeroporto1(query1(g_aero,g_reservas, hash_voos, arg1), fout, query_type);
         }
         else if (strcmp(query_type, "2") == 0 || strcmp(query_type, "2S") == 0) {
             if (n_args == 2) {
-                escreve_aeronaves(query2(stats_list, atoi(arg1), NULL, fout), atoi(arg1), fout, query_type);
+                escreve_aeronaves(query2(stats_list, atoi(arg1), NULL), atoi(arg1), fout, query_type);
             } else if (n_args == 3) {
-                escreve_aeronaves(query2(stats_list, atoi(arg1), arg2, fout), atoi(arg1), fout, query_type);
+                escreve_aeronaves(query2(stats_list, atoi(arg1), arg2), atoi(arg1), fout, query_type);
             }
         }
         else if (strcmp(query_type, "3") == 0 || strcmp(query_type, "3S") == 0) {
             if (n_args == 3) {
                 percorre_voos_aeroportos(array_voos, g_aero, arg1, arg2);
-                escreve_aeroporto3(query3(g_aero, fout), fout, query_type);
+                escreve_aeroporto3(query3(g_aero), fout, query_type);
             }
         }
+        /*
+        else if (strcmp(query_type, "5") == 0 || strcmp(query_type, "5S") == 0) {
+            if (n_args == 2) {
+                escreve_tempos5(query5(ordena_tempo_medio(conta_tempo(array_voos)), atoi(arg1)), atoi(arg1), fout, query_type);
+            }
+        } */
         fclose(fout);
     }
 
@@ -141,7 +149,7 @@ int main(int argc, char *argv[]) {
 
     // ------------------------- LIBERTAÇÃO MEMÓRIA -------------------------
     gestor_aeroportos_free(g_aero);
-    g_list_free_full(stats_list, NULL);
+    g_list_free(stats_list);
     gestor_aeronaves_free(g_aeroN);
     hash_voos_free(hash_voos);
     array_voos_free(array_voos);

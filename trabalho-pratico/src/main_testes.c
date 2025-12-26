@@ -74,7 +74,7 @@ int check_results_file(const char *path_res, const char *path_exp, int query_num
 int main(int argc, char *argv[]) {
 
     struct timespec start, end;
-    double parsing_time, q1_time=0, q2_time=0, q3_time=0;
+    double parsing_time, q1_time=0, q2_time=0, q3_time=0, q5_time=0;
     double total_time;
 
     if (argc != 4) {
@@ -140,7 +140,8 @@ int main(int argc, char *argv[]) {
     processar_ficheiro(fres, (FuncaoParser) parse_and_validate_reserva_line, action_add_reserva, g_reservas, NULL, err_fres);
 
     percorre_voos_aeronaves(array_voos, g_aeroN);
-    GList *stats_list = ordena_tudo(g_aeroN);
+    GList *stats_list = ordena_aeronaves(g_aeroN);
+    // GList *tempo_medio = ordena_tempo_medio(conta_tempo(array_voos));
 
     // -------------------------------------------------------------
     // Fechar ficheiros CSV e de erros
@@ -166,11 +167,13 @@ int main(int argc, char *argv[]) {
     int q1_count = 0;
     int q2_count = 0;
     int q3_count = 0;
+    int q5_count = 0;
 
     // Número de fails por query
     int q1_fail = 0;
     int q2_fail = 0;
     int q3_fail = 0;
+    int q5_fail = 0;
 
     int command_count = 0;
 
@@ -194,42 +197,60 @@ int main(int argc, char *argv[]) {
         int n_args = sscanf(line, "%s %s %s", query_type, arg1, arg2);
 
 
-        // Escolha da query
+        // Escolha da query 1
         if (strcmp(query_type, "1") == 0 || strcmp(query_type, "1S") == 0) {
             q1_count++;
             clock_gettime(CLOCK_REALTIME, &start);
-            escreve_aeroporto1(query1(g_aero, g_reservas, hash_voos, arg1, fout), fout, query_type);
+            escreve_aeroporto1(query1(g_aero, g_reservas, hash_voos, arg1), fout, query_type);
             fclose(fout);
         // Se os ficheiro de resultados que a query criou for diferente do esperado, incrementar o contador de fails
             if (check_results_file(output_path, results_path, command_count) != 0) q1_fail++;
             clock_gettime(CLOCK_REALTIME, &end);
             q1_time += (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1e9;
 
+        // Escolha da query 2  
+
         } else if (strcmp(query_type, "2") == 0 || strcmp(query_type, "2S") == 0) {
             q2_count++;
             clock_gettime(CLOCK_REALTIME, &start);
-            if (n_args == 2) escreve_aeronaves(query2(stats_list, atoi(arg1), NULL, fout), atoi(arg1), fout, query_type);
-            else escreve_aeronaves(query2(stats_list, atoi(arg1), arg2, fout), atoi(arg1), fout, query_type);
+            if (n_args == 2) escreve_aeronaves(query2(stats_list, atoi(arg1), NULL), atoi(arg1), fout, query_type);
+            else escreve_aeronaves(query2(stats_list, atoi(arg1), arg2), atoi(arg1), fout, query_type);
             fclose(fout);
         // Se os ficheiro de resultados que a query criou for diferente do esperado, incrementar o contador de fails
             if (check_results_file(output_path, results_path, command_count) != 0) q2_fail++;
             clock_gettime(CLOCK_REALTIME, &end);
             q2_time += (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1e9;
 
+        // EScolha da query 3
+
         } else if (strcmp(query_type, "3") == 0 || strcmp(query_type, "3S") == 0) {
             q3_count++;
             clock_gettime(CLOCK_REALTIME, &start);
             percorre_voos_aeroportos(array_voos, g_aero, arg1, arg2);
-            escreve_aeroporto3(query3(g_aero, fout), fout, query_type);
+            escreve_aeroporto3(query3(g_aero), fout, query_type);
             fclose(fout);
         // Se os ficheiro de resultados que a query criou for diferente do esperado, incrementar o contador de fails
             if (check_results_file(output_path, results_path, command_count) != 0) q3_fail++;
             clock_gettime(CLOCK_REALTIME, &end);
             q3_time += (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1e9;
         }
+
+        /* Escolha da query 5
+
+        else if (strcmp(query_type, "5") == 0 || strcmp(query_type, "5S") == 0) {
+            q5_count++;
+            clock_gettime(CLOCK_REALTIME, &start);
+            if (n_args == 2) escreve_tempos5(query5(tempo_medio, atoi(arg1)), atoi(arg1), fout, query_type);
+            fclose(fout);
+        // Se os ficheiro de resultados que a query criou for diferente do esperado, incrementar o contador de fails
+            if (check_results_file(output_path, results_path, command_count) != 0) q5_fail++;
+            clock_gettime(CLOCK_REALTIME, &end);
+            q5_time += (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1e9;
+        } */
+
+
         else {
             fclose(fout);
-            continue; // Query inválida
         }
     }
     fclose(f);
@@ -237,6 +258,7 @@ int main(int argc, char *argv[]) {
     // ------------------------- LIBERTAÇÃO MEMÓRIA -------------------------
     gestor_aeroportos_free(g_aero);
     g_list_free(stats_list);
+    // g_list_free(tempo_medio);
     gestor_aeronaves_free(g_aeroN);
     hash_voos_free(hash_voos);
     array_voos_free(array_voos);
