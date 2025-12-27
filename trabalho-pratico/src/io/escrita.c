@@ -55,30 +55,28 @@ void escreve_aeronaves (Aeronaves **stats, int num_aeronaves, FILE *out, char* q
     }
     if (strcmp (qtype, "2") == 0) {
         for (int i = 0; i < num_aeronaves; i++) {
-            fprintf(out, "%s;%s;%s;%d\n",
+            if (stats[i]) {
+                fprintf(out, "%s;%s;%s;%d\n",
                     get_identifier_aeronave(stats[i]),
                     get_manufacturer_aeronave(stats[i]),
                     get_model_aeronave(stats[i]),
                     get_num_voos_aeronave(stats[i])
                 );
-        }
-        for (int i = num_aeronaves; i < num_aeronaves; i++) {
-            destroy_aeronave(stats[i]);
+            }
         }
         free(stats);
         return;
     }
     else if (strcmp (qtype, "2S") == 0) {
         for (int i = 0; i < num_aeronaves; i++) {
-        fprintf(out, "%s=%s=%s=%d\n",
+            if (stats[i]){
+                fprintf(out, "%s=%s=%s=%d\n",
                 get_identifier_aeronave(stats[i]),
                 get_manufacturer_aeronave(stats[i]),
                 get_model_aeronave(stats[i]),
                 get_num_voos_aeronave(stats[i])
-            );
-        }
-        for (int i = num_aeronaves; i < num_aeronaves; i++) {
-            destroy_aeronave(stats[i]);
+                );
+            }
         }
     }
     free(stats);

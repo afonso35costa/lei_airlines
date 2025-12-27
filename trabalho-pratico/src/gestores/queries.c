@@ -20,7 +20,7 @@ void checka_reservas(Reservas *r, HashVoos *hash_voos, GestorAeroportos *ga){
     if (r) {
         char **flight_ids = get_flight_ids_reservas(r);
 
-        for (guint j = 0; j < get_num_flights_reserva(r); j++) {
+        for (int j = 0; j < get_num_flights_reserva(r); j++) {
             Voo *v = hash_voos_get(hash_voos, flight_ids[j]);
             if (!v) {
                 return;
@@ -152,7 +152,6 @@ Aeronaves **query2(GList *stats_list, int N, const char *manufacturer_filter) {
         free(result);
         return NULL;
     }
-
     return result;
 }
 
@@ -272,6 +271,7 @@ int get_time_total(Time *t) {
     if (t) {
         return t->time;
     }
+    else return 0;
 }
 
 char *get_time_airline(Time *t) {
@@ -394,6 +394,8 @@ Time **query5(GList *tempo_medio, int N) {
 
     return result;
 }
+
+// Funcções necessárias para a query 6: Listar o aeroporto de destino mais comum para passageiros de uma determinada nacionalidade
 
 
 

@@ -31,6 +31,7 @@ Aeronaves* criar_aeronave(void) {
     a->year        = NULL;
     a->capacity        = NULL;
     a->range        = NULL;
+    a->num_voos = 0;
 
     return a;
 }
@@ -61,14 +62,10 @@ void destroy_aeronave(Aeronaves *a) {
     free(a->identifier);
     free(a->manufacturer);
     free(a->model);
-    free(a);
-}
-
-void free_unused(Aeronaves *a) {
-    if (!a) return;
     free(a->year);
     free(a->capacity);
     free(a->range);
+    free(a);
 }
 
 // GETTERS

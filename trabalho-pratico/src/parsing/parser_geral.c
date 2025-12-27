@@ -36,24 +36,26 @@ void processar_ficheiro(FILE *f, FuncaoParser funcao_parser, FuncaoAddGestor fun
 }
 
 
-void action_add_aeroporto(void *ptr, void* g_aero, void* unused) {
-    (void) unused;
+void action_add_aeroporto(void *ptr, void* g_aero, void* unused1, void* unused2) {
+    (void) unused1;
+    (void) unused2;
     Aeroportos *a = ptr;
     GestorAeroportos *gestor = g_aero;
     if (a) gestor_aeroportos_add(gestor, a);
 }
 
-void action_add_aeronave(void *ptr, void* g_aeroN, void* unused) {
-    (void) unused;
+void action_add_aeronave(void *ptr, void* g_aeroN, void* unused1, void* unused2) {
+    (void) unused1;
+    (void) unused2;
     Aeronaves *a = ptr;
     GestorAeronaves *gestor = g_aeroN;
     if (a) {
         gestor_aeronaves_add(gestor, a);
-        free_unused(a);
     }
 }
 
-void action_add_voo(void *ptr, void* array_voos, void* hash_voos) {
+void action_add_voo(void *ptr, void* array_voos, void* hash_voos, void* unused) {
+    (void) unused;
     Voo *v = ptr;
     ArrayVoos *gestor_array = array_voos;
     HashVoos *gestor_hash = hash_voos;
@@ -63,9 +65,10 @@ void action_add_voo(void *ptr, void* array_voos, void* hash_voos) {
     }
 }
 
-void action_add_passageiro(void *ptr, void* unused1, void* unused2) {
+void action_add_passageiro(void *ptr, void* unused1, void* unused2, void* unused3) {
     (void) unused1;
     (void) unused2;
+    (void) unused3;
     Passageiros *p = ptr;
     destroy_passageiro(p);
 }

@@ -95,7 +95,6 @@ int main(int argc, char *argv[]) {
 
     int command_count = 0;
 
-
     while (getline(&line, &len, f) != -1) {  
 
         if (strlen(line) <= 1) continue;
