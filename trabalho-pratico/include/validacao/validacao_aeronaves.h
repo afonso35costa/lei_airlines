@@ -3,6 +3,7 @@
 
 #include "aeronaves.h"
 
+/*
 // Funções de validação individual
 int validar_identifier(const char *identifier);
 int validar_manufacturer(const char *manufacturer);
@@ -10,11 +11,37 @@ int validar_model(const char *model);
 int validar_year(int year);
 int validar_capacity(int capacity);
 int validar_range(int range);
+*/
 
-// Função geral para validar uma aeronave
+
+
+/**
+ * @brief Valida o ano de fabrico da aeronave.
+ * 
+ * @param anoA Ano de fabrico como string
+ * 
+ * @return 1 se o ano for válido, 0 caso contrário
+ */
+int validar_ano_aeronave(const char *anoA);
+
+
+/**
+ * @brief Validação geral da aeronave.
+ * 
+ * @param a Ponteiro para a estrutura Aeronaves
+ * 
+ * @return 1 se a aeronave for válida, 0 caso contrário
+ */
 int validar_aeronave(const Aeronaves *a);
 
-// Função para processar o ficheiro CSV e gerar erros
+
+/**
+ * @brief Processa o ficheiro CSV de aeronaves e gera um ficheiro de erros.
+ * 
+ * @param input_path Caminho para o ficheiro de entrada
+ * 
+ * @param erros_path Caminho para o ficheiro de erros
+ */
 void processar_ficheiro_aeronaves(const char *input_path, const char *erros_path);
 
 #endif

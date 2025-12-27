@@ -4,27 +4,83 @@
 #include <glib.h>
 #include "reservas.h"
 
+/**
+ * @brief Estrutura que representa um gestor de reservas utilizando um array dinâmico.
+ * 
+ * - array: Array dinâmico de ponteiros para Reservas (GPtrArray)
+ */
 typedef struct gestor_reservas GestorReservas;
 
-// Cria um gestor de reservas vazio
+
+/**
+ * @brief Cria um novo gestor de reservas.
+ * 
+ * @param void Não recebe parâmetros
+ * 
+ * @return Ponteiro para o gestor de reservas criado
+ */
 GestorReservas* gestor_reservas_create(void);
 
-// Adiciona uma reserva ao gestor
+/**
+ * @brief Adiciona uma reserva ao gestor.
+ * 
+ * @param gr Ponteiro para o gestor de reservas
+ * @param r Ponteiro para a reserva a ser adicionada
+ * 
+ * @return void
+ */
 void gestor_reservas_add(GestorReservas *gr, Reservas *r);
 
-// Remove reserva pelo identificador
+
+/**
+ * @brief Remove uma reserva do gestor pelo seu ID.
+ * 
+ * @param gr Ponteiro para o gestor de reservas
+ * @param reservation_id ID da reserva a ser removida
+ * 
+ * @return void
+ */
 void gestor_reservas_remove(GestorReservas *gr, const char *reservation_id);
 
-// Retorna ponteiro para reserva pelo índice
+
+/**
+ * @brief Retorna uma reserva do gestor pelo índice.
+ * 
+ * @param gr Ponteiro para o gestor de reservas
+ * @param index Índice da reserva a ser retornada
+ * 
+ * @return Ponteiro para a reserva correspondente ao índice
+ */
 Reservas* gestor_reservas_get(GestorReservas *gr, int index);
 
-// Retorna o array de reservas
+
+/**
+ * @brief Retorna o array de reservas do gestor.
+ * 
+ * @param gr Ponteiro para o gestor de reservas
+ * 
+ * @return Ponteiro para o array de reservas
+ */
 GPtrArray* gestor_reservas_get_array(GestorReservas *gr);
 
-// Retorna o número de reservas no gestor
+
+/**
+ * @brief Retorna o número de reservas no gestor.
+ * 
+ * @param gr Ponteiro para o gestor de reservas
+ * 
+ * @return Número de reservas no gestor
+ */
 guint gestor_reservas_get_length(GestorReservas *gr);
 
-// Liberta toda a memória associada ao gestor e às reservas
+
+/**
+ * @brief Liberta a memória associada ao gestor de reservas e todas as reservas nele contidas.
+ * 
+ * @param gr Ponteiro para o gestor de reservas a ser libertado
+ * 
+ * @return void
+ */
 void gestor_reservas_free(GestorReservas *gr);
 
 #endif

@@ -4,50 +4,164 @@
 #include <glib.h>
 #include "voos.h"
 
+/**
+ * @brief Estrutura que representa um gestor de voos baseado em array.
+ * 
+ * - array: Array dinâmico de ponteiros para voos (GPtrArray)
+ */
 typedef struct gestor_voosArray ArrayVoos;
 
-// Cria um gestor de voos vazio
+
+/**
+ * @brief Cria um gestor de voos vazio
+ * 
+ * @param void Não recebe parâmetros
+ * 
+ * @return Ponteiro para o gestor de voos criado
+ */
 ArrayVoos* array_voos_create(void);
 
-// Adiciona um voo ao gestor
+
+/**
+ * @brief Adiciona um voo ao gestor
+ * 
+ * @param gv Ponteiro para o gestor de voos
+ * @param v Ponteiro para o voo a ser adicionado
+ * 
+ * @return void
+ */
 void array_voos_add(ArrayVoos *gv, Voo *v);
 
-// Remove voo pelo índice ou identificador
+
+/**
+ * @brief Remove um voo do gestor pelo seu identificador
+ * 
+ * @param gv Ponteiro para o gestor de voos
+ * @param flight_id Identificador do voo a ser removido
+ * 
+ * @return void
+ */
 void array_voos_remove(ArrayVoos *gv, const char *flight_id);
 
-// Retorna ponteiro para voo pelo índice
+
+/**
+ * @brief Retorna um voo do gestor pelo índice
+ * 
+ * @param gv Ponteiro para o gestor de voos
+ * @param index Índice do voo a ser retornado
+ * 
+ * @return Ponteiro para o voo correspondente ao índice
+ */
 Voo* array_voos_get(ArrayVoos *gv, int index);
 
-// Retorna o array de voos
+
+/**
+ * @brief Retorna o array de voos do gestor
+ * 
+ * @param gv Ponteiro para o gestor de voos
+ * 
+ * @return Ponteiro para o array de voos (GPtrArray)
+ */
 GPtrArray* array_voos_get_array(ArrayVoos *gv);
 
-// Retorna o número de voos no gestor
+
+/**
+ * @brief Retorna o número de voos no gestor
+ * 
+ * @param gv Ponteiro para o gestor de voos
+ * 
+ * @return Número de voos no gestor
+ */
 guint array_voos_get_length(ArrayVoos *gv);
 
-// Liberta toda a memória associada ao gestor e aos voos
+
+/**
+ * @brief Liberta toda a memória associada ao gestor e aos voos
+ * 
+ * @param gv Ponteiro para o gestor de voos
+ * 
+ * @return void
+ */
 void array_voos_free(ArrayVoos *gv);
 
+/**
+ * @brief Estrutura que representa um gestor de voos baseado em hash table.
+ * 
+ * - hash: Hash table que mapeia identificadores de voos (flight_id) para ponteiros de voos (Voo*)
+ */
 typedef struct gestor_voosHash HashVoos;
 
-// Cria um gestor de voos vazio
+
+/**
+ * @brief Cria um gestor de voos vazio
+ * 
+ * @param void Não recebe parâmetros
+ * 
+ * @return Ponteiro para o gestor de voos criado
+ */
 HashVoos* hash_voos_create(void);
 
-//Devevolver a hash table interna (para uso em queries)
+
+/**
+ * @brief Retorna a hash table de voos do gestor
+ * 
+ * @param gv Ponteiro para o gestor de voos
+ * 
+ * @return Ponteiro para a hash table (GHashTable)
+ */
 GHashTable* hash_voos_get_hash(HashVoos *gv);
 
-// Adiciona um voo ao gestor
+
+/**
+ * @brief Adiciona um voo ao gestor
+ * 
+ * @param gv Ponteiro para o gestor de voos
+ * @param v Ponteiro para o voo a ser adicionado
+ * 
+ * @return void
+ */
 void hash_voos_add(HashVoos *gv, Voo *v);
 
-// Remove voo pelo identificador
+
+/**
+ * @brief Remove um voo do gestor pelo seu identificador
+ * 
+ * @param gv Ponteiro para o gestor de voos
+ * @param flight_id Identificador do voo a ser removido
+ * 
+ * @return void
+ */
 void hash_voos_remove(HashVoos *gv, const char *flight_id);
 
-// Retorna ponteiro para voo pelo identificador
+
+/**
+ * @brief Retorna um voo do gestor pelo seu identificador
+ * 
+ * @param gv Ponteiro para o gestor de voos
+ * @param flight_id Identificador do voo a ser retornado
+ * 
+ * @return Ponteiro para o voo correspondente ao identificador
+ */
 Voo* hash_voos_get(HashVoos *gv, const char *flight_id);
 
-// Liberta toda a memória associada ao gestor e aos voos
+
+/**
+ * @brief Liberta toda a memória associada ao gestor e aos voos
+ * 
+ * @param gv Ponteiro para o gestor de voos
+ * 
+ * @return void
+ */
 void hash_voos_free(HashVoos *gv);
 
-// Função que devolve o número de voos no gestor
+
+/**
+ * @brief Retorna o número de voos no gestor
+ * 
+ * @param gv Ponteiro para o gestor de voos
+ * 
+ * @return Número de voos no gestor
+ */
 guint hash_voos_get_length(HashVoos *gv);
 
 #endif

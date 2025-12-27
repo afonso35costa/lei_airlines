@@ -3,29 +3,75 @@
 
 #include "reservas.h"
 
-// ============================================================
-// FUNÇÕES DE VALIDAÇÃO INDIVIDUAIS
-// ============================================================
 
-int validar_reservation_id(const char *id);
-int validar_flight_ids(const char *flight_ids);
-int validar_document_number_reserva(const char *doc);
-int validar_seat(const char *seat);
-int validar_price(double price);
-int validar_extra_luggage(bool extra_luggage);
-int validar_priority_boarding(bool priority_boarding);
-int validar_qr_code(const char *qr);
+/**
+ * @brief Funções de validação individuais
+ * 
+ * @param reservation_id Identificador da reserva a validar 
+ * 
+ * @return int
+ */
+int validar_reservation_id_reservas(const char *reservation_id);
 
-// ============================================================
-// FUNÇÃO DE VALIDAÇÃO GERAL (COM ENCAPSULAMENTO)
-// ============================================================
 
+/**
+ * @brief Valida se o número de documento do passageiro existe no sistema. 
+ * 
+ * @param document_number Número de documento do passageiro a validar 
+ * 
+ * @return 1 se o número de documento existir, 0 caso contrário
+ */
+int validar_document_number_passageiro_exists(const char *document_number);
+
+
+/**
+ * @brief Valida se todos os IDs de voo na lista existem no sistema.
+ * 
+ * @param flight_ids Lista de IDs de voo a validar
+ * 
+ * @return 1 se todos os IDs existirem, 0 caso contrário
+ */
+int validar_flight_ids_exist(char **flight_ids);
+
+
+/**
+ * @brief Valida o número de documento da reserva.
+ * 
+ * @param document_number Número de documento da reserva a validar
+ * 
+ * @return 1 se o número de documento for válido, 0 caso contrário
+ */
+int validar_document_number_reserva(const char *document_number);
+
+
+/**
+ * @brief Valida a lista de IDs de voo na reserva.
+ * 
+ * @param flight_ids Lista de IDs de voo a validar
+ * 
+ * @return 1 se todos os IDs forem válidos, 0 caso contrário
+ */
+int validar_listas_reservas(char **flight_ids);
+
+
+/**
+ * @brief Validação geral da reserva.
+ * 
+ * @param r Ponteiro para a estrutura Reservas
+ * 
+ * @return 1 se a reserva for válida, 0 caso contrário
+ */
 int validar_reserva(const Reservas *r);
 
-// ============================================================
-// LEITURA DE FICHEIRO E GERAÇÃO DE FICHEIRO DE ERROS
-// ============================================================
 
+/**
+ * @brief Processa o ficheiro CSV de reservas e gera um ficheiro de erros.
+ * 
+ * @param ficheiro_entrada Caminho para o ficheiro de entrada
+ * @param ficheiro_erros Caminho para o ficheiro de erros
+ * 
+ * @return void
+ */
 void processar_ficheiro_reservas(const char *ficheiro_entrada, const char *ficheiro_erros);
 
 #endif
