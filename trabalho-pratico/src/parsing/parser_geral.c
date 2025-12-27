@@ -11,10 +11,11 @@
 #include "gestor_aeronaves.h"
 #include "gestor_voos.h"
 #include "gestor_reservas.h"
+#include "queries.h"
 
 // Parser geral para ficheiros CSV
 
-void processar_ficheiro(FILE *f, FuncaoParser funcao_parser, FuncaoAddGestor funcao_add, void *gestor1, void *gestor2, FILE *err_file) {
+void processar_ficheiro(FILE *f, FuncaoParser funcao_parser, FuncaoAddGestor funcao_add, void *gestor1, void *gestor2, void *gestor3, FILE *err_file) {
 
     char *line = NULL;
     size_t len = 0;
@@ -28,7 +29,7 @@ void processar_ficheiro(FILE *f, FuncaoParser funcao_parser, FuncaoAddGestor fun
         void *obj = funcao_parser(line, err_file);
 
         if (obj)
-            funcao_add(obj, gestor1, gestor2);
+            funcao_add(obj, gestor1, gestor2, gestor3);
     }
 
     free(line);
@@ -46,7 +47,10 @@ void action_add_aeronave(void *ptr, void* g_aeroN, void* unused) {
     (void) unused;
     Aeronaves *a = ptr;
     GestorAeronaves *gestor = g_aeroN;
-    if (a) gestor_aeronaves_add(gestor, a);
+    if (a) {
+        gestor_aeronaves_add(gestor, a);
+        free_unused(a);
+    }
 }
 
 void action_add_voo(void *ptr, void* array_voos, void* hash_voos) {
@@ -66,10 +70,14 @@ void action_add_passageiro(void *ptr, void* unused1, void* unused2) {
     destroy_passageiro(p);
 }
 
-void action_add_reserva(void *ptr, void* g_reservas, void* unused) {
-    (void) unused;
+void action_add_reserva(void *ptr, void* g_reservas, void* hash_voos, void* ga) {
     Reservas *r = ptr;
     GestorReservas *gestor = g_reservas;
-    if (r) gestor_reservas_add(gestor, r);
+    HashVoos *hash = hash_voos;
+    GestorAeroportos *g_aero = ga;
+    if (r) {
+        gestor_reservas_add(gestor, r);
+        checka_reservas(r, hash, g_aero);
+    }
 }
 

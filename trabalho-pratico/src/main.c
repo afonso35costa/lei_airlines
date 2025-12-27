@@ -70,11 +70,11 @@ int main(int argc, char *argv[]) {
     // Processar aeroportos
     // -------------------------------------------------------------
 
-    processar_ficheiro(faero, (FuncaoParser) parse_and_validate_aeroporto_line, action_add_aeroporto, g_aero, NULL, err_faero);
-    processar_ficheiro(fvoos, (FuncaoParser) parse_and_validate_voo_line, action_add_voo, array_voos, hash_voos, err_fvoos);
-    processar_ficheiro(faeron, (FuncaoParser) parse_and_validate_aeronave_line, action_add_aeronave, g_aeroN, NULL, err_faeron);
-    processar_ficheiro(fpass, (FuncaoParser) parse_and_validate_passageiro_line, action_add_passageiro, NULL, NULL, err_fpass);
-    processar_ficheiro(fres, (FuncaoParser) parse_and_validate_reserva_line, action_add_reserva, g_reservas, NULL, err_fres);
+    processar_ficheiro(faero, (FuncaoParser) parse_and_validate_aeroporto_line, action_add_aeroporto, g_aero, NULL, NULL, err_faero);
+    processar_ficheiro(fvoos, (FuncaoParser) parse_and_validate_voo_line, action_add_voo, array_voos, hash_voos, NULL, err_fvoos);
+    processar_ficheiro(faeron, (FuncaoParser) parse_and_validate_aeronave_line, action_add_aeronave, g_aeroN, NULL, NULL, err_faeron);
+    processar_ficheiro(fpass, (FuncaoParser) parse_and_validate_passageiro_line, action_add_passageiro, NULL, NULL, NULL, err_fpass);
+    processar_ficheiro(fres, (FuncaoParser) parse_and_validate_reserva_line, action_add_reserva, g_reservas, hash_voos, g_aero, err_fres);
 
     percorre_voos_aeronaves(array_voos, g_aeroN);
     GList *stats_list = ordena_aeronaves(g_aeroN);
@@ -120,7 +120,7 @@ int main(int argc, char *argv[]) {
         // Execução das queries
         // -------------------------
         if (strcmp(query_type, "1S") == 0 || strcmp(query_type, "1") == 0) {
-            if (n_args >= 2) escreve_aeroporto1(query1(g_aero,g_reservas, hash_voos, arg1), fout, query_type);
+            if (n_args >= 2) escreve_aeroporto1(query1(g_aero, arg1), fout, query_type);
         }
         else if (strcmp(query_type, "2") == 0 || strcmp(query_type, "2S") == 0) {
             if (n_args == 2) {

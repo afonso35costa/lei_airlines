@@ -36,10 +36,10 @@ char **parse_flight_ids(char *str) {  // str = "['TI12433', 'TI12434']"
     // Primeiro, conta o número de tokens
     int num_tokens = 1; // pelo menos 1 token
     for (char *p = s_orig; *p; p++) {
-        if (*p == ';') num_tokens++;
+        if (*p == ',') num_tokens++;
     }
 
-    char **arr = malloc((num_tokens) * sizeof(char*));
+    char **arr = malloc((num_tokens + 1) * sizeof(char*));
     if (!arr) { free(s_orig); return NULL; }
 
     char *rest = start;
@@ -61,10 +61,10 @@ Reservas *parse_reserva_line(const char *line) {
     if (!temp) return NULL;
 
     char *rest = temp;
-    char *campos[8] = {0};
+    char *campos[7] = {0};
     int i = 0;
 
-    while (rest && i < 8) {
+    while (rest && i < 7) {
         campos[i] = ignorar_virgulas(&rest);
         i++;
     }
@@ -74,7 +74,7 @@ Reservas *parse_reserva_line(const char *line) {
     bool priority = str_to_bool(campos[6]);
 
     Reservas *r = init_reserva(campos[0], flight_ids, campos[2], campos[3],
-                               price, extra, priority, campos[7]);
+                               price, extra, priority);
 
 
     // Liberta array temporário de flight_ids
@@ -85,7 +85,7 @@ Reservas *parse_reserva_line(const char *line) {
         free(flight_ids);
     }
                                    
-    for (int j = 0; j < 8; j++) free(campos[j]);
+    for (int j = 0; j < 7; j++) free(campos[j]);
     free(temp);
     return r;
 }

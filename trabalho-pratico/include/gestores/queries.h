@@ -8,10 +8,10 @@
 #include "gestor_reservas.h"
 #include "datas.h"  // Para DataHora
 
-typedef void Gestor;
+void checka_reservas(Reservas *r, HashVoos *hash_voos, GestorAeroportos *ga);
 
 /* Q1: Listar resumo de um aeroporto */
-Aeroportos *query1(GestorAeroportos *ga, GestorReservas *gr, HashVoos *gv, const char *code);
+Aeroportos *query1(GestorAeroportos *ga, const char *code);
 
 typedef struct aircraft_stats AircraftStats;
 

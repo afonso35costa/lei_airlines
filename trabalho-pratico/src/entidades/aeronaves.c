@@ -28,8 +28,8 @@ Aeronaves* criar_aeronave(void) {
     a->identifier   = NULL;
     a->manufacturer = NULL;
     a->model        = NULL;
-    a->year         = NULL;
-    a->capacity     = NULL;
+    a->year        = NULL;
+    a->capacity        = NULL;
     a->range        = NULL;
 
     return a;
@@ -37,17 +37,16 @@ Aeronaves* criar_aeronave(void) {
 
 
 // FUNÇÃO INICIALIZADORA - Inicializa uma aeronave com valores
-Aeronaves* init_aeronave(const char *identifier, const char *manufacturer,
-                         const char *model, const char *year, const char *capacity, const char *range) {
+Aeronaves* init_aeronave(const char *identifier, const char *manufacturer, const char *model, const char *year, const char *capacity, const char *range) {
     Aeronaves *a = criar_aeronave();
     if (a == NULL) return NULL;
 
     a->identifier   = identifier  ? strdup(identifier)  : NULL;
     a->manufacturer = manufacturer ? strdup(manufacturer) : NULL;
-    a->model        = model       ? strdup(model)       : NULL;
-    a->year         = year        ? strdup(year)        : NULL;
-    a->capacity     = capacity    ? strdup(capacity)    : NULL;
-    a->range        = range       ? strdup(range)       : NULL;
+    a->model = model ? strdup(model) : NULL;
+    a->year = year ? strdup(year) : NULL;
+    a->capacity = capacity ? strdup(capacity) : NULL;
+    a->range = range ? strdup(range) : NULL;
     a->num_voos     = 0;
 
     return a;
@@ -62,10 +61,14 @@ void destroy_aeronave(Aeronaves *a) {
     free(a->identifier);
     free(a->manufacturer);
     free(a->model);
+    free(a);
+}
+
+void free_unused(Aeronaves *a) {
+    if (!a) return;
     free(a->year);
     free(a->capacity);
     free(a->range);
-    free(a);
 }
 
 // GETTERS

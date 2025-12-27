@@ -12,11 +12,12 @@ typedef struct aeronaves Aeronaves;
 Aeronaves* criar_aeronave(void);
 
 // Inicializa uma aeronave com dados
-Aeronaves* init_aeronave(const char *identifier, const char *manufacturer,
-                         const char *model, const char *year, const char *capacity, const char *range);
+Aeronaves* init_aeronave(const char *identifier, const char *manufacturer, const char *model, const char *year, const char *capacity, const char *range);
 
 // Liberta a memória associada a uma aeronave
 void destroy_aeronave(Aeronaves *a);
+
+void free_unused(Aeronaves *a);
 
 // GETTERS - Funções para obter valores
 

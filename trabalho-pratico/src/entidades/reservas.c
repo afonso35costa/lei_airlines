@@ -13,7 +13,6 @@ typedef struct reservas {
     double price;                     // preço da reserva
     bool extra_luggage;               // bagagem extra incluída
     bool priority_boarding;           // embarque prioritário incluído
-    char *qr_code;                // string do código QR
 } Reservas;
 
 // FUNÇÃO CONSTRUTORA - Criar nova reserva e alocar memória
@@ -31,7 +30,6 @@ Reservas* create_reserva(void) {
     r->price = 0.0;
     r->extra_luggage = false;
     r->priority_boarding = false;
-    r->qr_code = NULL;
     
     return r;
 }
@@ -39,8 +37,7 @@ Reservas* create_reserva(void) {
 // FUNÇÃO INICIALIZADORA - Inicializar reserva com valores
 Reservas* init_reserva(const char *reservation_id, char **flight_ids, 
                       const char *document_number, const char *seat, 
-                      double price, bool extra_luggage, bool priority_boarding, 
-                      const char *qr_code) {
+                      double price, bool extra_luggage, bool priority_boarding) {
     Reservas *r = create_reserva();
     if (r == NULL) return NULL;
     
@@ -48,7 +45,6 @@ Reservas* init_reserva(const char *reservation_id, char **flight_ids,
     r->reservation_id = reservation_id ? strdup(reservation_id) : NULL;
     r->document_number = document_number ? strdup(document_number) : NULL;
     r->seat = seat ? strdup(seat) : NULL;
-    r->qr_code = qr_code ? strdup(qr_code) : NULL;
     
     // Copia array de flight_ids
     if (flight_ids != NULL) {
@@ -60,7 +56,10 @@ Reservas* init_reserva(const char *reservation_id, char **flight_ids,
         r->flight_ids = malloc((count + 1) * sizeof(char*));
         if (r->flight_ids != NULL) {
             for (int i = 0; i < count; i++) {
-                r->flight_ids[i] = strdup(flight_ids[i]);
+                if (flight_ids[i])  // protecção extra
+                    r->flight_ids[i] = strdup(flight_ids[i]);
+                else
+                    r->flight_ids[i] = NULL;
             }
             r->flight_ids[count] = NULL; // Terminator
         }
@@ -107,7 +106,6 @@ void destroy_reserva(Reservas *r) {
     }
     free(r->document_number);
     free(r->seat);
-    free(r->qr_code);
     
     // Liberta a estrutura principal
     free(r);
@@ -155,9 +153,6 @@ bool get_priority_boarding_reservas(const Reservas *r) {
     return (r != NULL) ? r->priority_boarding : false;
 }
 
-char* get_qr_code_reservas(const Reservas *r) {
-    return (r != NULL) ? r->qr_code : NULL;
-}
 
 // ============================================================================
 // SETTERS - Funções para definir valores
@@ -221,8 +216,3 @@ void set_priority_boarding(Reservas *r, bool priority) {
     if (r != NULL) r->priority_boarding = priority;
 }
 
-void set_qr_code_reservas(Reservas *r, const char *qr) {
-    if (r == NULL) return;
-    free(r->qr_code);
-    r->qr_code = qr ? strdup(qr) : NULL;
-}

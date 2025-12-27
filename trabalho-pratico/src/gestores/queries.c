@@ -14,37 +14,39 @@
 #include "datas.h"
 #include "queries.h"
 
-Aeroportos *query1(GestorAeroportos *ga, GestorReservas *gr, HashVoos *gv, const char *code) {
-    if (!ga || !gr || !gv || !code)
-        return NULL;
-    // procurar aeroporto
-    Aeroportos *a = gestor_aeroportos_get(ga, code);
-    if (a) {
-        for (guint i = 0; i < gestor_reservas_get_length(gr); i++) {
-            Reservas *r = gestor_reservas_get(gr, i);
-            if (r) {
-                char **flight_ids = get_flight_ids_reservas(r);
+// Função que percorre as reservas e aumenta as contagens
 
-                for (guint j = 0; j < get_num_flights_reserva(r); j++) {
-                    Voo *v = hash_voos_get(gv, flight_ids[j]);
-                    if (!v) {
-                        return NULL;
-                    }
-                    if (v && strcmp(get_status_voo(v), "Cancelled") != 0) {
-                        // verificar se o aeroporto é origem ou destino
-                        if (g_strcmp0(get_origin_voo(v), code) == 0) {
-                            int count = get_arr_count_aeroporto(a);
-                            set_arr_count_aeroporto(a, count + 1);
-                        }
-                        if (g_strcmp0(get_destination_voo(v), code) == 0) {
-                            int count = get_dep_count_aeroporto(a);
-                            set_dep_count_aeroporto(a, count + 1);
-                        }
-                    }
+void checka_reservas(Reservas *r, HashVoos *hash_voos, GestorAeroportos *ga){
+    if (r) {
+        char **flight_ids = get_flight_ids_reservas(r);
+
+        for (guint j = 0; j < get_num_flights_reserva(r); j++) {
+            Voo *v = hash_voos_get(hash_voos, flight_ids[j]);
+            if (!v) {
+                return;
+            }
+            if (v && strcmp(get_status_voo(v), "Cancelled") != 0) {
+                Aeroportos *a1 = gestor_aeroportos_get(ga, get_origin_voo(v));
+                if (a1) {
+                    int count = get_arr_count_aeroporto(a1);
+                    set_arr_count_aeroporto(a1, count + 1);
+                }
+                Aeroportos *a2 = gestor_aeroportos_get(ga, get_destination_voo(v));
+                if (a2) {
+                    int count = get_dep_count_aeroporto(a2);
+                    set_dep_count_aeroporto(a2, count + 1);
                 }
             }
         }
     }
+}
+
+Aeroportos *query1(GestorAeroportos *ga, const char *code) {
+    if (!ga || !code)
+        return NULL;
+    // procurar aeroporto
+    Aeroportos *a = gestor_aeroportos_get(ga, code);
+    
     return a;
 }
 

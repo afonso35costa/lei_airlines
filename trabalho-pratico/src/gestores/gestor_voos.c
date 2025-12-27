@@ -65,7 +65,7 @@ struct gestor_voosHash {
 HashVoos* hash_voos_create(void) {
     HashVoos *ga = malloc(sizeof(HashVoos));
     if (!ga) return NULL;
-    ga->hash = g_hash_table_new_full(g_str_hash, g_str_equal, free, NULL);
+    ga->hash = g_hash_table_new_full(g_str_hash, g_str_equal, NULL, NULL);
     return ga;
 }
 
@@ -76,7 +76,7 @@ GHashTable* hash_voos_get_hash(HashVoos *ga) {
 
 // Adiciona voo
 void hash_voos_add(HashVoos *ga, Voo *voo) {
-    g_hash_table_insert(ga->hash, g_strdup(get_flight_id_voo(voo)), voo);
+    g_hash_table_insert(ga->hash, (gpointer) get_flight_id_voo(voo), voo);
 }
 
 // Remove voo

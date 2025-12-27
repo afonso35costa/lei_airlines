@@ -11,7 +11,7 @@ struct gestor_aeroportos {
 GestorAeroportos* gestor_aeroportos_create(void) {
     GestorAeroportos *ga = malloc(sizeof(GestorAeroportos));
     if (!ga) return NULL;
-    ga->hash = g_hash_table_new_full(g_str_hash, g_str_equal, free, (GDestroyNotify)destroy_aeroporto);
+    ga->hash = g_hash_table_new_full(g_str_hash, g_str_equal, NULL, (GDestroyNotify)destroy_aeroporto);
     return ga;
 }
 
@@ -22,7 +22,7 @@ GHashTable* gestor_aeroportos_get_hash(GestorAeroportos *ga) {
 
 // Adiciona aeroporto
 void gestor_aeroportos_add(GestorAeroportos *ga, Aeroportos *aeroporto) {
-    g_hash_table_insert(ga->hash, g_strdup(get_code_aeroporto(aeroporto)), aeroporto);
+    g_hash_table_insert(ga->hash, (gpointer) get_code_aeroporto(aeroporto), aeroporto);
 }
 
 // Remove aeroporto

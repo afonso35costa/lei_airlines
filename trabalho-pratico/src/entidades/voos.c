@@ -43,7 +43,6 @@ Voo* create_voo(void) {
     v->destination = NULL;
     v->aircraft = NULL;
     v->airline = NULL;
-    v->tracking_url = NULL;
     
     return v;
 }
@@ -52,7 +51,7 @@ Voo* create_voo(void) {
 Voo* init_voo(const char *flight_id, DataHora *departure, DataHora *actual_departure,
               DataHora *arrival, DataHora *actual_arrival, const char *gate,
               const char *status, const char *origin, const char *destination,
-              const char *aircraft, const char *airline, const char *tracking_url) {
+              const char *aircraft, const char *airline) {
     Voo *v = create_voo();
     if (v == NULL) return NULL;
     
@@ -64,7 +63,6 @@ Voo* init_voo(const char *flight_id, DataHora *departure, DataHora *actual_depar
     v->destination = destination ? strdup(destination) : NULL;
     v->aircraft = aircraft ? strdup(aircraft) : NULL;
     v->airline = airline ? strdup(airline) : NULL;
-    v->tracking_url = tracking_url ? strdup(tracking_url) : NULL;
     
     // Copia estruturas DataHora (assumindo que têm função de cópia)
     /* Não existe função de cópia para DataHora: atribuir os ponteiros diretamente
@@ -107,7 +105,6 @@ void destroy_voo(Voo *v) {
     free(v->destination);
     free(v->aircraft);
     free(v->airline);
-    free(v->tracking_url);
     
     // Liberta estruturas DataHora
     if (v->departure) destroy_data_hora(v->departure);
@@ -118,6 +115,7 @@ void destroy_voo(Voo *v) {
     // Liberta a estrutura principal
     free(v);
 }
+
 
 // ===========================================
 // GETTERS - Funções para obter valores
@@ -168,9 +166,6 @@ char* get_airline_voo(const Voo *v) {
     return (v != NULL) ? v->airline : NULL;
 }
 
-char* get_tracking_url_voo(const Voo *v) {
-    return (v != NULL) ? v->tracking_url : NULL;
-}
 
 // ===========================================
 // SETTERS - Funções para definir valores
@@ -242,8 +237,3 @@ void set_airline_voo(Voo *v, const char *airline) {
     v->airline = airline ? strdup(airline) : NULL;
 }
 
-void set_tracking_url_voo(Voo *v, const char *tracking_url) {
-    if (v == NULL) return;
-    free(v->tracking_url);
-    v->tracking_url = tracking_url ? strdup(tracking_url) : NULL;
-}

@@ -10,12 +10,6 @@
 /* O tipo Voo é opaco para o utilizador do header; a definição completa fica em voos.c */
 typedef struct voo Voo;
 
-/* Liberta todas as strings internas de um Voo (não liberta o struct) */
-void voo_clear(Voo *v);
-
-/* Liberta o struct e todo o seu conteúdo */
-void voo_free(Voo *v);
-
 /* Cria um novo Voo duplicando todas as strings passadas (cada parâmetro pode ser NULL).
    Retorna NULL em caso de falha de alocação. */
 Voo* create_voo(void);
@@ -25,7 +19,7 @@ Voo* create_voo(void);
 Voo* init_voo(const char *flight_id, DataHora *departure, DataHora *actual_departure,
               DataHora *arrival, DataHora *actual_arrival, const char *gate,
               const char *status, const char *origin, const char *destination,
-              const char *aircraft, const char *airline, const char *tracking_url);
+              const char *aircraft, const char *airline);
 
 /* Compara voos */
 int compare_voos(const Voo *v1, const Voo *v2);
@@ -46,7 +40,6 @@ char* get_origin_voo(const Voo *v);
 char* get_destination_voo(const Voo *v);
 char* get_aircraft_voo(const Voo *v);
 char* get_airline_voo(const Voo *v);
-char* get_tracking_url_voo(const Voo *v);
 
 /* Setters */
 void set_flight_id_voo(Voo *v, const char *flight_id);
@@ -60,7 +53,6 @@ void set_origin_voo(Voo *v, const char *origin);
 void set_destination_voo(Voo *v, const char *destination);
 void set_aircraft_voo(Voo *v, const char *aircraft);
 void set_airline_voo(Voo *v, const char *airline);
-void set_tracking_url_voo(Voo *v, const char *tracking_url);
 
 
 
