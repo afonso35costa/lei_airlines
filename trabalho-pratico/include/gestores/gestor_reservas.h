@@ -4,6 +4,8 @@
 #include <glib.h>
 #include "reservas.h"
 
+
+
 /**
  * @brief Estrutura que representa um gestor de reservas utilizando um array dinâmico.
  * 
@@ -82,6 +84,8 @@ guint gestor_reservas_get_length(GestorReservas *gr);
  * @return void
  */
 void gestor_reservas_free(GestorReservas *gr);
+
+
 
 // FALTA DOCUMENTAR
 

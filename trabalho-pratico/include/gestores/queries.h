@@ -6,6 +6,7 @@
 #include "gestor_aeronaves.h"
 #include "gestor_voos.h"
 #include "gestor_reservas.h"
+#include "gestor_passageiros.h"
 #include "passageiros.h"
 #include "datas.h"  // Para DataHora
 
@@ -240,7 +241,9 @@ typedef struct hash_aeroportos_passageiro HashAeroportosPassageiro;
 
 HashAeroportosPassageiro *hash_aero_pass_create(void);
 
-void verifica_passageiros(Passageiros *p, HashAeroportosPassageiro *hash_ap, GestorAeroportos *ga, HashReservas *gr, HashVoos *hv);
+void hash_aero_pass_free(HashAeroportosPassageiro *hap);
+
+void verifica_passageiros(HashPassageiros *hp, HashAeroportosPassageiro *hash_ap, HashReservas *gr, HashVoos *hv);
 
 PassageiroStats *query6(HashAeroportosPassageiro *hash_ap, const char *nacionalidade);
 

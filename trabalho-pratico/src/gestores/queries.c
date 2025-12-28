@@ -7,6 +7,7 @@
 #include "gestor_aeronaves.h"
 #include "gestor_voos.h"
 #include "gestor_reservas.h"
+#include "gestor_passageiros.h"
 #include "aeroportos.h"
 #include "aeronaves.h"
 #include "reservas.h"
@@ -359,7 +360,8 @@ GList *ordena_tempo_medio (HashTime *hash_time) {
         if (!t) continue;
         tempo_medio = g_list_append(tempo_medio, t);
     }
-
+    g_hash_table_destroy(hash_time->hash);
+    free(hash_time);
     // Ordena a lista
     tempo_medio = g_list_sort(tempo_medio, compara_tempos);
     tempo_medio = g_list_append(tempo_medio, NULL);
@@ -420,6 +422,13 @@ int get_count_passageiro_stats(PassageiroStats *ps) {
     return ps->count;
 }
 
+void passageiro_stats_free(PassageiroStats *ps) {
+    if (!ps) return;
+    free(ps->nacionalidade);
+    free(ps->aeroporto_code);
+    free(ps);
+}
+
 struct hash_aeroportos_passageiro {
     GHashTable *hash;
 };
@@ -427,44 +436,60 @@ struct hash_aeroportos_passageiro {
 HashAeroportosPassageiro *hash_aero_pass_create(void){
     HashAeroportosPassageiro *h = malloc(sizeof(HashAeroportosPassageiro));
     if (!h) return NULL;
-    h->hash = g_hash_table_new_full(g_str_hash, g_str_equal, free, NULL);
+    h->hash = g_hash_table_new_full(g_str_hash, g_str_equal, free, (GDestroyNotify) passageiro_stats_free);
     return h;
 }
 
+void hash_aero_pass_free(HashAeroportosPassageiro *hap) {
+    if (!hap) return;
+    g_hash_table_destroy(hap->hash);
+    free(hap);
+}
 
-void verifica_passageiros(Passageiros *p, HashAeroportosPassageiro *hash_ap, GestorAeroportos *ga, HashReservas *gr, HashVoos *hv) {
-    if (!p || !hash_ap || !ga || !gr || !hv) return;
-    char *nacionalidade = get_nationality_passageiros(p);
-    if (!nacionalidade) return;
+
+void verifica_passageiros(HashPassageiros *hash_passageiros, HashAeroportosPassageiro *hash_ap, HashReservas *gr, HashVoos *hv) {
+    if (!hash_passageiros || !hash_ap || !gr || !hv) return;
+    
+    GHashTableIter iter;
+    gpointer key, value;
+    g_hash_table_iter_init(&iter, hash_passageiros_get_hash(hash_passageiros)); 
+
+    while (g_hash_table_iter_next(&iter, &key, &value)) {
+        Passageiros *p = (Passageiros *)value;
+        if (!p) continue;
+
+        char *nacionalidade = get_nationality_passageiros(p);
+        if (!nacionalidade) return;
 
 
-    char *doc = get_document_number_passageiros(p);
-    if (!doc) return;
-    Reservas *r = hash_reservas_get(gr, doc);
-    if (r) {
+        char *doc = get_document_number_passageiros(p);
+        if (!doc) return;
+        Reservas *r = hash_reservas_get(gr, doc);
+        if (r) {
 
-        char **id = get_flight_ids_reservas(r);
-        if (!id) return;
+            char **id = get_flight_ids_reservas(r);
+            if (!id) return;
 
-        for (int i = 0; i < get_num_flights_reserva(r); i++) {
-            Voo *v = hash_voos_get(hv, id[i]);
-            if (!v) continue;
+            for (int i = 0; i < get_num_flights_reserva(r); i++) {
+                Voo *v = hash_voos_get(hv, id[i]);
+                if (!v) continue;
 
-            char *destination = get_destination_voo(v);
-            if (!destination) continue;
+                char *destination = get_destination_voo(v);
+                if (!destination) continue;
 
-            char chave[512];
-            snprintf(chave, sizeof(chave), "%s_%s", nacionalidade, destination);
+                char chave[512];
+                snprintf(chave, sizeof(chave), "%s_%s", nacionalidade, destination);
 
-            PassageiroStats *stat = g_hash_table_lookup(hash_ap->hash, chave);
-            if (!stat) {
-                stat = malloc(sizeof(PassageiroStats));
-                stat->nacionalidade = strdup(nacionalidade);
-                stat->aeroporto_code = strdup(destination);
-                stat->count = 0;
-                g_hash_table_insert(hash_ap->hash, strdup(chave), stat);
+                PassageiroStats *stat = g_hash_table_lookup(hash_ap->hash, chave);
+                if (!stat) {
+                    stat = malloc(sizeof(PassageiroStats));
+                    stat->nacionalidade = strdup(nacionalidade);
+                    stat->aeroporto_code = strdup(destination);
+                    stat->count = 0;
+                    g_hash_table_insert(hash_ap->hash, strdup(chave), stat);
+                }
+                stat->count += 1;
             }
-            stat->count++;
         }
     }
 }

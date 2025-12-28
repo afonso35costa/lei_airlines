@@ -22,7 +22,16 @@ DataHora* ler_data_hora(const char *texto) {
     if (sscanf(texto, "%d-%d-%d %d:%d", &ano, &mes, &dia, &hora, &minuto) == 5) {
         dh->data = ano * 10000 + mes * 100 + dia;
         dh->hora = hora * 100 + minuto;
+    } 
+    else if (strcmp(texto, "N/A") == 0) { 
+        dh->data = 0;
+        dh->hora = 0;
     }
+    else {
+        free(dh);
+        return NULL;
+    }
+    
     return dh;
 }
 
@@ -46,6 +55,12 @@ DataHora* ler_data(const char *texto) {
 // Converte DataHora para string "YYYY-MM-DD HH:MM"
 char *data_hora_para_texto(DataHora *dh) {
     if (!dh) return NULL;
+    if (dh->data == 0 && dh->hora == 0) {
+        char *buffer = malloc(4);
+        sprintf(buffer, "N/A");
+        return buffer;
+    }
+
     int ano = dh->data / 10000;
     int mes = (dh->data / 100) % 100;
     int dia = dh->data % 100;

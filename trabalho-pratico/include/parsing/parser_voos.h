@@ -27,4 +27,6 @@ Voo *parse_voo_line(const char *line);
  */
 Voo *parse_and_validate_voo_line(const char *line, FILE *ferr);
 
+char *voo_para_csv(Voo *v);
+
 #endif

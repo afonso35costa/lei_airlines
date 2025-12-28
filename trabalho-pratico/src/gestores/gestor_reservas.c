@@ -2,6 +2,7 @@
 #include <glib.h>
 #include <stdlib.h>
 
+/*
 struct gestor_reservas {
     GPtrArray *array;  // array de Reservas*
 };
@@ -52,6 +53,8 @@ void gestor_reservas_free(GestorReservas *gr) {
     free(gr);
 }
 
+
+*/
 
 // Implementação do gestor de reservas baseado em hash table
 

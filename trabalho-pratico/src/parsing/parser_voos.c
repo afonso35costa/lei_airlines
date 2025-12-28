@@ -58,3 +58,29 @@ Voo *parse_and_validate_voo_line(const char *line, FILE *ferr) {
     
     return v;  // válido ✅
 }
+
+// Funcao que transforma um Voo numa linha CSV
+char *voo_para_csv(Voo *v) {
+    if (!v) return NULL;
+    char *dep_str = data_hora_para_texto(get_departure_voo(v));
+    char *act_dep_str = data_hora_para_texto(get_actual_departure_voo(v));
+    char *arr_str = data_hora_para_texto(get_arrival_voo(v));
+    char *act_arr_str = data_hora_para_texto(get_actual_arrival_voo(v));
+    char *line = malloc(512);
+    if (!line) {
+        free(dep_str);
+        free(act_dep_str);
+        free(arr_str);
+        free(act_arr_str);
+        return NULL;
+    }
+    snprintf(line, 512, "\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"",
+             get_flight_id_voo(v), dep_str, act_dep_str, arr_str, act_arr_str, get_gate_voo(v),
+             get_status_voo(v), get_origin_voo(v), get_destination_voo(v), get_aircraft_voo(v),
+             get_airline_voo(v));
+    free(dep_str);
+    free(act_dep_str);
+    free(arr_str);
+    free(act_arr_str);
+    return line;
+}

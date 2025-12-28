@@ -27,11 +27,18 @@ char **parse_flight_ids(char *str) {  // str = "['TI12433', 'TI12434']"
     size_t len = strlen(s_orig);
     char *start = s_orig;  // ponteiro que percorre o buffer
 
-    // Remove colchetes, sem mexer no ponteiro original
+    // Se nao estiver entre parentesis retos, retorna NULL
+
+    if (len < 2 || s_orig[0] != '[' || s_orig[len-1] != ']') {
+        free(s_orig);
+        return NULL;
+    }
+
+    // Remove parentesis, sem mexer no ponteiro original
     if (len >= 2 && s_orig[0] == '[' && s_orig[len-1] == ']') {
         s_orig[len-1] = '\0';
         start++; // apenas start aponta para o início real do conteúdo
-    }
+    } 
 
     // Primeiro, conta o número de tokens
     int num_tokens = 1; // pelo menos 1 token

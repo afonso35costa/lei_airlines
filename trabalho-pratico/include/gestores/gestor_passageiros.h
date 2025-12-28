@@ -1,31 +1,21 @@
-/*
 #ifndef GESTOR_PASSAGEIROS_H
 #define GESTOR_PASSAGEIROS_H
 
 #include "passageiros.h"
+#include <glib.h>
 
-#define TABLE_SIZE 20000
+typedef struct gestor_passageiros HashPassageiros;
 
-typedef struct nodo_p {
-    char *key;               // document_number
-    Passageiros *valor;      // struct Passageiros
-    struct nodo_p *next;     // próximo no caso de colisão
-} NodoPassageiros;
+// FALTA DOCUMENTAÇÃO
 
-typedef struct gestor_passageiros {
-    NodoPassageiros **tabela; // array de listas
-} GestorPassageiros;
+HashPassageiros* hash_passageiros_create(void);
 
-GestorPassageiros *criar_gestor_passageiros();
-void libertar_gestor_passageiros(GestorPassageiros *g);
+GHashTable* hash_passageiros_get_hash(HashPassageiros *gp);
 
-
-int inserir_passageiro(GestorPassageiros *g, Passageiros *p);
-Passageiros *procurar_passageiro(GestorPassageiros *g, const char *doc);
-int remover_passageiro(GestorPassageiros *g, const char *doc);
-
-
-void print_todos_passageiros(GestorPassageiros *g);
+void hash_passageiros_add(HashPassageiros *gp, Passageiros *passageiro);
+void hash_passageiros_remove(HashPassageiros *gp, const char *code);
+Passageiros* hash_passageiros_get(HashPassageiros *gp, const char *code);
+void hash_passageiros_free(HashPassageiros *gp);
+guint hash_passageiros_get_length(HashPassageiros *gp);
 
 #endif
-*/

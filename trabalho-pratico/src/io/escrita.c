@@ -114,30 +114,30 @@ void escreve_tempos5 (Time **time, int num_companhias, FILE *out, char *q_type) 
     }
     if (strcmp (q_type, "5") == 0) {
         for (int i = 0; i < num_companhias; i++) {
-            if (!time[i]) return;
+            if (!time[i]) {
+                free(time);
+                return;
+            }
             fprintf(out, "%s;%d;%.3f\n",
                     get_time_airline(time[i]),
                     get_time_delayed_count(time[i]),
                     round3((double) get_time_total(time[i]) / get_time_delayed_count(time[i]))
                 );
         }
-        for (int j=num_companhias; j < num_companhias ; j++) {
-            free_time(time[j]);
-        }
         free(time);
         return;
     }
     else if (strcmp (q_type, "5S") == 0) {
         for (int i = 0; i < num_companhias; i++) {
-            if (!time[i]) return;
+            if (!time[i]) {
+                free(time);
+                return;
+            }
             fprintf(out, "%s=%d=%.3f\n",
                 get_time_airline(time[i]),
                 get_time_delayed_count(time[i]),
                 round3((double) get_time_total(time[i]) / get_time_delayed_count(time[i]))
                 );
-        }
-        for (int j=num_companhias; j < num_companhias ; j++) {
-            free_time(time[j]);
         }
         free(time);
         return;

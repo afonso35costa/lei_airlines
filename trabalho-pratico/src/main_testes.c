@@ -12,6 +12,7 @@
 #include "gestor_voos.h"
 #include "gestor_aeronaves.h"
 #include "gestor_reservas.h"
+#include "gestor_passageiros.h"
 #include "queries.h"
 #include "leitura.h"
 #include "escrita.h"
@@ -100,9 +101,9 @@ int main(int argc, char *argv[]) {
     ArrayVoos *array_voos = array_voos_create();
     HashVoos *hash_voos = hash_voos_create();
     GestorAeronaves *g_aeroN = gestor_aeronaves_create();
-    GestorReservas *g_reservas = gestor_reservas_create();
     HashAeroportosPassageiro *aero_pass = hash_aero_pass_create();
     HashReservas *hash_reservas = hash_reservas_create();
+    HashPassageiros *hash_passageiros = hash_passageiros_create();
 
    // -------------------------------------------------------------
     // Abrir ficheiros CSV e ficheiros de erro
@@ -136,11 +137,12 @@ int main(int argc, char *argv[]) {
     // -------------------------------------------------------------
 
     processar_ficheiro(faero, (FuncaoParser) parse_and_validate_aeroporto_line, action_add_aeroporto, g_aero, NULL, NULL, NULL, err_faero);
-    processar_ficheiro(fvoos, (FuncaoParser) parse_and_validate_voo_line, action_add_voo, array_voos, hash_voos, NULL, NULL, err_fvoos);
     processar_ficheiro(faeron, (FuncaoParser) parse_and_validate_aeronave_line, action_add_aeronave, g_aeroN, NULL, NULL, NULL, err_faeron);
-    processar_ficheiro(fres, (FuncaoParser) parse_and_validate_reserva_line, action_add_reserva, g_reservas, hash_voos, g_aero, hash_reservas, err_fres);
-    processar_ficheiro(fpass, (FuncaoParser) parse_and_validate_passageiro_line, action_add_passageiro, aero_pass, g_aero, hash_voos, hash_reservas, err_fpass);
+    processar_ficheiro(fvoos, (FuncaoParser) parse_and_validate_voo_line, action_add_voo, array_voos, hash_voos, g_aeroN, NULL, err_fvoos);
+    processar_ficheiro(fpass, (FuncaoParser) parse_and_validate_passageiro_line, action_add_passageiro, NULL, hash_passageiros, NULL, NULL, err_fpass);
+    processar_ficheiro(fres, (FuncaoParser) parse_and_validate_reserva_line, action_add_reserva, hash_passageiros, hash_voos, g_aero, hash_reservas, err_fres);
 
+    verifica_passageiros(hash_passageiros, aero_pass, hash_reservas, hash_voos);
     percorre_voos_aeronaves(array_voos, g_aeroN);
     GList *stats_list = ordena_aeronaves(g_aeroN);
     GList *tempo_medio = ordena_tempo_medio(conta_tempo(array_voos));
@@ -195,10 +197,10 @@ int main(int argc, char *argv[]) {
         if (!fout) { perror("Erro ao criar output"); continue; }
 
         char query_type[10];
-        char arg1[256], arg2[256];
-        arg1[0] = arg2[0] = '\0';
+        char arg1[256], arg2[256], arg3[256], arg4[256], arg5[256];
+        arg1[0] = arg2[0] = arg3[0] = arg4[0] = arg5[0] = '\0';
 
-        int n_args = sscanf(line, "%s %s %s", query_type, arg1, arg2);
+        int n_args = sscanf(line, "%s %s %s %s %s %s", query_type, arg1, arg2, arg3, arg4, arg5);
 
 
         // Escolha da query 1
@@ -257,7 +259,25 @@ int main(int argc, char *argv[]) {
         else if (strcmp(query_type, "6") == 0 || strcmp(query_type, "6S") == 0) {
             q6_count++;
             clock_gettime(CLOCK_REALTIME, &start);
-            if (n_args >= 2) escreve_aeroporto6(query6(aero_pass, arg1), fout, query_type);
+            if (n_args == 2) escreve_aeroporto6(query6(aero_pass, arg1), fout, query_type);
+            else if (n_args == 3) {
+                char combined_arg[512];
+                snprintf(combined_arg, sizeof(combined_arg), "%s %s", arg1, arg2);
+                escreve_aeroporto6(query6(aero_pass, combined_arg), fout, query_type);
+            }
+            else if (n_args == 4) {
+                char combined_arg[768];
+                snprintf(combined_arg, sizeof(combined_arg), "%s %s %s", arg1, arg2, arg3);
+                escreve_aeroporto6(query6(aero_pass, combined_arg), fout, query_type);
+            }
+            else if (n_args == 5) {
+                char combined_arg[1024];
+                snprintf(combined_arg, sizeof(combined_arg), "%s %s %s %s", arg1, arg2, arg3, arg4);
+                escreve_aeroporto6(query6(aero_pass, combined_arg), fout, query_type);
+            }
+            else if (n_args == 6) {
+                fprintf(fout, "\n"); // Mais de 5 argumentos não é suportado
+            }
             fclose(fout);
         // Se os ficheiro de resultados que a query criou for diferente do esperado, incrementar o contador de fails
             if (check_results_file(output_path, results_path, command_count) != 0) q6_fail++;
@@ -278,7 +298,9 @@ int main(int argc, char *argv[]) {
     gestor_aeronaves_free(g_aeroN);
     hash_voos_free(hash_voos);
     array_voos_free(array_voos);
-    gestor_reservas_free(g_reservas);
+    hash_aero_pass_free(aero_pass);
+    hash_reservas_free(hash_reservas);
+    hash_passageiros_free(hash_passageiros);
     free(line);
 
     // Proporção de fails por query

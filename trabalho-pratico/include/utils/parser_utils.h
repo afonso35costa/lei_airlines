@@ -24,7 +24,7 @@ typedef void *(*FuncaoParser)(const char *line, FILE *err_file);
  * @param gestor2 Ponteiro para o segundo gestor
  * @param gestor3 Ponteiro para o terceiro gestor
  */
-typedef void (*FuncaoAddGestor)(void *objeto, void *gestor1, void *gestor2, void *gestor3, void *gestor4);
+typedef int (*FuncaoAddGestor)(void *objeto, void *gestor1, void *gestor2, void *gestor3, void *gestor4);
 
 
 /**

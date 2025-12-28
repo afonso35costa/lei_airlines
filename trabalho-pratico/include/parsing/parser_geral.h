@@ -36,9 +36,9 @@ void processar_ficheiro(FILE *f, FuncaoParser funcao_parser, FuncaoAddGestor fun
  * @param unused1 Ponteiro não utilizado
  * @param unused2 Ponteiro não utilizado
  * 
- * @return void
+ * @return int
  */
-void action_add_aeroporto(void *ptr, void* g_aero, void* unused1, void* unused2, void* unused3);
+int action_add_aeroporto(void *ptr, void* g_aero, void* unused1, void* unused2, void* unused3);
 
 
 /**
@@ -49,9 +49,9 @@ void action_add_aeroporto(void *ptr, void* g_aero, void* unused1, void* unused2,
  * @param unused1 Ponteiro não utilizado
  * @param unused2 Ponteiro não utilizado
  * 
- * @return void
+ * @return int
  */
-void action_add_aeronave(void *ptr, void* g_aeroN, void* unused1, void* unused2, void* unused3);
+int action_add_aeronave(void *ptr, void* g_aeroN, void* unused1, void* unused2, void* unused3);
 
 
 /**
@@ -62,9 +62,9 @@ void action_add_aeronave(void *ptr, void* g_aeroN, void* unused1, void* unused2,
  * @param hash_voos Ponteiro para o gestor de voos baseado em hash
  * @param unused Ponteiro não utilizado
  * 
- * @return void
+ * @return int
  */
-void action_add_voo(void *ptr, void* array_voos, void* hash_voos, void*unused, void* unused2);
+int action_add_voo(void *ptr, void* array_voos, void* hash_voos, void*unused, void* unused2);
 
 
 /**
@@ -75,9 +75,9 @@ void action_add_voo(void *ptr, void* array_voos, void* hash_voos, void*unused, v
  * @param unused2 Ponteiro não utilizado
  * @param unused3 Ponteiro não utilizado
  * 
- * @return void
+ * @return int
  */
-void action_add_passageiro(void *ptr, void* hash, void* gestor1, void* hash_voos, void *gestor2);
+int action_add_passageiro(void *ptr, void* hash, void* gestor1, void* hash_voos, void *gestor2);
 
 
 /**
@@ -88,6 +88,6 @@ void action_add_passageiro(void *ptr, void* hash, void* gestor1, void* hash_voos
  * @param hash_voos Ponteiro para o gestor de voos baseado em hash
  * @param ga Ponteiro para o gestor de aeroportos
  *
- * @return void
+ * @return int
  */
-void action_add_reserva(void *ptr, void* g_res, void* hash_voos, void *ga, void *unused1);
+int action_add_reserva(void *ptr, void* g_res, void* hash_voos, void *ga, void *unused1);

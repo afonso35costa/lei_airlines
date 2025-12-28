@@ -13,6 +13,15 @@
  */
 int validar_flight_id_voos(const char *flight_id);
 
+// Falta documentar
+
+int validar_datas_voos(DataHora *dep, DataHora *act_dep, DataHora *arr, DataHora *act_arr);
+
+int validar_status_voos(Voo *v);
+
+int valida_destination_origin_voos(const char *destination, const char *origin);
+
+
 
 /**
  * @brief Valida um voo completo.
@@ -21,7 +30,8 @@ int validar_flight_id_voos(const char *flight_id);
  * 
  * @return 1 se válido, 0 caso contrário
  */
-int validar_voo(const Voo *v);
+int validar_voo(Voo *v);
+
 
 
 #endif
