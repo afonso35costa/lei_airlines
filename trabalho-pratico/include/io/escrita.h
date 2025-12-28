@@ -78,4 +78,9 @@ void escreve_aeroporto3 (Aeroportos *a, FILE *out, char* qtype);
  */
 void escreve_tempos5 (Time **time, int num_companhias, FILE *out, char *q_type);
 
+
+// FALTA DOCUMENTAR
+
+void escreve_aeroporto6 (PassageiroStats *a, FILE *out, char* qtype);
+
 #endif

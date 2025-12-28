@@ -15,15 +15,6 @@ typedef struct gestor_aeronaves GestorAeronaves;
 
 
 /**
- * @brief Estrutura que representa um contador de voos associados a aeronaves.
- * 
- * - table: Tabela hash que mapeia identificadores de aeronaves para o número de voos realizados.
- * 
- */
-typedef struct conta_voos ContaVoos;
-
-
-/**
  * @brief Cria um novo gestor de aeronaves.
  * 
  * @param void Não recebe parâmetros

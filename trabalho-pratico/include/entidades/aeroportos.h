@@ -176,6 +176,12 @@ int get_dep_count_aeroporto(const Aeroportos *a);
 int get_arr_count_aeroporto(const Aeroportos *a);
 
 
+// FALTA DOCUMENTAR
+
+
+int get_nac_count_aeroporto(const Aeroportos *a);
+
+
 // SETTERS - Funções para definir valores
 
 /**
@@ -286,6 +292,11 @@ void set_dep_count_aeroporto(Aeroportos *a, int dep_count);
  * @param arr_count Novo contador de chegadas do aeroporto
  */
 void set_arr_count_aeroporto(Aeroportos *a, int arr_count);
+
+
+// FALTA DOCUMENTAR
+
+void set_nac_count_aeroporto(Aeroportos *a, int nac_count);
 
 
 #endif

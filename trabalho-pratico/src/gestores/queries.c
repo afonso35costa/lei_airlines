@@ -10,6 +10,7 @@
 #include "aeroportos.h"
 #include "aeronaves.h"
 #include "reservas.h"
+#include "passageiros.h"
 #include "voos.h"
 #include "datas.h"
 #include "queries.h"
@@ -329,11 +330,14 @@ gint compara_tempos(gconstpointer a, gconstpointer b) {
         const Time *bb = (const Time *)b;
 
         double t1 = (double) aa->time / aa->delayed_count;
-        double t2 = (double) bb->time / aa->delayed_count;
+        double t2 = (double) bb->time / bb->delayed_count;
 
         if (round3(t1) > round3(t2))
-            return round3(t2) - round3(t1); // descendente por contagem
+            return -1; // descendente por contagem
 
+        if (round3(t1) < round3(t2)){
+            return 1; 
+        } 
         return strcmp(aa->airline, bb->airline); // ascendente por identificador
 }
 
@@ -358,6 +362,7 @@ GList *ordena_tempo_medio (HashTime *hash_time) {
 
     // Ordena a lista
     tempo_medio = g_list_sort(tempo_medio, compara_tempos);
+    tempo_medio = g_list_append(tempo_medio, NULL);
     return tempo_medio;
 }
 
@@ -377,8 +382,8 @@ Time **query5(GList *tempo_medio, int N) {
     while (current != NULL && count < N) {
         Time *t = (Time *)current->data;
         if (!t) {
-            current = current->next;
-            continue;
+            result[count] = NULL;
+            return result;
         }
 
         result[count] = t;
@@ -388,14 +393,113 @@ Time **query5(GList *tempo_medio, int N) {
 
     // Se nao houver estatisticas para mostrar retorna NULL
     if (count == 0) {
+        printf("Zero");
         free(result);
         return NULL;
     }
-
     return result;
 }
 
-// Funcções necessárias para a query 6: Listar o aeroporto de destino mais comum para passageiros de uma determinada nacionalidade
+// Funções necessárias para a query 6: Listar o aeroporto de destino mais comum para passageiros de uma determinada nacionalidade
+
+struct passageiro_stats{
+    char *nacionalidade;
+    char *aeroporto_code;
+    int count;
+};
+
+char *get_nacionalidade_passageiro_stats(PassageiroStats *ps) {
+    return ps->nacionalidade;
+}
+
+char *get_aeroporto_code_passageiro_stats(PassageiroStats *ps) {
+    return ps->aeroporto_code;
+}
+
+int get_count_passageiro_stats(PassageiroStats *ps) {
+    return ps->count;
+}
+
+struct hash_aeroportos_passageiro {
+    GHashTable *hash;
+};
+
+HashAeroportosPassageiro *hash_aero_pass_create(void){
+    HashAeroportosPassageiro *h = malloc(sizeof(HashAeroportosPassageiro));
+    if (!h) return NULL;
+    h->hash = g_hash_table_new_full(g_str_hash, g_str_equal, free, NULL);
+    return h;
+}
 
 
+void verifica_passageiros(Passageiros *p, HashAeroportosPassageiro *hash_ap, GestorAeroportos *ga, HashReservas *gr, HashVoos *hv) {
+    if (!p || !hash_ap || !ga || !gr || !hv) return;
+    char *nacionalidade = get_nationality_passageiros(p);
+    if (!nacionalidade) return;
+
+
+    char *doc = get_document_number_passageiros(p);
+    if (!doc) return;
+    Reservas *r = hash_reservas_get(gr, doc);
+    if (r) {
+
+        char **id = get_flight_ids_reservas(r);
+        if (!id) return;
+
+        for (int i = 0; i < get_num_flights_reserva(r); i++) {
+            Voo *v = hash_voos_get(hv, id[i]);
+            if (!v) continue;
+
+            char *destination = get_destination_voo(v);
+            if (!destination) continue;
+
+            char chave[512];
+            snprintf(chave, sizeof(chave), "%s_%s", nacionalidade, destination);
+
+            PassageiroStats *stat = g_hash_table_lookup(hash_ap->hash, chave);
+            if (!stat) {
+                stat = malloc(sizeof(PassageiroStats));
+                stat->nacionalidade = strdup(nacionalidade);
+                stat->aeroporto_code = strdup(destination);
+                stat->count = 0;
+                g_hash_table_insert(hash_ap->hash, strdup(chave), stat);
+            }
+            stat->count++;
+        }
+    }
+}
+
+PassageiroStats *query6(HashAeroportosPassageiro *hash_ap, const char *nacionalidade){
+    if (!hash_ap || !nacionalidade) {
+        printf("DEBUG: hash_ap ou nacionalidade nulos\n");
+        return NULL;
+    }
+
+    // Percorre a hash table de aeroportos para encontrar o com mais partidas
+    GHashTableIter iter;
+    gpointer key, value;
+    g_hash_table_iter_init(&iter, hash_ap->hash);
+
+    PassageiroStats *top_airport = NULL;
+    int max_arr = -1;
+
+    while (g_hash_table_iter_next(&iter, &key, &value)) {
+        PassageiroStats *stats = (PassageiroStats *)value;
+        if (!stats) {
+            continue;
+        }
+
+        if (strcmp(stats->nacionalidade, nacionalidade) == 0) {
+            if (stats->count > max_arr || (stats->count == max_arr && strcmp(stats->aeroporto_code, top_airport->aeroporto_code) < 0)) {
+                max_arr = stats->count;
+                top_airport = stats;
+            }
+        }
+    }
+    // Escreve o resultado no ficheiro de output
+    if (top_airport && max_arr > 0) {
+        return top_airport;
+    }
+    return NULL;
+}
 

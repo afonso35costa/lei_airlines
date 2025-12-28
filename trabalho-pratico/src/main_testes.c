@@ -74,7 +74,7 @@ int check_results_file(const char *path_res, const char *path_exp, int query_num
 int main(int argc, char *argv[]) {
 
     struct timespec start, end;
-    double parsing_time, q1_time=0, q2_time=0, q3_time=0, q5_time=0;
+    double parsing_time, q1_time=0, q2_time=0, q3_time=0, q5_time=0, q6_time=0;
     double total_time;
 
     if (argc != 4) {
@@ -101,6 +101,8 @@ int main(int argc, char *argv[]) {
     HashVoos *hash_voos = hash_voos_create();
     GestorAeronaves *g_aeroN = gestor_aeronaves_create();
     GestorReservas *g_reservas = gestor_reservas_create();
+    HashAeroportosPassageiro *aero_pass = hash_aero_pass_create();
+    HashReservas *hash_reservas = hash_reservas_create();
 
    // -------------------------------------------------------------
     // Abrir ficheiros CSV e ficheiros de erro
@@ -133,15 +135,15 @@ int main(int argc, char *argv[]) {
     // Processar aeroportos
     // -------------------------------------------------------------
 
-    processar_ficheiro(faero, (FuncaoParser) parse_and_validate_aeroporto_line, action_add_aeroporto, g_aero, NULL, NULL, err_faero);
-    processar_ficheiro(fvoos, (FuncaoParser) parse_and_validate_voo_line, action_add_voo, array_voos, hash_voos, NULL, err_fvoos);
-    processar_ficheiro(faeron, (FuncaoParser) parse_and_validate_aeronave_line, action_add_aeronave, g_aeroN, NULL, NULL, err_faeron);
-    processar_ficheiro(fpass, (FuncaoParser) parse_and_validate_passageiro_line, action_add_passageiro, NULL, NULL, NULL, err_fpass);
-    processar_ficheiro(fres, (FuncaoParser) parse_and_validate_reserva_line, action_add_reserva, g_reservas, hash_voos, g_aero, err_fres);
+    processar_ficheiro(faero, (FuncaoParser) parse_and_validate_aeroporto_line, action_add_aeroporto, g_aero, NULL, NULL, NULL, err_faero);
+    processar_ficheiro(fvoos, (FuncaoParser) parse_and_validate_voo_line, action_add_voo, array_voos, hash_voos, NULL, NULL, err_fvoos);
+    processar_ficheiro(faeron, (FuncaoParser) parse_and_validate_aeronave_line, action_add_aeronave, g_aeroN, NULL, NULL, NULL, err_faeron);
+    processar_ficheiro(fres, (FuncaoParser) parse_and_validate_reserva_line, action_add_reserva, g_reservas, hash_voos, g_aero, hash_reservas, err_fres);
+    processar_ficheiro(fpass, (FuncaoParser) parse_and_validate_passageiro_line, action_add_passageiro, aero_pass, g_aero, hash_voos, hash_reservas, err_fpass);
 
     percorre_voos_aeronaves(array_voos, g_aeroN);
     GList *stats_list = ordena_aeronaves(g_aeroN);
-    // GList *tempo_medio = ordena_tempo_medio(conta_tempo(array_voos));
+    GList *tempo_medio = ordena_tempo_medio(conta_tempo(array_voos));
 
     // -------------------------------------------------------------
     // Fechar ficheiros CSV e de erros
@@ -168,12 +170,14 @@ int main(int argc, char *argv[]) {
     int q2_count = 0;
     int q3_count = 0;
     int q5_count = 0;
+    int q6_count = 0;
 
     // Número de fails por query
     int q1_fail = 0;
     int q2_fail = 0;
     int q3_fail = 0;
     int q5_fail = 0;
+    int q6_fail = 0;
 
     int command_count = 0;
 
@@ -221,7 +225,7 @@ int main(int argc, char *argv[]) {
             clock_gettime(CLOCK_REALTIME, &end);
             q2_time += (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1e9;
 
-        // EScolha da query 3
+        // Escolha da query 3
 
         } else if (strcmp(query_type, "3") == 0 || strcmp(query_type, "3S") == 0) {
             q3_count++;
@@ -235,7 +239,7 @@ int main(int argc, char *argv[]) {
             q3_time += (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1e9;
         }
 
-        /* Escolha da query 5
+        // Escolha da query 5
 
         else if (strcmp(query_type, "5") == 0 || strcmp(query_type, "5S") == 0) {
             q5_count++;
@@ -246,8 +250,20 @@ int main(int argc, char *argv[]) {
             if (check_results_file(output_path, results_path, command_count) != 0) q5_fail++;
             clock_gettime(CLOCK_REALTIME, &end);
             q5_time += (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1e9;
-        } */
+        } 
 
+        // Escolha da query 6
+
+        else if (strcmp(query_type, "6") == 0 || strcmp(query_type, "6S") == 0) {
+            q6_count++;
+            clock_gettime(CLOCK_REALTIME, &start);
+            if (n_args >= 2) escreve_aeroporto6(query6(aero_pass, arg1), fout, query_type);
+            fclose(fout);
+        // Se os ficheiro de resultados que a query criou for diferente do esperado, incrementar o contador de fails
+            if (check_results_file(output_path, results_path, command_count) != 0) q6_fail++;
+            clock_gettime(CLOCK_REALTIME, &end);
+            q6_time += (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1e9;
+        } 
 
         else {
             fclose(fout);
@@ -258,7 +274,7 @@ int main(int argc, char *argv[]) {
     // ------------------------- LIBERTAÇÃO MEMÓRIA -------------------------
     gestor_aeroportos_free(g_aero);
     g_list_free(stats_list);
-    // g_list_free(tempo_medio);
+    g_list_free(tempo_medio);
     gestor_aeronaves_free(g_aeroN);
     hash_voos_free(hash_voos);
     array_voos_free(array_voos);
@@ -269,6 +285,8 @@ int main(int argc, char *argv[]) {
     printf("Q1: %d de %d testes ok!\n", q1_count - q1_fail,  q1_count);
     printf("Q2: %d de %d testes ok!\n", q2_count - q2_fail,  q2_count);
     printf("Q3: %d de %d testes ok!\n", q3_count - q3_fail,  q3_count);
+    printf("Q5: %d de %d testes ok!\n", q5_count - q5_fail,  q5_count);
+    printf("Q6: %d de %d testes ok!\n", q6_count - q6_fail,  q6_count);
 
     // Memória utilizada
     struct rusage r_usage;
@@ -276,12 +294,14 @@ int main(int argc, char *argv[]) {
     printf("Memória utilizada: %ld KB\n", r_usage.ru_maxrss);
 
     // Print dos tempos
-    total_time = parsing_time + q1_time + q2_time + q3_time;
+    total_time = parsing_time + q1_time + q2_time + q3_time + q5_time + q6_time;
     printf("Tempos de execução:\n");
     printf("\tParsing: %.6f segundos\n", parsing_time);
     printf("\tQuery 1: %.6f segundos\n", q1_time);
     printf("\tQuery 2: %.6f segundos\n", q2_time);
     printf("\tQuery 3: %.6f segundos\n", q3_time);
+    printf("\tQuery 5: %.6f segundos\n", q5_time);
+    printf("\tQuery 6: %.6f segundos\n", q6_time);
     printf("Tempo total: %.6f segundos\n", total_time);
 
 

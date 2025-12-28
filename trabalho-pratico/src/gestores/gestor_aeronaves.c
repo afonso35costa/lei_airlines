@@ -8,10 +8,6 @@ struct gestor_aeronaves {
     GHashTable *hash;  // hash table de Aeronaves*
 };
 
-struct conta_voos {
-    GHashTable *table; // hash table de contadores
-};
-
 // Cria gestor
 GestorAeronaves* gestor_aeronaves_create(void) {
     GestorAeronaves *ga = malloc(sizeof(GestorAeronaves));

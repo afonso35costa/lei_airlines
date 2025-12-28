@@ -16,6 +16,7 @@ typedef struct aeroportos {
     int departures;   // número de partidas
     int dep_count;    // número de passageiros que partiram
     int arr_count;    // número de passageiros que chegaram
+    int nac_count;    // numero de passageiros de acordo com a nacionalidade
 } Aeroportos;
 
 // FUNÇÃO CONSTRUTORA - Cria uma aeronave e aloca memória
@@ -36,6 +37,7 @@ Aeroportos* create_aeroporto(void) {
     a->departures = 0;
     a->dep_count = 0;
     a->arr_count = 0;
+    a->nac_count = 0;
 
     return a;
 }
@@ -122,6 +124,9 @@ int get_arr_count_aeroporto(const Aeroportos *a) {
     return a ? a->arr_count : 0;
 }
 
+int get_nac_count_aeroporto(const Aeroportos *a) {
+    return a ? a->nac_count : 0;
+}
 // SETTERS
 
 void set_code_aeroporto(Aeroportos *a, const char *code) {
@@ -178,4 +183,8 @@ void set_dep_count_aeroporto(Aeroportos *a, int dep_count) {
 
 void set_arr_count_aeroporto(Aeroportos *a, int arr_count) {
     if (a) a->arr_count = arr_count;
+}
+
+void set_nac_count_aeroporto(Aeroportos *a, int nac_count) {
+    if (a) a->nac_count = nac_count;
 }

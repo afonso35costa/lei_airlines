@@ -6,6 +6,7 @@
 #include "gestor_aeronaves.h"
 #include "gestor_voos.h"
 #include "gestor_reservas.h"
+#include "passageiros.h"
 #include "datas.h"  // Para DataHora
 
 /**
@@ -224,5 +225,23 @@ GList *ordena_tempo_medio (HashTime *hash);
  * @return Ponteiro para a estrutura
  */
 Time **query5(GList *tempo_medio, int N);
+
+// Query 6
+
+typedef struct passageiro_stats PassageiroStats;
+
+char *get_nacionalidade_passageiro_stats(PassageiroStats *ps);
+
+char *get_aeroporto_code_passageiro_stats(PassageiroStats *ps);
+
+int get_count_passageiro_stats(PassageiroStats *ps);
+
+typedef struct hash_aeroportos_passageiro HashAeroportosPassageiro;
+
+HashAeroportosPassageiro *hash_aero_pass_create(void);
+
+void verifica_passageiros(Passageiros *p, HashAeroportosPassageiro *hash_ap, GestorAeroportos *ga, HashReservas *gr, HashVoos *hv);
+
+PassageiroStats *query6(HashAeroportosPassageiro *hash_ap, const char *nacionalidade);
 
 #endif

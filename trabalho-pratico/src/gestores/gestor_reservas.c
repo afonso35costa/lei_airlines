@@ -51,3 +51,49 @@ void gestor_reservas_free(GestorReservas *gr) {
     g_ptr_array_free(gr->array, TRUE);
     free(gr);
 }
+
+
+// Implementação do gestor de reservas baseado em hash table
+
+struct gestor_resHash {
+    GHashTable *hash;  // hash table de flight_id -> Voo*
+};
+
+// Cria gestor
+HashReservas* hash_reservas_create(void) {
+    HashReservas *gr = malloc(sizeof(HashReservas));
+    if (!gr) return NULL;
+    gr->hash = g_hash_table_new_full(g_str_hash, g_str_equal, free, NULL);
+    return gr;
+}
+
+//Devolve hash table interna (para uso em queries)
+GHashTable* hash_reservas_get_hash(HashReservas *gr) {
+    return gr->hash;
+}
+
+// Adiciona reserva
+void hash_reservas_add(HashReservas *gr, Reservas *reserva) {
+    g_hash_table_insert(gr->hash, strdup(get_document_number_reservas(reserva)), reserva);
+}
+
+// Remove reserva
+void hash_reservas_remove(HashReservas *gr, const char *id) {
+    g_hash_table_remove(gr->hash, id);
+}
+
+// Retorna reserva
+Reservas* hash_reservas_get(HashReservas *gr, const char *id) {
+    return g_hash_table_lookup(gr->hash, id);
+}
+
+// Liberta gestor e todas as reservas
+void hash_reservas_free(HashReservas *gr) {
+    g_hash_table_destroy(gr->hash);
+    free(gr);
+}
+
+// Funcao que devolve o numero de reservas no gestor
+guint hash_reservas_get_length(HashReservas *gr) {
+    return g_hash_table_size(gr->hash);
+}

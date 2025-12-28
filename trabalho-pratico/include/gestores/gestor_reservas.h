@@ -83,4 +83,22 @@ guint gestor_reservas_get_length(GestorReservas *gr);
  */
 void gestor_reservas_free(GestorReservas *gr);
 
+// FALTA DOCUMENTAR
+
+typedef struct gestor_resHash HashReservas;
+
+HashReservas* hash_reservas_create(void);
+
+GHashTable* hash_reservas_get_hash(HashReservas *gr);
+
+void hash_reservas_add(HashReservas *gr, Reservas *reserva);
+
+void hash_reservas_remove(HashReservas *gr, const char *id);
+
+Reservas* hash_reservas_get(HashReservas *gr, const char *id);
+
+void hash_reservas_free(HashReservas *gr);
+
+guint hash_reservas_get_length(HashReservas *gr);
+
 #endif

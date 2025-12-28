@@ -95,7 +95,7 @@ Reservas *parse_and_validate_reserva_line(const char *line, FILE *ferr) {
         return NULL;
 
     Reservas *r = parse_reserva_line(line);
-    /*
+
     if (!validar_reserva(r)) {
         if (ferr) {
             fprintf(ferr, "%s\n", line);
@@ -103,7 +103,6 @@ Reservas *parse_and_validate_reserva_line(const char *line, FILE *ferr) {
         destroy_reserva(r);
         return NULL;
     }
-        */
 
     return r; // válido ✅
 }

@@ -36,6 +36,8 @@ int main(int argc, char *argv[]) {
     HashVoos *hash_voos = hash_voos_create();
     GestorAeronaves *g_aeroN = gestor_aeronaves_create();
     GestorReservas *g_reservas = gestor_reservas_create();
+    HashAeroportosPassageiro *aero_pass = hash_aero_pass_create();
+    HashReservas *hash_reservas = hash_reservas_create();
 
 
     // -------------------------------------------------------------
@@ -70,11 +72,11 @@ int main(int argc, char *argv[]) {
     // Processar aeroportos
     // -------------------------------------------------------------
 
-    processar_ficheiro(faero, (FuncaoParser) parse_and_validate_aeroporto_line, action_add_aeroporto, g_aero, NULL, NULL, err_faero);
-    processar_ficheiro(fvoos, (FuncaoParser) parse_and_validate_voo_line, action_add_voo, array_voos, hash_voos, NULL, err_fvoos);
-    processar_ficheiro(faeron, (FuncaoParser) parse_and_validate_aeronave_line, action_add_aeronave, g_aeroN, NULL, NULL, err_faeron);
-    processar_ficheiro(fpass, (FuncaoParser) parse_and_validate_passageiro_line, action_add_passageiro, NULL, NULL, NULL, err_fpass);
-    processar_ficheiro(fres, (FuncaoParser) parse_and_validate_reserva_line, action_add_reserva, g_reservas, hash_voos, g_aero, err_fres);
+    processar_ficheiro(faero, (FuncaoParser) parse_and_validate_aeroporto_line, action_add_aeroporto, g_aero, NULL, NULL, NULL, err_faero);
+    processar_ficheiro(fvoos, (FuncaoParser) parse_and_validate_voo_line, action_add_voo, array_voos, hash_voos, NULL, NULL, err_fvoos);
+    processar_ficheiro(faeron, (FuncaoParser) parse_and_validate_aeronave_line, action_add_aeronave, g_aeroN, NULL, NULL, NULL, err_faeron);
+    processar_ficheiro(fres, (FuncaoParser) parse_and_validate_reserva_line, action_add_reserva, g_reservas, hash_voos, g_aero, hash_reservas, err_fres);
+    processar_ficheiro(fpass, (FuncaoParser) parse_and_validate_passageiro_line, action_add_passageiro, aero_pass, g_aero, hash_voos, g_reservas, err_fpass);
 
     percorre_voos_aeronaves(array_voos, g_aeroN);
     GList *stats_list = ordena_aeronaves(g_aeroN);
@@ -134,12 +136,16 @@ int main(int argc, char *argv[]) {
                 escreve_aeroporto3(query3(g_aero), fout, query_type);
             }
         }
-        /*
         else if (strcmp(query_type, "5") == 0 || strcmp(query_type, "5S") == 0) {
             if (n_args == 2) {
                 escreve_tempos5(query5(ordena_tempo_medio(conta_tempo(array_voos)), atoi(arg1)), atoi(arg1), fout, query_type);
             }
-        } */
+        }
+        else if (strcmp(query_type, "6") == 0 || strcmp(query_type, "6S") == 0) {
+            if (n_args == 2) {
+                escreve_aeroporto6(query6(aero_pass, arg1), fout, query_type);
+            }
+        }
         fclose(fout);
     }
 
