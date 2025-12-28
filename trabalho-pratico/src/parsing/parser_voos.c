@@ -47,6 +47,7 @@ Voo *parse_and_validate_voo_line(const char *line, FILE *ferr) {
     // Parsing sintático (sempre válido estruturalmente)
     Voo *v = parse_voo_line(line);
 
+/*
     // Validação semântica
      if (!validar_voo(v)) {
         if (ferr) {
@@ -55,6 +56,7 @@ Voo *parse_and_validate_voo_line(const char *line, FILE *ferr) {
         destroy_voo(v);
         return NULL;
     }
+*/
     
     return v;  // válido ✅
 }
