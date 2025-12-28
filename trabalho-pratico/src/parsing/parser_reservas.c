@@ -94,6 +94,7 @@ Reservas *parse_reserva_line(const char *line) {
                                    
     for (int j = 0; j < 7; j++) free(campos[j]);
     free(temp);
+    if (!r) printf("erro\n");
     return r;
 }
 
@@ -111,6 +112,5 @@ Reservas *parse_and_validate_reserva_line(const char *line, FILE *ferr) {
         return NULL;
     }
 */
-
     return r; // válido ✅
 }

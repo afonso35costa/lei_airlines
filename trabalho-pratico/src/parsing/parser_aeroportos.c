@@ -57,6 +57,6 @@ Aeroportos *parse_and_validate_aeroporto_line(const char *line, FILE *ferr) {
         if (ferr) fprintf(ferr, "%s\n", line);
         destroy_aeroporto(a);
         return NULL;
-    }
+    } 
     return a;
 }

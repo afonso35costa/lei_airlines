@@ -47,7 +47,7 @@ Aeronaves *parse_and_validate_aeronave_line(const char *line, FILE *ferr) {
         }
         destroy_aeronave(a);
         return NULL;
-    }
+    } 
 
     return a;  // válido ✅
 }

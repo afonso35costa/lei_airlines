@@ -123,27 +123,45 @@ int main(int argc, char *argv[]) {
         // -------------------------
         // Execução das queries
         // -------------------------
+
+        //  QUERY 1
+
         if (strcmp(query_type, "1S") == 0 || strcmp(query_type, "1") == 0) {
             if (n_args >= 2) escreve_aeroporto1(query1(g_aero, arg1), fout, query_type);
         }
+
+        // QUERY 2
+
         else if (strcmp(query_type, "2") == 0 || strcmp(query_type, "2S") == 0) {
             if (n_args == 2) {
                 escreve_aeronaves(query2(stats_list, atoi(arg1), NULL), atoi(arg1), fout, query_type);
             } else if (n_args == 3) {
                 escreve_aeronaves(query2(stats_list, atoi(arg1), arg2), atoi(arg1), fout, query_type);
             }
+            else {
+                fprintf(fout, "\n");
+            }
         }
+
+        // QUERY 3
+
         else if (strcmp(query_type, "3") == 0 || strcmp(query_type, "3S") == 0) {
             if (n_args == 3) {
                 percorre_voos_aeroportos(array_voos, g_aero, arg1, arg2);
                 escreve_aeroporto3(query3(g_aero), fout, query_type);
             }
         }
+
+        // QUERY 5
+
         else if (strcmp(query_type, "5") == 0 || strcmp(query_type, "5S") == 0) {
             if (n_args == 2) {
                 escreve_tempos5(query5(tempo_medio, atoi(arg1)), atoi(arg1), fout, query_type);
             }
         }
+
+        // QUERY 6
+
         else if (strcmp(query_type, "6") == 0 || strcmp(query_type, "6S") == 0) {
             if (n_args == 2) {
                 escreve_aeroporto6(query6(aero_pass, arg1), fout, query_type);

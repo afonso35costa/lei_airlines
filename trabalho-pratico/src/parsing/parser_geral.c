@@ -95,6 +95,7 @@ int action_add_reserva(void *ptr, void* g_pass, void* hash_voos, void *ga, void 
     Reservas *r = ptr;
     HashPassageiros *hash_pass = g_pass;
     HashVoos *hash = hash_voos;
+    HashReservas *hash_reservas = hash_res;
     if (r) {
         if (!hash_passageiros_get(hash_pass, get_document_number_reservas(r))) {
             destroy_reserva(r);
@@ -124,7 +125,6 @@ int action_add_reserva(void *ptr, void* g_pass, void* hash_voos, void *ga, void 
                 return 1;
             }
         }
-        HashReservas *hash_reservas = hash_res;
         GestorAeroportos *g_aero = ga;
         hash_reservas_add(hash_reservas, r);
         checka_reservas(r, hash, g_aero);

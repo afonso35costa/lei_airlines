@@ -99,7 +99,7 @@ void hash_reservas_add(HashReservas *gr, Reservas *reserva);
 
 void hash_reservas_remove(HashReservas *gr, const char *id);
 
-Reservas* hash_reservas_get(HashReservas *gr, const char *id);
+GList* hash_reservas_get(HashReservas *gr, const char *id);
 
 void hash_reservas_free(HashReservas *gr);
 

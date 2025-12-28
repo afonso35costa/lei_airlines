@@ -45,7 +45,7 @@ Passageiros *parse_and_validate_passageiro_line(const char *line, FILE *ferr) {
         }
         destroy_passageiro(p);
         return NULL;
-    }
+    } 
 
     return p; // válido ✅
 }
