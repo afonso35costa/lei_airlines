@@ -16,7 +16,7 @@
 
 // Parser geral para ficheiros CSV
 
-void processar_ficheiro(FILE *f, FuncaoParser funcao_parser, FuncaoAddGestor funcao_add, void *gestor1, void *gestor2, void *gestor3, void *gestor4,  FILE *err_file) {
+void processar_ficheiro(FILE *f, FuncaoParser funcao_parser, FuncaoAddGestor funcao_add, void *gestor1, void *gestor2, void *gestor3, void *gestor4, void *gestor5, FILE *err_file) {
 
     char *line = NULL;
     size_t len = 0;
@@ -30,7 +30,7 @@ void processar_ficheiro(FILE *f, FuncaoParser funcao_parser, FuncaoAddGestor fun
         void *obj = funcao_parser(line, err_file);
 
         if (obj)
-            if (funcao_add(obj, gestor1, gestor2, gestor3, gestor4)) {
+            if (funcao_add(obj, gestor1, gestor2, gestor3, gestor4, gestor5)) {
                 fprintf(err_file, "%s\n", line); // escreve a linha inválida
             }
     }
@@ -39,20 +39,22 @@ void processar_ficheiro(FILE *f, FuncaoParser funcao_parser, FuncaoAddGestor fun
 }
 
 
-int action_add_aeroporto(void *ptr, void* g_aero, void* unused1, void* unused2, void* unused3) {
+int action_add_aeroporto(void *ptr, void* g_aero, void* unused1, void* unused2, void* unused3, void* unused4) {
     (void) unused1;
     (void) unused2;
     (void) unused3;
+    (void) unused4;
     Aeroportos *a = ptr;
     GestorAeroportos *gestor = g_aero;
     if (a) gestor_aeroportos_add(gestor, a);
     return 0;
 }
 
-int action_add_aeronave(void *ptr, void* g_aeroN, void* unused1, void* unused2, void* unused3) {
+int action_add_aeronave(void *ptr, void* g_aeroN, void* unused1, void* unused2, void* unused3, void* unused4) {
     (void) unused1;
     (void) unused2;
     (void) unused3;
+    (void) unused4;
     Aeronaves *a = ptr;
     GestorAeronaves *gestor = g_aeroN;
     if (a) {
@@ -61,8 +63,9 @@ int action_add_aeronave(void *ptr, void* g_aeroN, void* unused1, void* unused2, 
     return 0;
 }
 
-int action_add_voo(void *ptr, void* array_voos, void* hash_voos, void*gestor_aeronaves, void* unused2) {
+int action_add_voo(void *ptr, void* array_voos, void* hash_voos, void*gestor_aeronaves, void* unused2, void* unused3) {
     (void) unused2;
+    (void) unused3;
     Voo *v = ptr;
     GestorAeronaves *ga = gestor_aeronaves;
     if (v && ga) {
@@ -81,21 +84,24 @@ int action_add_voo(void *ptr, void* array_voos, void* hash_voos, void*gestor_aer
     return 0;
 }
 
-int action_add_passageiro(void *ptr, void* hash, void* hash_pass, void* hash_voos, void *gestor2) {
+int action_add_passageiro(void *ptr, void* hash, void* hash_pass, void* hash_voos, void *gestor2, void *unused3) {
     (void) hash_voos;
     (void) gestor2;
     (void) hash;
+    (void) unused3;
     HashPassageiros *hash_passageiros = hash_pass;
     Passageiros *p = ptr;
     if (p) hash_passageiros_add(hash_passageiros, p);
     return 0;
 }
 
-int action_add_reserva(void *ptr, void* g_pass, void* hash_voos, void *ga, void *hash_res) {
+int action_add_reserva(void *ptr, void* g_pass, void* hash_voos, void *ga, void *hash_res, void *aero_pass) {
     Reservas *r = ptr;
+    HashAeroportosPassageiro *hap = aero_pass;
     HashPassageiros *hash_pass = g_pass;
     HashVoos *hash = hash_voos;
     HashReservas *hash_reservas = hash_res;
+
     if (r) {
         if (!hash_passageiros_get(hash_pass, get_document_number_reservas(r))) {
             destroy_reserva(r);
@@ -128,6 +134,7 @@ int action_add_reserva(void *ptr, void* g_pass, void* hash_voos, void *ga, void 
         GestorAeroportos *g_aero = ga;
         hash_reservas_add(hash_reservas, r);
         checka_reservas(r, hash, g_aero);
+        verifica_passageiros(hash_pass, hap, r, hash);
     }
     return 0;
 }

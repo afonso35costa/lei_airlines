@@ -51,11 +51,11 @@ int main(int argc, char *argv[]) {
     FILE *fpass = abrir_ficheiro_leitura(csv_path, "passengers.csv");
     FILE *fres = abrir_ficheiro_leitura(csv_path, "reservations.csv");
 
-    FILE *err_faero = abrir_ficheiro_escrita("resultados/airports_errors.txt");
-    FILE *err_fvoos = abrir_ficheiro_escrita("resultados/flights_errors.txt");
-    FILE *err_faeron = abrir_ficheiro_escrita("resultados/aircrafts_errors.txt");
-    FILE *err_fpass = abrir_ficheiro_escrita("resultados/passengers_errors.txt");
-    FILE *err_fres = abrir_ficheiro_escrita("resultados/reservations_errors.txt");
+    FILE *err_faero = abrir_ficheiro_escrita("resultados/airports_errors.csv");
+    FILE *err_fvoos = abrir_ficheiro_escrita("resultados/flights_errors.csv");
+    FILE *err_faeron = abrir_ficheiro_escrita("resultados/aircrafts_errors.csv");
+    FILE *err_fpass = abrir_ficheiro_escrita("resultados/passengers_errors.csv");
+    FILE *err_fres = abrir_ficheiro_escrita("resultados/reservations_errors.csv");
 
     // -------------------------------------------------------------
     // Ler headers e copiar para ficheiros de erro
@@ -73,13 +73,12 @@ int main(int argc, char *argv[]) {
     // Processar aeroportos
     // -------------------------------------------------------------
 
-    processar_ficheiro(faero, (FuncaoParser) parse_and_validate_aeroporto_line, action_add_aeroporto, g_aero, NULL, NULL, NULL, err_faero);
-    processar_ficheiro(faeron, (FuncaoParser) parse_and_validate_aeronave_line, action_add_aeronave, g_aeroN, NULL, NULL, NULL, err_faeron);
-    processar_ficheiro(fvoos, (FuncaoParser) parse_and_validate_voo_line, action_add_voo, array_voos, hash_voos, g_aeroN, NULL, err_fvoos);
-    processar_ficheiro(fpass, (FuncaoParser) parse_and_validate_passageiro_line, action_add_passageiro, NULL, hash_passageiros, NULL, NULL, err_fpass);
-    processar_ficheiro(fres, (FuncaoParser) parse_and_validate_reserva_line, action_add_reserva, hash_passageiros, hash_voos, g_aero, hash_reservas, err_fres);
+    processar_ficheiro(faero, (FuncaoParser) parse_and_validate_aeroporto_line, action_add_aeroporto, g_aero, NULL, NULL, NULL, NULL, err_faero);
+    processar_ficheiro(faeron, (FuncaoParser) parse_and_validate_aeronave_line, action_add_aeronave, g_aeroN, NULL, NULL, NULL, NULL, err_faeron);
+    processar_ficheiro(fvoos, (FuncaoParser) parse_and_validate_voo_line, action_add_voo, array_voos, hash_voos, g_aeroN, NULL, NULL, err_fvoos);
+    processar_ficheiro(fpass, (FuncaoParser) parse_and_validate_passageiro_line, action_add_passageiro, NULL, hash_passageiros, NULL, NULL, NULL, err_fpass);
+    processar_ficheiro(fres, (FuncaoParser) parse_and_validate_reserva_line, action_add_reserva, hash_passageiros, hash_voos, g_aero, hash_reservas, aero_pass, err_fres);
 
-    verifica_passageiros(hash_passageiros, aero_pass, hash_reservas, hash_voos);
     percorre_voos_aeronaves(array_voos, g_aeroN);
     GList *stats_list = ordena_aeronaves(g_aeroN);
     GList *tempo_medio = ordena_tempo_medio(conta_tempo(array_voos));
@@ -115,10 +114,10 @@ int main(int argc, char *argv[]) {
 
         // --- Interpretar query ---
         char query_type[10];
-        char arg1[256], arg2[256], arg3[256], arg4[256], arg5[256];
-        arg1[0] = arg2[0] = arg3[0] = arg4[0] = arg5[0] = '\0';
+        char arg1[256], arg2[256], arg3[256], arg4[256], arg5[256], arg6[256], arg7[256], arg8[256];
+        arg1[0] = arg2[0] = arg3[0] = arg4[0] = arg5[0] = arg6[0] = arg7[0] = arg8[0] = '\0';
 
-        int n_args = sscanf(line, "%s %s %s %s %s %s", query_type, arg1, arg2, arg3, arg4, arg5);
+        int n_args = sscanf(line, "%s %s %s %s %s %s %s %s %s", query_type, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
 
         // -------------------------
         // Execução das queries
@@ -182,12 +181,31 @@ int main(int argc, char *argv[]) {
                 escreve_aeroporto6(query6(aero_pass, combined_arg), fout, query_type);
             }
             else if (n_args == 6) {
-                fprintf(fout, "\n"); // Mais de 5 argumentos não é suportado
+                char combined_arg[1280];
+                snprintf(combined_arg, sizeof(combined_arg), "%s %s %s %s %s", arg1, arg2, arg3, arg4, arg5);
+                escreve_aeroporto6(query6(aero_pass, combined_arg), fout, query_type);
             }
-        }
+            else if (n_args == 7) {
+                char combined_arg[1536];
+                snprintf(combined_arg, sizeof(combined_arg), "%s %s %s %s %s %s", arg1, arg2, arg3, arg4, arg5, arg6);
+                escreve_aeroporto6(query6(aero_pass, combined_arg), fout, query_type);
+            }
+            else if (n_args == 8) {
+                char combined_arg[1792];
+                snprintf(combined_arg, sizeof(combined_arg), "%s %s %s %s %s %s %s", arg1, arg2, arg3, arg4, arg5, arg6, arg7);
+                escreve_aeroporto6(query6(aero_pass, combined_arg), fout, query_type);
+            }
+            else if (n_args == 9) {
+                char combined_arg[2048];
+                snprintf(combined_arg, sizeof(combined_arg), "%s %s %s %s %s %s %s %s", arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
+                escreve_aeroporto6(query6(aero_pass, combined_arg), fout, query_type);
+            }
+            else {
+                fprintf(fout, "\n");
+            }
         fclose(fout);
+        }
     }
-
     fclose(f);
     printf("DEBUG: queries terminadas\n");
 

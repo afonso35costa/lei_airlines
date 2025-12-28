@@ -25,7 +25,7 @@
  * 
  * @return void
  */
-void processar_ficheiro(FILE *f, FuncaoParser funcao_parser, FuncaoAddGestor funcao_add, void *gestor1, void *gestor2, void *gestor3, void *gestor4, FILE *err_file);
+void processar_ficheiro(FILE *f, FuncaoParser funcao_parser, FuncaoAddGestor funcao_add, void *gestor1, void *gestor2, void *gestor3, void *gestor4, void *gestor5, FILE *err_file);
 
 
 /**
@@ -38,7 +38,7 @@ void processar_ficheiro(FILE *f, FuncaoParser funcao_parser, FuncaoAddGestor fun
  * 
  * @return int
  */
-int action_add_aeroporto(void *ptr, void* g_aero, void* unused1, void* unused2, void* unused3);
+int action_add_aeroporto(void *ptr, void* g_aero, void* unused1, void* unused2, void* unused3, void* unused4);
 
 
 /**
@@ -51,7 +51,7 @@ int action_add_aeroporto(void *ptr, void* g_aero, void* unused1, void* unused2, 
  * 
  * @return int
  */
-int action_add_aeronave(void *ptr, void* g_aeroN, void* unused1, void* unused2, void* unused3);
+int action_add_aeronave(void *ptr, void* g_aeroN, void* unused1, void* unused2, void* unused3, void* unused4);
 
 
 /**
@@ -64,7 +64,7 @@ int action_add_aeronave(void *ptr, void* g_aeroN, void* unused1, void* unused2, 
  * 
  * @return int
  */
-int action_add_voo(void *ptr, void* array_voos, void* hash_voos, void*unused, void* unused2);
+int action_add_voo(void *ptr, void* array_voos, void* hash_voos, void*unused, void* unused2, void* unused3);
 
 
 /**
@@ -77,7 +77,7 @@ int action_add_voo(void *ptr, void* array_voos, void* hash_voos, void*unused, vo
  * 
  * @return int
  */
-int action_add_passageiro(void *ptr, void* hash, void* gestor1, void* hash_voos, void *gestor2);
+int action_add_passageiro(void *ptr, void* hash, void* gestor1, void* hash_voos, void *gestor2, void *unused3);
 
 
 /**
@@ -90,4 +90,4 @@ int action_add_passageiro(void *ptr, void* hash, void* gestor1, void* hash_voos,
  *
  * @return int
  */
-int action_add_reserva(void *ptr, void* g_res, void* hash_voos, void *ga, void *unused1);
+int action_add_reserva(void *ptr, void* g_res, void* hash_voos, void *ga, void *hash_res, void *aero_pass);

@@ -243,7 +243,7 @@ HashAeroportosPassageiro *hash_aero_pass_create(void);
 
 void hash_aero_pass_free(HashAeroportosPassageiro *hap);
 
-void verifica_passageiros(HashPassageiros *hp, HashAeroportosPassageiro *hash_ap, HashReservas *gr, HashVoos *hv);
+void verifica_passageiros(HashPassageiros *hp, HashAeroportosPassageiro *hash_ap, Reservas *r, HashVoos *hv);
 
 PassageiroStats *query6(HashAeroportosPassageiro *hash_ap, const char *nacionalidade);
 
