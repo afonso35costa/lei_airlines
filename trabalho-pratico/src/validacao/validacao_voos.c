@@ -81,9 +81,9 @@ int valida_destination_origin_voos(const char *destination, const char *origin) 
 int validar_voo(Voo *v) {
     if (!v) return 0;
     if (!valida_destination_origin_voos(get_destination_voo(v), get_origin_voo(v))) return 0;
-    if (!validar_status_voos(v)) return 0;
     if (!validar_datas_voos(get_departure_voo(v), get_actual_departure_voo(v), get_arrival_voo(v), get_actual_arrival_voo(v))) return 0;
     if (!validar_flight_id_voos(get_flight_id_voo(v))) return 0;
+    if (!validar_status_voos(v)) return 0;
 
     return 1;
 }
