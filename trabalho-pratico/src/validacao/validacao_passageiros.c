@@ -216,7 +216,8 @@ int validar_passageiro(const Passageiros *p) {
 
     return validar_document_number_passageiro(get_document_number_passageiros(p)) &&
            validar_email_passageiro(get_email_passageiros(p)) &&
-           validar_genero_passageiro (get_gender_passageiros(p));
+           validar_genero_passageiro (get_gender_passageiros(p))&& 
+           validar_dob_passageiro (get_dob_passageiros(p));
 }
 
 /*

@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <math.h>
 #include "validacao_aeroportos.h"
 #include "aeroportos.h"
 
@@ -23,10 +24,13 @@ int validar_type_aeroporto (const char *type) {
 
 
 int validar_latitude_aeroporto (double latitude) {
+    if (isnan(latitude)) return 0;
     return (latitude >= -90.0 && latitude <= 90.0);
 }
 
+
 int validar_longitude_aeroporto (double longitude) {
+    if (isnan(longitude)) return 0;
     return (longitude >= -180.0 && longitude <= 180.0);
 }
 

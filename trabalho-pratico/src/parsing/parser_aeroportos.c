@@ -28,8 +28,16 @@ Aeroportos *parse_aeroporto_line(const char *line) {
     }
     // ---------------------------------------------
 
-    double latitude  = atof(campos[4]);
-    double longitude = atof(campos[5]);
+    char *endptr_lat, *endptr_lon;
+    double latitude  = strtod(campos[4], &endptr_lat);
+    double longitude = strtod(campos[5], &endptr_lon);
+
+    // Verifica se há caracteres inválidos
+    if (*endptr_lat != '\0' || *endptr_lon != '\0') {
+        for (int j = 0; j < 8; j++) free(campos[j]);
+        free(temp);
+        return NULL;  // Coordenadas inválidas
+    }
 
     Aeroportos *a = init_aeroporto(campos[0], campos[1], campos[2], campos[3],
                                    latitude, longitude, campos[6], campos[7]);
