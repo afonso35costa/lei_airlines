@@ -79,8 +79,15 @@ void escreve_aeroporto3 (Aeroportos *a, FILE *out, char* qtype);
 void escreve_tempos5 (Time **time, int num_companhias, FILE *out, char *q_type);
 
 
-// FALTA DOCUMENTAR
-
+/**
+ * @brief Função que escreve aeroporto de destino mais comum para passageiros de uma nacionalidade em ficheiro
+ * 
+ * @param a Ponteiro para a estrutura PassageiroStats
+ * @param out Ponteiro para o ficheiro de saída
+ * @param qtype Tipo de query (formato de saída)
+ * 
+ * @return void
+ */
 void escreve_aeroporto6 (PassageiroStats *a, FILE *out, char* qtype);
 
 #endif

@@ -227,24 +227,99 @@ GList *ordena_tempo_medio (HashTime *hash);
  */
 Time **query5(GList *tempo_medio, int N);
 
-// Query 6
 
+/**
+ * @brief Estrutura auxiliar para estatísticas de passageiros por nacionalidade e aeroporto de destino.
+ * 
+ * - nacionalidade: Nacionalidade do passageiro
+ * - aeroporto_code: Código do aeroporto de destino mais comum
+ * - count: Número de passageiros com essa nacionalidade que têm o aeroporto como destino
+ * 
+ */
 typedef struct passageiro_stats PassageiroStats;
 
+
+/**
+ * @brief Obtém a nacionalidade do passageiro.
+ * 
+ * @param ps Ponteiro para a estrutura PassageiroStats
+ * 
+ * @return Nacionalidade do passageiro
+ */
 char *get_nacionalidade_passageiro_stats(PassageiroStats *ps);
 
+
+/**
+ * @brief Obtém o código do aeroporto de destino mais comum para a nacionalidade.
+ * 
+ * @param ps Ponteiro para a estrutura PassageiroStats
+ * 
+ * @return Código do aeroporto de destino mais comum
+ */
 char *get_aeroporto_code_passageiro_stats(PassageiroStats *ps);
 
+
+/**
+ * @brief Obtém o número de passageiros com a nacionalidade que têm o aeroporto como destino.
+ * 
+ * @param ps Ponteiro para a estrutura PassageiroStats
+ * 
+ * @return Número de passageiros
+ */
 int get_count_passageiro_stats(PassageiroStats *ps);
 
+
+/**
+ * @brief Liberta a memória associada a uma estrutura PassageiroStats.
+ * 
+ * @param ps Ponteiro para a estrutura PassageiroStats a ser libertada
+ * 
+ * @return void
+ */
 typedef struct hash_aeroportos_passageiro HashAeroportosPassageiro;
 
+
+/**
+ * @brief Cria uma nova instância de HashAeroportosPassageiro.
+ * 
+ * @param void Não recebe parâmetros
+ * 
+ * @return Ponteiro para a nova instância de HashAeroportosPassageiro
+ */
 HashAeroportosPassageiro *hash_aero_pass_create(void);
 
+
+/**
+ * @brief Liberta a memória associada a uma estrutura HashAeroportosPassageiro.
+ * 
+ * @param hap Ponteiro para a estrutura HashAeroportosPassageiro a ser libertada
+ * 
+ * @return void
+ */
 void hash_aero_pass_free(HashAeroportosPassageiro *hap);
 
+
+/**
+ * @brief Função que verifica as reservas e atualiza as estatísticas de passageiros por nacionalidade e aeroporto de destino.
+ * 
+ * @param hp Ponteiro para o gestor de passageiros (hash table)
+ * @param hash_ap Ponteiro para a estrutura HashAeroportosPassageiro
+ * @param r Ponteiro para a reserva a ser verificada
+ * @param hv Ponteiro para o gestor de voos (hash table)
+ * 
+ * @return void 
+ */
 void verifica_passageiros(HashPassageiros *hp, HashAeroportosPassageiro *hash_ap, Reservas *r, HashVoos *hv);
 
+
+/**
+ * @brief Q6: Aeroporto de destino mais comum para passageiros de uma determinada nacionalidade.
+ * 
+ * @param hash_ap Ponteiro para a estrutura HashAeroportosPassageiro
+ * @param nacionalidade Nacionalidade dos passageiros a serem consultados
+ * 
+ * @return Ponteiro para a estrutura PassageiroStats com o aeroporto de destino mais comum, ou NULL se não houver dados
+ */
 PassageiroStats *query6(HashAeroportosPassageiro *hash_ap, const char *nacionalidade);
 
 #endif

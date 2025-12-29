@@ -3,16 +3,6 @@
 
 #include "aeronaves.h"
 
-/*
-// Funções de validação individual
-int validar_identifier(const char *identifier);
-int validar_manufacturer(const char *manufacturer);
-int validar_model(const char *model);
-int validar_year(int year);
-int validar_capacity(int capacity);
-int validar_range(int range);
-*/
-
 
 
 /**
