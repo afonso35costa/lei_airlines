@@ -17,7 +17,7 @@ int validar_flight_id_voos(const char *flight_id) {
         if (!isupper(flight_id[i])) return 0;
     }
 
-    for (int i = 2; flight_id[i] != "\0"; i++) {
+    for (int i = 2; flight_id[i] != '\0'; i++) {
         if (!isdigit(flight_id[i])) return 0;
     }
     return 1;
