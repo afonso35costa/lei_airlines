@@ -12,15 +12,14 @@
 // ============================================================
 
 int validar_flight_id_voos(const char *flight_id) {
-    if (!flight_id || strlen(flight_id) != 7) return 0;
+    if (!flight_id ) return 0;
     for (int i = 0; i < 2; i++) {
         if (!isupper(flight_id[i])) return 0;
     }
 
-    for (int i = 2; i < 7; i++) {
+    for (int i = 2; flight_id[i] != "\0"; i++) {
         if (!isdigit(flight_id[i])) return 0;
     }
-
     return 1;
 }
 
@@ -30,10 +29,9 @@ int validar_datas_voos(DataHora *dep, DataHora *act_dep, DataHora *arr, DataHora
     if (get_data(act_dep) == 0 && get_hora(act_dep) == 0 && get_data(act_arr) == 0 && get_hora(act_arr) == 0) {
         return 1; // Voo cancelado
     }
-    if (comparar_data_hora(act_dep, dep) < 0) return 0;
-    if (comparar_data_hora(act_arr, arr) < 0) return 0;
-    if (comparar_data_hora(act_arr, dep) < 0) return 0;
-    if (comparar_data_hora(act_arr, arr) < 0) return 0;
+    if (comparar_data_hora(arr,dep) < 0) return 0;
+    if (comparar_data_hora(act_arr, act_dep) < 0) return 0;
+
 
     return 1;
 }
