@@ -2,6 +2,7 @@
 # ------------------------------
 CC = gcc
 CFLAGS = -Werror=discarded-qualifiers -Wall -Wextra -g -DDEBUG
+# CFLAGS = -g -O0 -Wall -Wextra -fsanitize=address
 #GLIB_CFLAGS = `pkg-config --cflags glib-2.0`
 #GLIB_LIBS = `pkg-config --libs glib-2.0`
 

@@ -203,8 +203,8 @@ int main(int argc, char *argv[]) {
             else {
                 fprintf(fout, "\n");
             }
-        fclose(fout);
         }
+        fclose(fout);
     }
     fclose(f);
     printf("DEBUG: queries terminadas\n");

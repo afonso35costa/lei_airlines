@@ -11,7 +11,7 @@ struct gestor_passageiros {
 HashPassageiros* hash_passageiros_create(void) {
     HashPassageiros *gp = malloc(sizeof(HashPassageiros));
     if (!gp) return NULL;
-    gp->hash = g_hash_table_new_full(g_str_hash, g_str_equal, NULL, (GDestroyNotify)destroy_passageiro);
+    gp->hash = g_hash_table_new_full(g_str_hash, g_str_equal, free, (GDestroyNotify)destroy_passageiro);
     return gp;
 }
 
@@ -22,7 +22,7 @@ GHashTable* hash_passageiros_get_hash(HashPassageiros *gp) {
 
 // Adiciona passageiro
 void hash_passageiros_add(HashPassageiros *gp, Passageiros *passageiro) {
-    g_hash_table_insert(gp->hash, (gpointer) get_document_number_passageiros(passageiro), passageiro);
+    g_hash_table_insert(gp->hash, g_strdup(get_document_number_passageiros(passageiro)), passageiro);
 }
 
 // Remove passageiro

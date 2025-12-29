@@ -12,7 +12,7 @@ struct gestor_aeronaves {
 GestorAeronaves* gestor_aeronaves_create(void) {
     GestorAeronaves *ga = malloc(sizeof(GestorAeronaves));
     if (!ga) return NULL;
-    ga->hash = g_hash_table_new_full(g_str_hash, g_str_equal, NULL, (GDestroyNotify)destroy_aeronave);
+    ga->hash = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, (GDestroyNotify)destroy_aeronave);
     return ga;
 }
 
@@ -23,7 +23,7 @@ GHashTable* gestor_aeronaves_get_hash(GestorAeronaves *ga) {
 
 // Adiciona aeronave a gestor
 void gestor_aeronaves_add(GestorAeronaves *ga, Aeronaves *aeronave) {
-    g_hash_table_insert(ga->hash, (gpointer)get_identifier_aeronave(aeronave), aeronave);
+    g_hash_table_insert(ga->hash, g_strdup(get_identifier_aeronave(aeronave)), aeronave);
 }
 
 // Remove aeronave por aircraft identifier

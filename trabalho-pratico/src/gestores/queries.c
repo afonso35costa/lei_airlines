@@ -125,7 +125,7 @@ Aeronaves **query2(GList *stats_list, int N, const char *manufacturer_filter) {
         return NULL;
     }
 
-    Aeronaves **result = malloc(sizeof(Aeronaves *) * N);
+    Aeronaves **result = calloc(N, sizeof(Aeronaves *));
     if (!result) return NULL;
 
     int count = 0;
@@ -281,6 +281,7 @@ char *get_time_airline(Time *t) {
 }
 
 void free_time(Time *t) {
+    if (!t) return;
     free(t->airline);
     free(t);
 }
