@@ -70,7 +70,7 @@ int main(int argc, char *argv[]) {
     if (getline(&line, &len, fres) != -1) fprintf(err_fres, "%s", line);
 
     // -------------------------------------------------------------
-    // Processar aeroportos
+    // Processar todos os ficheiros CSV
     // -------------------------------------------------------------
 
     processar_ficheiro(faero, (FuncaoParser) parse_and_validate_aeroporto_line, action_add_aeroporto, g_aero, NULL, NULL, NULL, NULL, err_faero);
@@ -212,7 +212,7 @@ int main(int argc, char *argv[]) {
     // ------------------------- LIBERTAÇÃO MEMÓRIA -------------------------
     gestor_aeroportos_free(g_aero);
     g_list_free(stats_list);
-    g_list_free(tempo_medio);
+    g_list_free_full(tempo_medio, (GDestroyNotify)free_time);
     gestor_aeronaves_free(g_aeroN);
     hash_voos_free(hash_voos);
     array_voos_free(array_voos);
