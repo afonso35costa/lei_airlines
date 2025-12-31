@@ -45,6 +45,7 @@ ALL_SOURCES = $(EXISTING_SOURCES) $(ENTITY_SOURCES) $(PARSING_SOURCES)
 # ------------------------------
 PROGRAM_PRINCIPAL = programa-principal
 PROGRAM_TESTES = programa-testes
+PROGRAM_INTERATIVO = programa-interativo
 
 # ------------------------------
 # Includes para subpastas
@@ -52,7 +53,7 @@ PROGRAM_TESTES = programa-testes
 INCLUDE_DIRS = -I$(INCDIR) -I$(INCDIR)/entidades -I$(INCDIR)/gestores -I$(INCDIR)/parsing -I$(INCDIR)/utils -I$(INCDIR)/validacao -I$(INCDIR)/io
 
 # Comando make
-all: $(PROGRAM_PRINCIPAL) $(PROGRAM_TESTES)
+all: $(PROGRAM_PRINCIPAL) $(PROGRAM_TESTES) $(PROGRAM_INTERATIVO)
 
 # ------------------------------
 # Regras principais
@@ -63,12 +64,14 @@ $(PROGRAM_PRINCIPAL): $(SRCDIR)/main.c $(ALL_SOURCES)
 $(PROGRAM_TESTES): $(SRCDIR)/main_testes.c $(ALL_SOURCES)
 	$(CC) $(CFLAGS) $(GLIB_CFLAGS) $(INCLUDE_DIRS) -o $(PROGRAM_TESTES) $(SRCDIR)/main_testes.c $(ALL_SOURCES) $(GLIB_LIBS)
 
+$(PROGRAM_INTERATIVO): $(SRCDIR)/main_interativo.c $(ALL_SOURCES)
+	$(CC) $(CFLAGS) $(GLIB_CFLAGS) $(INCLUDE_DIRS) -o $(PROGRAM_INTERATIVO) $(SRCDIR)/main_interativo.c $(ALL_SOURCES) $(GLIB_LIBS)
 
 # ------------------------------
 # Limpeza
 # ------------------------------
 clean:
-	rm -f $(PROGRAM_PRINCIPAL) $(PROGRAM_TESTES) *.o
+	rm -f $(PROGRAM_PRINCIPAL) $(PROGRAM_TESTES) $(PROGRAM_INTERATIVO) *.o
 	rm -f resultados/*.csv || true
 	rm -f resultados/*.txt || true
 
