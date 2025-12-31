@@ -25,7 +25,7 @@ Aeronaves *parse_aeronave_line(const char *line) {
         token = strsep(&rest, ",");
     }
 
-    Aeronaves *a = init_aeronave(campos[0], campos[1], campos[2], campos[3], campos[4], campos[5]);
+    Aeronaves *a = init_aeronave(campos[0], campos[1], campos[2], campos[3]);
 
     for (int j = 0; j < 6; j++) free(campos[j]);
     free(temp);

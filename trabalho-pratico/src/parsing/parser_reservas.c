@@ -76,12 +76,11 @@ Reservas *parse_reserva_line(const char *line) {
         i++;
     }
     char **flight_ids = parse_flight_ids(campos[1]);
-    double price = atof(campos[4]);
-    bool extra = str_to_bool(campos[5]);
-    bool priority = str_to_bool(campos[6]);
+    //double price = atof(campos[4]);
+    //bool extra = str_to_bool(campos[5]);
+    //bool priority = str_to_bool(campos[6]);
 
-    Reservas *r = init_reserva(campos[0], flight_ids, campos[2], campos[3],
-                               price, extra, priority);
+    Reservas *r = init_reserva(campos[0], flight_ids, campos[2]);
 
 
     // Liberta array temporário de flight_ids

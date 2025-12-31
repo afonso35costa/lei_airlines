@@ -25,8 +25,7 @@ Passageiros *parse_passageiro_line(const char *line) {
     }
 
     Passageiros *p = init_passageiro(campos[0], campos[1], campos[2], campos[3],
-                                     campos[4], campos[5], campos[6], campos[7],
-                                     campos[8], campos[9]);
+                                     campos[4], campos[5], campos[6]);
 
     for (int j = 0; j < 10; j++) free(campos[j]);
     free(temp);

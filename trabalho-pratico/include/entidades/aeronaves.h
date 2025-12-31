@@ -43,7 +43,7 @@ Aeronaves* criar_aeronave(void);
  * @return Ponteiro para a aeronave inicializada, ou NULL em caso de erro
  */
 Aeronaves* init_aeronave(const char *identifier, const char *manufacturer,
-                         const char *model, const char *year, const char *capacity, const char *range);
+                         const char *model, const char *year);
 
 
 /**

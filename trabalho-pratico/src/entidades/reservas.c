@@ -9,10 +9,10 @@ typedef struct reservas {
     char *reservation_id;             // número da reserva
     char **flight_ids;                // identificadores de voo
     char *document_number;        // documento de identificação do passageiro
-    char *seat;                   // número do assento (ex: "12A")
-    double price;                     // preço da reserva
-    bool extra_luggage;               // bagagem extra incluída
-    bool priority_boarding;           // embarque prioritário incluído
+    //char *seat;                   // número do assento (ex: "12A")
+    //double price;                     // preço da reserva
+    //bool extra_luggage;               // bagagem extra incluída
+    //bool priority_boarding;           // embarque prioritário incluído
 } Reservas;
 
 // FUNÇÃO CONSTRUTORA - Criar nova reserva e alocar memória
@@ -26,25 +26,24 @@ Reservas* create_reserva(void) {
     r->reservation_id = NULL;
     r->flight_ids = NULL;
     r->document_number = NULL;
-    r->seat = NULL;
-    r->price = 0.0;
-    r->extra_luggage = false;
-    r->priority_boarding = false;
+    //r->seat = NULL;
+    // r->price = 0.0;
+    //r->extra_luggage = false;
+    //r->priority_boarding = false;
     
     return r;
 }
 
 // FUNÇÃO INICIALIZADORA - Inicializar reserva com valores
 Reservas* init_reserva(const char *reservation_id, char **flight_ids, 
-                      const char *document_number, const char *seat, 
-                      double price, bool extra_luggage, bool priority_boarding) {
+                      const char *document_number) {
     Reservas *r = create_reserva();
     if (r == NULL) return NULL;
     
     // Aloca e copia strings simples
     r->reservation_id = reservation_id ? strdup(reservation_id) : NULL;
     r->document_number = document_number ? strdup(document_number) : NULL;
-    r->seat = seat ? strdup(seat) : NULL;
+    //r->seat = seat ? strdup(seat) : NULL;
     
     // Copia array de flight_ids
     if (flight_ids != NULL) {
@@ -66,9 +65,9 @@ Reservas* init_reserva(const char *reservation_id, char **flight_ids,
     }
     
     // Copia valores numéricos/booleanos
-    r->price = price;
-    r->extra_luggage = extra_luggage;
-    r->priority_boarding = priority_boarding;
+    //r->price = price;
+    //r->extra_luggage = extra_luggage;
+    //r->priority_boarding = priority_boarding;
     
     return r;
 }
@@ -105,7 +104,7 @@ void destroy_reserva(Reservas *r) {
         free(r->flight_ids);
     }
     free(r->document_number);
-    free(r->seat);
+    //free(r->seat);
     
     // Liberta a estrutura principal
     free(r);
@@ -137,6 +136,7 @@ char* get_document_number_reservas(const Reservas *r) {
     return (r != NULL) ? r->document_number : NULL;
 }
 
+/*
 char* get_seat_reservas(const Reservas *r) {
     return (r != NULL) ? r->seat : NULL;
 }
@@ -152,7 +152,7 @@ bool get_extra_luggage_reservas(const Reservas *r) {
 bool get_priority_boarding_reservas(const Reservas *r) {
     return (r != NULL) ? r->priority_boarding : false;
 }
-
+*/
 
 // ============================================================================
 // SETTERS - Funções para definir valores
@@ -198,6 +198,7 @@ void set_document_number_reservas(Reservas *r, const char *doc) {
     r->document_number = doc ? strdup(doc) : NULL;
 }
 
+/*
 void set_seat_reservas(Reservas *r, const char *seat) {
     if (r == NULL) return;
     free(r->seat);
@@ -215,4 +216,4 @@ void set_extra_luggage_reservas(Reservas *r, bool extra) {
 void set_priority_boarding(Reservas *r, bool priority) {
     if (r != NULL) r->priority_boarding = priority;
 }
-
+*/

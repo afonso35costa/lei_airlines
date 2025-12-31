@@ -10,8 +10,8 @@ typedef struct aeronaves {
     char *manufacturer;   // fabricante
     char *model;          // modelo
     char *year;             // ano de fabrico
-    char *capacity;         // capacidade máxima de passageiros
-    char *range;            // alcance máximo em km
+    //char *capacity;         // capacidade máxima de passageiros
+    //char *range;            // alcance máximo em km
     int num_voos;           // Numero de voos
 } Aeronaves;
 
@@ -29,8 +29,8 @@ Aeronaves* criar_aeronave(void) {
     a->manufacturer = NULL;
     a->model        = NULL;
     a->year        = NULL;
-    a->capacity        = NULL;
-    a->range        = NULL;
+    //a->capacity        = NULL;
+    //a->range        = NULL;
     a->num_voos = 0;
 
     return a;
@@ -38,7 +38,7 @@ Aeronaves* criar_aeronave(void) {
 
 
 // FUNÇÃO INICIALIZADORA - Inicializa uma aeronave com valores
-Aeronaves* init_aeronave(const char *identifier, const char *manufacturer, const char *model, const char *year, const char *capacity, const char *range) {
+Aeronaves* init_aeronave (const char *identifier, const char *manufacturer, const char *model, const char *year) {
     Aeronaves *a = criar_aeronave();
     if (a == NULL) return NULL;
 
@@ -46,8 +46,8 @@ Aeronaves* init_aeronave(const char *identifier, const char *manufacturer, const
     a->manufacturer = manufacturer ? strdup(manufacturer) : NULL;
     a->model = model ? strdup(model) : NULL;
     a->year = year ? strdup(year) : NULL;
-    a->capacity = capacity ? strdup(capacity) : NULL;
-    a->range = range ? strdup(range) : NULL;
+    //a->capacity = capacity ? strdup(capacity) : NULL;
+    //a->range = range ? strdup(range) : NULL;
     a->num_voos     = 0;
 
     return a;
@@ -63,8 +63,8 @@ void destroy_aeronave(Aeronaves *a) {
     free(a->manufacturer);
     free(a->model);
     free(a->year);
-    free(a->capacity);
-    free(a->range);
+    //free(a->capacity);
+    //free(a->range);
     free(a);
 }
 
@@ -86,6 +86,7 @@ const char* get_year_aeronave(const Aeronaves *a) {
     return a ? a->year : NULL;
 }
 
+/*
 const char* get_capacity_aeronave(const Aeronaves *a) {
     return a ? a->capacity : NULL;
 }
@@ -93,6 +94,7 @@ const char* get_capacity_aeronave(const Aeronaves *a) {
 const char* get_range_aeronave(const Aeronaves *a) {
     return a ? a->range : NULL;
 }
+*/
 
 int get_num_voos_aeronave(const Aeronaves *a) {
     return a ? a->num_voos : -1;
@@ -123,7 +125,7 @@ void set_year_aeronave(Aeronaves *a, const char *year) {
     free(a->year);
     a->year = year ? strdup(year) : NULL;
 }
-
+/*
 void set_capacity_aeronave(Aeronaves *a, const char *capacity) {
     if (!a) return;
     free(a->capacity);
@@ -135,7 +137,7 @@ void set_range_aeronave(Aeronaves *a, const char *range) {
     free(a->range);
     a->range = range ? strdup(range) : NULL;
 }
-
+*/
 void set_num_voos_aeronave(Aeronaves *a, int num_voos) {
     if (!a) return;
     a->num_voos = num_voos;

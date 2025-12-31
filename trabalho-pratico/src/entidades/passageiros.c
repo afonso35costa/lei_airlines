@@ -13,9 +13,9 @@ typedef struct passageiros {
     char *nationality;     // nacionalidade
     char *gender;          // género (M, F, O)
     char *email;           // email
-    char *phone;           // número de telefone
-    char *address;         // morada
-    char *photo;           // fotografia (ficheiro ou URL)
+    //char *phone;           // número de telefone
+    //char *address;         // morada
+    //char *photo;           // fotografia (ficheiro ou URL)
 } Passageiros;
 
 // FUNÇÃO CONSTRUTORA - Função para criar um novo passageiro e alocar a memória necessária
@@ -34,9 +34,9 @@ Passageiros* create_passageiro(void) {
     p->nationality = NULL;
     p->gender = NULL;
     p->email = NULL;
-    p->phone = NULL;
-    p->address = NULL;
-    p->photo = NULL;
+    //p->phone = NULL;
+    //p->address = NULL;
+    //p->photo = NULL;
     
     return p;
 }
@@ -45,7 +45,7 @@ Passageiros* create_passageiro(void) {
 
 Passageiros* init_passageiro(const char *document_number, const char *first_name, const char *last_name, 
                              const char *dob, const char *nationality, const char *gender,
-                             const char *email, const char *phone, const char *address, const char *photo) {
+                             const char *email) {
     Passageiros *p = create_passageiro();
     if (p == NULL) return NULL;
     
@@ -57,9 +57,9 @@ Passageiros* init_passageiro(const char *document_number, const char *first_name
     p->nationality = strdup(nationality);
     p->gender = strdup(gender);
     p->email = strdup(email);
-    p->phone = strdup(phone);
-    p->address = strdup(address);
-    p->photo = strdup(photo);
+    //p->phone = strdup(phone);
+    //p->address = strdup(address);
+    //p->photo = strdup(photo);
 
     return p;
 }
@@ -95,9 +95,9 @@ void destroy_passageiro(Passageiros *p) {
     free(p->nationality);
     free(p->gender);
     free(p->email);
-    free(p->phone);
-    free(p->address);
-    free(p->photo);
+    //free(p->phone);
+    //free(p->address);
+    //free(p->photo);
     
     // Liberta a estrutura principal
     free(p);
@@ -136,6 +136,7 @@ char* get_email_passageiros(const Passageiros *p) {
     return (p != NULL) ? p->email : NULL;
 }
 
+/*
 char* get_phone_passageiros(const Passageiros *p) {
     return (p != NULL) ? p->phone : NULL;
 }
@@ -147,7 +148,7 @@ char* get_address_passageiros(const Passageiros *p) {
 char* get_photo_passageiros(const Passageiros *p) {
     return (p != NULL) ? p->photo : NULL;
 }
-
+*/
 // ===========================================================================================
 // SETTERS - Funções para definir valores
 // ===========================================================================================
@@ -193,7 +194,7 @@ void set_email_passageiros(Passageiros *p, const char *mail) {
     free(p->email);
     p->email = mail ? strdup(mail) : NULL;
 }
-
+/*
 void set_phone_passageiros(Passageiros *p, const char *tel) {
     if (p == NULL) return;
     free(p->phone);
@@ -211,3 +212,4 @@ void set_photo_passageiros(Passageiros *p, const char *pic) {
     free(p->photo);
     p->photo = pic ? strdup(pic) : NULL;
 }
+*/

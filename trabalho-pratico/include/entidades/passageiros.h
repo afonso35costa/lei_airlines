@@ -43,15 +43,12 @@ Passageiros* create_passageiro(void);
  * @param nationality Nacionalidade do passageiro
  * @param gender Género do passageiro
  * @param email Email do passageiro
- * @param phone Telefone do passageiro
- * @param address Morada do passageiro
- * @param photo Caminho para a foto do passageiro
  * 
  * @return Ponteiro para o passageiro inicializado, ou NULL em caso de erro
  */
 Passageiros *init_passageiro(const char *document_number, const char *first_name, const char *last_name,
                              const char *dob, const char *nationality, const char *gender,
-                             const char *email, const char *phone, const char *address, const char *photo);
+                             const char *email);
 
 
 /**

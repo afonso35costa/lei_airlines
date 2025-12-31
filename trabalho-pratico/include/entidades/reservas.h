@@ -44,8 +44,7 @@ Reservas* create_reserva(void);
  * @return Ponteiro para a reserva inicializada, ou NULL em caso de erro
  */
 Reservas* init_reserva(const char *reservation_id, char **flight_ids, 
-                      const char *document_number, const char *seat, 
-                      double price, bool extra_luggage, bool priority_boarding);
+                      const char *document_number);
 
 
 /**
