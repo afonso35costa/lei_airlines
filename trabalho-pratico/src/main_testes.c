@@ -328,7 +328,7 @@ int main(int argc, char *argv[]) {
     // ------------------------- LIBERTAÇÃO MEMÓRIA -------------------------
     gestor_aeroportos_free(g_aero);
     g_list_free(stats_list);
-    g_list_free(tempo_medio);
+    g_list_free_full(tempo_medio, (GDestroyNotify)free_time);
     gestor_aeronaves_free(g_aeroN);
     hash_voos_free(hash_voos);
     array_voos_free(array_voos);
