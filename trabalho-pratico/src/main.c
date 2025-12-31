@@ -151,6 +151,12 @@ int main(int argc, char *argv[]) {
             }
         }
 
+        // Query 4
+
+        else if (strcmp(query_type, "4") == 0 || strcmp(query_type, "4S") == 0) {
+            fprintf(fout, "\n");
+        }
+
         // QUERY 5
 
         else if (strcmp(query_type, "5") == 0 || strcmp(query_type, "5S") == 0) {
@@ -212,7 +218,7 @@ int main(int argc, char *argv[]) {
     // ------------------------- LIBERTAÇÃO MEMÓRIA -------------------------
     gestor_aeroportos_free(g_aero);
     g_list_free(stats_list);
-    g_list_free_full(tempo_medio, (GDestroyNotify)free_time);
+    g_list_free(tempo_medio);
     gestor_aeronaves_free(g_aeroN);
     hash_voos_free(hash_voos);
     array_voos_free(array_voos);
