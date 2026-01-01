@@ -86,6 +86,13 @@ GList* ordena_aeronaves (GestorAeronaves *ga);
  */
 Aeronaves **query2(GList *stats_list, int N, const char *manufacturer_filter);
 
+// Falta documentar
+
+gint compare_voo_date(gconstpointer a, gconstpointer b);
+
+// devolve o índice do primeiro voo com data >= start
+gint lower_bound(ArrayVoos *gv, DataHora *start);
+
 
 /**
  * @brief Função que percorre todos os voos e conta partidas por aeroporto entre duas datas.

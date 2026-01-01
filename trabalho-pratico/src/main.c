@@ -79,6 +79,7 @@ int main(int argc, char *argv[]) {
     processar_ficheiro(fpass, (FuncaoParser) parse_and_validate_passageiro_line, action_add_passageiro, NULL, hash_passageiros, NULL, NULL, NULL, err_fpass);
     processar_ficheiro(fres, (FuncaoParser) parse_and_validate_reserva_line, action_add_reserva, hash_passageiros, hash_voos, g_aero, hash_reservas, aero_pass, err_fres);
 
+    g_ptr_array_sort(array_voos_get_array(array_voos), compare_voo_date);
     percorre_voos_aeronaves(array_voos, g_aeroN);
     GList *stats_list = ordena_aeronaves(g_aeroN);
     GList *tempo_medio = ordena_tempo_medio(conta_tempo(array_voos));
