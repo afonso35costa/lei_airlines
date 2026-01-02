@@ -137,12 +137,6 @@ int get_hora(DataHora *dh);
  */
 int get_data(DataHora *dh);
 
-// falta documentar
-
-void set_data(DataHora *dh, int data);
-
-void set_hora(DataHora *dh, int hora);
-
 
 /**
  * @brief Compara duas estruturas DataHora.

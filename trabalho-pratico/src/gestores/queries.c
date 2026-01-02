@@ -161,93 +161,54 @@ Aeronaves **query2(GList *stats_list, int N, const char *manufacturer_filter) {
 // QUERY 3 - Aeroporto com mais partidas entre datas
 // ============================================================
 
-// Função de comparação para ordenação de voos por data real de partida
 
-gint compare_voo_date(gconstpointer a, gconstpointer b) {
-    const Voo *v1 = *(const Voo **)a; 
-    const Voo *v2 = *(const Voo **)b;  
-    
-    return comparar_data_hora(
-        get_actual_departure_voo(v1),
-        get_actual_departure_voo(v2)
-    );
-}
+// Função que percorre todos os voos e conta partidas por aeroporto
 
-gint compare_voo_with_date(Voo *v, DataHora *d) {
-    return comparar_data_hora(
-        get_actual_departure_voo(v),
-        d
-    );
-}
+void percorre_voos_aeroportos(ArrayVoos *gv, GestorAeroportos *ga, char* start_date, char* end_date) {
 
-gint lower_bound(ArrayVoos *gv, DataHora *start) {
-    gint left = 0;
-    gint right = array_voos_get_length(gv);
-
-    while (left < right) {
-        gint mid = (left + right) / 2;
-        Voo *v = array_voos_get(gv, mid);
-
-        if (compare_voo_with_date(v, start) < 0)
-            left = mid + 1;
-        else
-            right = mid;
-    }
-    return left;
-}
-
-
-void percorre_voos_aeroportos(ArrayVoos *gv, GestorAeroportos *ga,
-                              char* start_date, char* end_date) {
-
-    if (!gv || !ga) return;
-
-    // limpar contagem
+    // RESET na contagem de partidas de todos os aeroportos
     GHashTableIter iter;
     gpointer key, value;
     g_hash_table_iter_init(&iter, gestor_aeroportos_get_hash(ga));
     while (g_hash_table_iter_next(&iter, &key, &value)) {
-        set_departures_aeroporto((Aeroportos*)value, 0);
+        Aeroportos *aero = (Aeroportos*)value;
+        if (aero) {
+            set_departures_aeroporto(aero, 0);
+        }
     }
 
+    // Verifica se os gestores são válidos
+    if (!gv || !ga) {
+        return;
+    }
     DataHora *start = ler_data(start_date);
-    DataHora *end   = ler_data(end_date);
+    DataHora *end = ler_data(end_date);
     if (!start || !end) {
         destroy_data_hora(start);
         destroy_data_hora(end);
         return;
     }
 
-    set_hora(end, 2359); // considerar todo o dia de end_date
+    for (guint i = 0; i < array_voos_get_length(gv); i++) {
+        Voo *voo = array_voos_get(gv, i);
+        if (!voo) {
+            continue;
+        }
 
-    guint n = array_voos_get_length(gv);
-    if (n == 0) {
-        destroy_data_hora(start);
-        destroy_data_hora(end);
-        return;
-    }
+        char *origin = get_origin_voo(voo);
+        DataHora *departure = get_actual_departure_voo(voo);
+        if (!origin || !departure) {
+            continue;
+        }
 
-    // 1) encontrar primeiro índice >= start
-    gint idx = lower_bound(gv, start);
 
-    // 2) percorrer só até ultrapassar end
-    for (; idx < (gint)n ; idx++) {
-
-        Voo *voo = array_voos_get(gv, idx);
-        DataHora *dep = get_actual_departure_voo(voo);
-
-        if (comparar_data_hora(dep, end) > 0)
-            return;
-        if (strcmp(get_status_voo(voo), "Cancelled") != 0) {
-            add_departures_aeroporto(ga, get_origin_voo(voo));
+        if (strcmp(get_status_voo(voo), "Cancelled") != 0 && esta_entre_datas(departure, start, end)) {
+            add_departures_aeroporto(ga, origin);
         }
     }
-
     destroy_data_hora(start);
     destroy_data_hora(end);
 }
-
-
 
 // Resolução da query 3 que é dar o aeroporto com mais partidas entre datas
 
