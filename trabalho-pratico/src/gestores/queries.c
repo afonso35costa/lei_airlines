@@ -236,11 +236,8 @@ void percorre_voos_aeroportos(ArrayVoos *gv, GestorAeroportos *ga,
         Voo *voo = array_voos_get(gv, idx);
         DataHora *dep = get_actual_departure_voo(voo);
 
-        if (comparar_data_hora(dep, end) > 0) {
-            destroy_data_hora(start);
-            destroy_data_hora(end);
+        if (comparar_data_hora(dep, end) > 0)
             return;
-        }
         if (strcmp(get_status_voo(voo), "Cancelled") != 0) {
             add_departures_aeroporto(ga, get_origin_voo(voo));
         }
