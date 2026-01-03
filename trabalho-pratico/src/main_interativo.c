@@ -146,20 +146,15 @@ int main(int argc, char *argv[]) {
             continue;
         }
 
-        char arg1[256], arg2[256], arg3[256], arg4[256], arg5[256], arg6[256], arg7[256], arg8[256];
-                    arg1[0] = arg2[0] = arg3[0] = arg4[0] = arg5[0] = arg6[0] = arg7[0] = arg8[0] = '\0';
-
-        int n_args = sscanf(query_type, "%s %s %s %s %s %s %s %s %s", query_type, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
-
         FILE *fout = stdout;
 
-        
-        
+
         // Execução das queries
 
         //  QUERY 1
 
          if (strcmp(query_type, "1") == 0 || strcmp(query_type, "1S") == 0) {
+            char arg1[256];
             printf("Código do aeroporto: ");
             if (fgets(arg1, sizeof(arg1), stdin) == NULL) continue;
             arg1[strcspn(arg1, "\n")] = '\0';  // Remover newline
@@ -178,6 +173,7 @@ int main(int argc, char *argv[]) {
         // QUERY 2
 
         else if (strcmp(query_type, "2") == 0 || strcmp(query_type, "2S") == 0) {
+            char arg1[256], arg2[256];
             printf("Número de aeronaves (N): ");
             if (fgets(arg1, sizeof(arg1), stdin) == NULL) continue;
             arg1[strcspn(arg1, "\n")] = '\0';
@@ -200,6 +196,7 @@ int main(int argc, char *argv[]) {
         // QUERY 3
 
         else if (strcmp(query_type, "3") == 0 || strcmp(query_type, "3S") == 0) {
+            char arg1[256], arg2[256];
             printf("Data inicial (aaaa-mm-dd): ");
             if (fgets(arg1, sizeof(arg1), stdin) == NULL) continue;
             arg1[strcspn(arg1, "\n")] = '\0';
@@ -257,6 +254,7 @@ int main(int argc, char *argv[]) {
         // QUERY 5
 
         else if (strcmp(query_type, "5") == 0 || strcmp(query_type, "5S") == 0) {
+            char arg1[256];
             printf("Número de companhias (N): ");
             if (fgets(arg1, sizeof(arg1), stdin) == NULL) continue;
             arg1[strcspn(arg1, "\n")] = '\0';
@@ -271,27 +269,38 @@ int main(int argc, char *argv[]) {
         // QUERY 6
 
         else if (strcmp(query_type, "6") == 0 || strcmp(query_type, "6S") == 0) {
+            char arg1[256], arg2[256], arg3[256], arg4[256], arg5[256], arg6[256], arg7[256], arg8[256];
+            arg1[0] = arg2[0] = arg3[0] = arg4[0] = arg5[0] = arg6[0] = arg7[0] = arg8[0] = '\0';
             
             printf("Nacionalidade: ");
-            char input_line[256];
-            if (fgets(arg1, sizeof(arg1), stdin) == NULL) continue;
-            arg1[strcspn(arg1, "\n")] = '\0';
+            char input_line[1024];
+            fgets(input_line, sizeof(input_line), stdin);
+            input_line[strcspn(input_line, "\n")] = '\0';
             
-
-            int n_args = sscanf(input_line, "%s %s %s %s %s %s %s %s", 
+            
+            
+            // Parsing da linha
+            int n_args = sscanf(input_line, "%255s %255s %255s %255s %255s %255s %255s %255s", 
                                arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
             
-            // Validação do máximo 8 argumentos (palavras)
-            if (n_args > 8 || n_args == 0) {
-                printf("Nacionalidade tem de ter entre 1 e 8 palavras.\n");
+            
+            // ✅ VALIDAÇÃO: Máximo 8 argumentos
+            if (n_args > 8 || n_args <= 0) {
+                printf("❌ ERRO: Nacionalidade deve ter entre 1 e 8 palavras.\n");
                 continue;
+            }
+            
+            // DEBUG: Testar query6 diretamente
+            void *resultado_q6 = (n_args == 1) ? query6(aero_pass, arg1) : NULL;
+            if (n_args == 1) {
+                printf("%s\n", resultado_q6 ? "algo" : "NULL");
             }
             
             printf("Output: ");
             
-            // Executar query consoante número de argumentos 
+            // Executar query (IGUAL ao main.c)
             if (n_args == 1) {
-                escreve_aeroporto6(query6(aero_pass, arg1), fout, query_type);
+                escreve_aeroporto6(resultado_q6, fout, query_type);
             }
             else if (n_args == 2) {
                 char combined_arg[512];
@@ -303,7 +312,6 @@ int main(int argc, char *argv[]) {
                 snprintf(combined_arg, sizeof(combined_arg), "%s %s %s", arg1, arg2, arg3);
                 escreve_aeroporto6(query6(aero_pass, combined_arg), fout, query_type);
             }
-            
             else if (n_args == 4) {
                 char combined_arg[1024];
                 snprintf(combined_arg, sizeof(combined_arg), "%s %s %s %s", arg1, arg2, arg3, arg4);
@@ -331,15 +339,14 @@ int main(int argc, char *argv[]) {
             }
         }
         
-        
         // Query não reconhecida
         else {
-            printf("Query não implementada ou inválida\n ");
+            printf("Query não implementada ou inválida\n");
             printf("Pressione: 0 (sair), r (reset) ou outra query válida.\n");
         }
     }
 
-    //  LIBERTAÇÃO MEMÓRIA 
+    // Libertação de memória
     gestor_aeroportos_free(g_aero);
     g_list_free(stats_list);
     g_list_free(tempo_medio);
@@ -355,3 +362,89 @@ int main(int argc, char *argv[]) {
 
     return 0;
 }
+
+//         else if (strcmp(query_type, "6") == 0 || strcmp(query_type, "6S") == 0) {
+            
+//             printf("Nacionalidade: ");
+//             char input_line[256];
+//             if (fgets(arg1, sizeof(arg1), stdin) == NULL) continue;
+//             arg1[strcspn(arg1, "\n")] = '\0';
+            
+
+//             int n_args = sscanf(input_line, "%s %s %s %s %s %s %s %s", 
+//                                arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
+            
+//             // Validação do máximo 8 argumentos (palavras)
+//             if (n_args > 8 || n_args == 0) {
+//                 printf("Nacionalidade tem de ter entre 1 e 8 palavras.\n");
+//                 continue;
+//             }
+            
+//             printf("Output: ");
+            
+//             // Executar query consoante número de argumentos 
+//             if (n_args == 1) {
+//                 escreve_aeroporto6(query6(aero_pass, arg1), fout, query_type);
+//             }
+//             else if (n_args == 2) {
+//                 char combined_arg[512];
+//                 snprintf(combined_arg, sizeof(combined_arg), "%s %s", arg1, arg2);
+//                 escreve_aeroporto6(query6(aero_pass, combined_arg), fout, query_type);
+//             }
+//             else if (n_args == 3) {
+//                 char combined_arg[768];
+//                 snprintf(combined_arg, sizeof(combined_arg), "%s %s %s", arg1, arg2, arg3);
+//                 escreve_aeroporto6(query6(aero_pass, combined_arg), fout, query_type);
+//             }
+            
+//             else if (n_args == 4) {
+//                 char combined_arg[1024];
+//                 snprintf(combined_arg, sizeof(combined_arg), "%s %s %s %s", arg1, arg2, arg3, arg4);
+//                 escreve_aeroporto6(query6(aero_pass, combined_arg), fout, query_type);
+//             }
+//             else if (n_args == 5) {
+//                 char combined_arg[1280];
+//                 snprintf(combined_arg, sizeof(combined_arg), "%s %s %s %s %s", arg1, arg2, arg3, arg4, arg5);
+//                 escreve_aeroporto6(query6(aero_pass, combined_arg), fout, query_type);
+//             }
+//             else if (n_args == 6) {
+//                 char combined_arg[1536];
+//                 snprintf(combined_arg, sizeof(combined_arg), "%s %s %s %s %s %s", arg1, arg2, arg3, arg4, arg5, arg6);
+//                 escreve_aeroporto6(query6(aero_pass, combined_arg), fout, query_type);
+//             }
+//             else if (n_args == 7) {
+//                 char combined_arg[1792];
+//                 snprintf(combined_arg, sizeof(combined_arg), "%s %s %s %s %s %s %s", arg1, arg2, arg3, arg4, arg5, arg6, arg7);
+//                 escreve_aeroporto6(query6(aero_pass, combined_arg), fout, query_type);
+//             }
+//             else if (n_args == 8) {
+//                 char combined_arg[2048];
+//                 snprintf(combined_arg, sizeof(combined_arg), "%s %s %s %s %s %s %s %s", arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
+//                 escreve_aeroporto6(query6(aero_pass, combined_arg), fout, query_type);
+//             }
+//         }
+        
+        
+//         // Query não reconhecida
+//         else {
+//             printf("Query não implementada ou inválida\n ");
+//             printf("Pressione: 0 (sair), r (reset) ou outra query válida.\n");
+//         }
+//     }
+
+//     //  LIBERTAÇÃO MEMÓRIA 
+//     gestor_aeroportos_free(g_aero);
+//     g_list_free(stats_list);
+//     g_list_free(tempo_medio);
+//     gestor_aeronaves_free(g_aeroN);
+//     hash_voos_free(hash_voos);
+//     array_voos_free(array_voos);
+//     hash_aero_pass_free(aero_pass);
+//     hash_reservas_free(hash_reservas);
+//     hash_passageiros_free(hash_passageiros);
+//     free(line);
+
+//     printf("DEBUG: programa terminado\n");
+
+//     return 0;
+// }
