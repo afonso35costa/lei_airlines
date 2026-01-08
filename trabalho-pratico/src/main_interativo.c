@@ -293,7 +293,7 @@ int main(int argc, char *argv[]) {
             // DEBUG: Testar query6 diretamente
             void *resultado_q6 = (n_args == 1) ? query6(aero_pass, arg1) : NULL;
             if (n_args == 1) {
-                printf("%s\n", resultado_q6 ? "algo" : "NULL");
+                printf("%s", resultado_q6 ? "" : "");
             }
             
             printf("Output: ");
