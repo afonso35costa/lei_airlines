@@ -294,7 +294,15 @@ void set_dep_count_aeroporto(Aeroportos *a, int dep_count);
 void set_arr_count_aeroporto(Aeroportos *a, int arr_count);
 
 
-// FALTA DOCUMENTAR
+/**
+
+ * @brief Define o contador de nacionalidades do aeroporto.
+ * 
+ * @param a Ponteiro para o aeroporto
+ * @param nac_count Novo contador de nacionalidades do aeroporto
+ * 
+ * @return void 
+ */
 
 void set_nac_count_aeroporto(Aeroportos *a, int nac_count);
 

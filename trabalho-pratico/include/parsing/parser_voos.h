@@ -27,6 +27,13 @@ Voo *parse_voo_line(const char *line);
  */
 Voo *parse_and_validate_voo_line(const char *line, FILE *ferr);
 
+/**
+ * @brief Converte uma estrutura Voo em uma linha CSV.
+ * 
+ * @param v Ponteiro para a estrutura Voo
+ * 
+ * @return String contendo a representação CSV do voo. Deve ser liberada pelo chamador.
+ */
 char *voo_para_csv(Voo *v);
 
 #endif
